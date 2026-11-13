@@ -1,0 +1,9 @@
+data/raw/
+__pycache__/
+*.pyc
+.env
+.ipynb_checkpoints/
+venv/
+cache/
+data/processed/soilgrids_cache/
+.claude/

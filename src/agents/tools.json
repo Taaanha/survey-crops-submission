@@ -1,0 +1,65 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "nearest_analog_year",
+      "description": "Find the historical years whose climate signature (monsoon onset timing, onset rainfall, longest dry spell, mean temperature) most closely matches the current season, using NASA POWER data. Returns the closest year overall and the closest year that also has soil-moisture records; use year_to_backtest for backtest_rotation.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "district": {
+            "type": "string",
+            "enum": ["cumilla", "noakhali", "feni", "brahmanbaria", "sylhet"]
+          },
+          "current_season": {
+            "type": "object",
+            "properties": {
+              "onset_doy": {"type": "integer", "description": "Day of year of the observed monsoon onset."},
+              "onset_amount_mm": {"type": "number", "description": "Rainfall (mm) in the onset week."},
+              "dry_spell_days": {"type": "integer", "description": "Longest dry spell so far this year, in days."},
+              "mean_t2m_c": {"type": "number", "description": "Mean temperature so far this year, in Celsius."}
+            },
+            "required": ["onset_doy", "onset_amount_mm", "dry_spell_days", "mean_t2m_c"]
+          }
+        },
+        "required": ["district", "current_season"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "backtest_rotation",
+      "description": "Replay a candidate crop rotation against real NASA SMAP soil moisture and NASA POWER climate data from one historical year, and count the days with adequate soil moisture for each crop's water demand (FAO-56 crop coefficients).",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "district": {
+            "type": "string",
+            "enum": ["cumilla", "noakhali", "feni", "brahmanbaria", "sylhet"]
+          },
+          "analog_year": {
+            "type": "integer",
+            "minimum": 2015,
+            "description": "Use year_to_backtest from nearest_analog_year's result."
+          },
+          "rotation_plan": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "crop": {
+                  "type": "string",
+                  "enum": ["rice", "mung_bean", "lentil", "chickpea", "wheat", "maize", "mustard", "potato"]
+                },
+                "start_date": {"type": "string", "description": "YYYY-MM-DD planting date."}
+              },
+              "required": ["crop", "start_date"]
+            }
+          }
+        },
+        "required": ["district", "analog_year", "rotation_plan"]
+      }
+    }
+  }
+]

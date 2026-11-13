@@ -1,0 +1,18 @@
+# disease risk (api-disease-risks)
+Layer: 1 compute (plus the additive field built in src/api/disease_block.py and called from app.py `/api/v1/risk-calendar`)
+Code: src/compute/disease_risk/core.py
+Purpose (2–3 sentences): Counts, over the past seasons 2001-2024, in how many seasons the weather was favourable for a crop disease inside the crop growing window, using only rules whose every number has a source row in `data/reference/disease_rules_draft.csv`. It never says a disease occurred. A crop with no usable rule is "not assessed", never 0.
+Public API (exact signatures + one-line description each):
+- `build_rule(kept, crop)` : the rule (values + citations) for a computable crop from the strict-loader kept rows, or None if any number is missing.
+- `favourable_days(weather, rule)` : boolean Series by date: 5-day mean temperature below the limit AND 10-day rain total at or above the limit AND day minimum not below the "unfavourable" limit.
+- `longest_run(flags)` : longest run of consecutive True values.
+- `season_window(year, start_md, end_md, extra_days)` : first and last day of the growing window for the season starting in `year`.
+- `count_seasons(weather, rule, start_md, end_md, extra_days, seasons=SEASONS)` : per-season rows and totals (`seasons_favourable`, `seasons_any_favourable_day`); a season with incomplete weather is skipped and listed, never counted as 0.
+- `assess_crop(crop, weather, kept, skipped, start_md=None, end_md=None, extra_days=None)` : one result per crop, `status` "assessed" (counts + citations) or "not_assessed" (+ reason).
+Inputs (data files / other modules) and their provenance: `load_weather()` (IMERG V07 Final Run rain + POWER temperature); `data/reference/disease_rules_draft.csv` via `reference.load_file`; the potato sowing window and tuber-start days from the risk-calendar crop spec.
+Outputs (shape + units + provenance fields): dict with counts of past seasons (of n), per-season longest favourable run, the rule numbers and citations. The API adds `src` ids that resolve in `provenance[]` (imerg, power, and the reference row source).
+Reference tables used (data/reference/*.csv rows): `disease_rules_draft.csv` rows `potato.disease.late_blight_rule.{tmax,rain_mm,unfavorable_tmin}` (Hyre 1954). Wheat blast rows have no source link (skipped by the loader); the lentil rule needs leaf-wetness hours, which we do not have. Both are "not assessed".
+Tests (file names + what each proves): tests/disease_risk/test_disease_risk.py (favourable-day rule, run length, window dates, counts, missing weather skipped not zero, wheat/lentil/mustard not assessed, real Cumilla data); src/api/test_disease_risks.py (the `disease_risks` field, provenance resolves, old keys unchanged, no banned words).
+Known limitations / honest caveats: (1) The Hyre rule is from a 1954 paper; the issue and exact page are not pinned (the link is an Internet Archive search). (2) The 5-day mean uses POWER `temp_mean_c`; the CSV row is named "tmax" but its note says "5-day average temp", so the mean is used (see Open questions). (3) A "favourable season" = at least 10 favourable days in a row, from the row note (onset 7-14 days after 10 consecutive favourable days); `seasons_any_favourable_day` is also given. (4) Potato has no sourced harvest date, so the window is the cited sowing-window start to its end plus 55 days (cited tuber-start upper bound); weather after that is not counted. (5) Weather is the area around the district, not one field; counts say nothing about whether disease occurred.
+CHAT KIT: src/compute/disease_risk/core.py, src/api/disease_block.py, data/reference/disease_rules_draft.csv, tests/disease_risk/test_disease_risk.py
+Last changed: 2026-11-13 by api-disease-risks

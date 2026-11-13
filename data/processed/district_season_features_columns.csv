@@ -1,0 +1,9 @@
+column,dataset,source_url,unit,note,first_season_year,last_season_year,district_seasons_with_value,district_seasons_total
+rain_total_mm,"NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), district polygon mean",https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary,mm per season,NaN unless every day observed,2001,2024,4608,4608
+rain_max_1d_mm,"NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), district polygon mean",https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary,mm per day,largest observed day,2001,2024,4608,4608
+tmean_c,"NASA POWER daily, AG community, district query point",https://power.larc.nasa.gov/docs/services/api/temporal/daily/,degC,mean of daily T2M,2001,2024,4608,4608
+tmax_mean_c,"NASA POWER daily, AG community, district query point",https://power.larc.nasa.gov/docs/services/api/temporal/daily/,degC,mean of daily T2M_MAX,2001,2024,4608,4608
+tmin_mean_c,"NASA POWER daily, AG community, district query point",https://power.larc.nasa.gov/docs/services/api/temporal/daily/,degC,mean of daily T2M_MIN,2001,2024,4608,4608
+rh_mean_pct,"NASA POWER daily, AG community, district query point",https://power.larc.nasa.gov/docs/services/api/temporal/daily/,percent,mean of daily RH2M,2001,2024,4608,4608
+wind_mean_ms,"NASA POWER daily, AG community, district query point",https://power.larc.nasa.gov/docs/services/api/temporal/daily/,m/s,mean of daily WS2M at 2 m,2001,2024,4608,4608
+solar_sum_mj_m2,"NASA POWER daily, AG community, district query point",https://power.larc.nasa.gov/docs/services/api/temporal/daily/,MJ/m2 per season,sum of daily ALLSKY_SFC_SW_DWN,2001,2024,4608,4608

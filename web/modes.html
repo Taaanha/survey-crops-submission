@@ -1,0 +1,915 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Survey Crops – What to sow, and when?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.css">
+<style>
+:root{color-scheme:dark;--night:#06101B;--deep:#0B2630;--moss:#12382C;--panel:rgba(255,255,255,.06);--line:rgba(255,255,255,.13);--ink:#F4F1E6;--mute:rgba(244,241,230,.64);--gold:#F2C14E;--leaf:#7BD389;--water:#4FC3F7;--coral:#FF7A6B;--amber:#FFB547;--teal:#2BB3A3;--head:'Space Grotesk','Noto Sans Bengali',system-ui,sans-serif;--body:'Inter','Noto Sans Bengali',system-ui,sans-serif;--fs:1}
+*{box-sizing:border-box}html{background:var(--night);-webkit-text-size-adjust:100%}
+body{margin:0;min-height:100vh;color:var(--ink);font:calc(15px*var(--fs))/1.5 var(--body);background:radial-gradient(120% 60% at 0% 0%,rgba(43,179,163,.22),transparent 60%),radial-gradient(90% 50% at 100% 100%,rgba(123,211,137,.14),transparent 60%),linear-gradient(180deg,var(--night),var(--deep) 55%,var(--moss));background-attachment:fixed;overflow-x:hidden}
+body.big{--fs:1.18}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.5;background-image:radial-gradient(1.2px 1.2px at 24px 38px,#fff9,transparent),radial-gradient(1px 1px at 120px 90px,#fff7,transparent),radial-gradient(1.4px 1.4px at 210px 20px,#fffb,transparent),radial-gradient(1px 1px at 60px 160px,#fff6,transparent),radial-gradient(1.2px 1.2px at 260px 140px,#fff8,transparent);background-size:300px 280px;animation:twk 6s ease-in-out infinite alternate}
+@keyframes twk{from{opacity:.3}to{opacity:.65}}
+h1,h2,h3{font-family:var(--head);margin:0;line-height:1.15;letter-spacing:-.01em}
+h1{font-size:clamp(1.7rem,6.5vw,2.6rem)}h2{font-size:1.35rem;margin:22px 0 10px}h3{font-size:1.05rem}
+p{margin:.3em 0}button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:var(--water)}
+svg.ic{width:1.25em;height:1.25em;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.art{display:block;flex:none;filter:drop-shadow(0 5px 8px rgba(0,0,0,.35))}
+/* header */
+header.top{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:8px;padding:10px 14px;background:linear-gradient(180deg,rgba(6,16,27,.94),rgba(6,16,27,.7));backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--head);font-weight:700;font-size:1.05rem;margin-right:auto;white-space:nowrap}
+.dot{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#F7E98A,var(--leaf) 60%,var(--teal))}
+.pill{min-height:40px;min-width:40px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);display:inline-flex;align-items:center;justify-content:center;gap:6px;font-weight:700}
+.pill.gold{background:var(--gold);color:#10202A;border-color:transparent}
+.seg{display:inline-flex;padding:3px;border-radius:99px;border:1px solid var(--line);background:var(--panel)}
+.seg button{min-height:34px;padding:0 12px;border-radius:99px;font-weight:700;color:var(--mute)}
+.seg button.on{background:var(--gold);color:#10202A}
+.brand span:last-child{display:inline}@media(max-width:520px){#modeLbl{display:none}header.top [data-v=sources]{display:none}header.top{gap:5px;padding:8px 8px}.brand span:last-child{display:none}.pill{min-width:38px;padding:0 9px}.back span{display:none}.seg button{padding:0 9px}}.back{display:none}.back.show{display:inline-flex}
+/* layout */
+.shell{position:relative;max-width:520px;margin:0 auto;padding:14px 16px 110px}
+nav.bnav{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:space-around;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:rgba(6,16,27,.94);backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+nav.bnav button{flex:1;max-width:100px;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 2px;border-radius:14px;font-size:.72rem;font-weight:600;color:var(--mute)}
+nav.bnav button.on{color:var(--gold);background:rgba(242,193,78,.1)}
+@media(min-width:900px){
+ .apibar{margin-left:225px}
+ .shell{max-width:1040px;margin-left:240px;margin-right:auto;padding:26px 36px 60px}
+ nav.bnav{top:62px;right:auto;width:224px;bottom:0;flex-direction:column;justify-content:flex-start;gap:6px;padding:16px 12px;border-top:0;border-right:1px solid var(--line)}
+ nav.bnav button{flex:none;max-width:none;flex-direction:row;gap:12px;font-size:1rem;padding:12px 14px}
+ .cols{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:22px;align-items:start}
+ .grid2{grid-template-columns:repeat(3,1fr)!important}
+ .crops{grid-template-columns:repeat(4,1fr)!important}
+ .strats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:start}
+}
+@media(min-width:1280px){.shell{margin-left:max(240px,calc(50vw - 520px + 120px))}}
+.page{display:none;animation:pgin .35s ease both}.page.on{display:block}
+@keyframes pgin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{display:flex;align-items:center;gap:8px;color:var(--gold);font-weight:700;font-size:.82rem;letter-spacing:.04em;text-transform:uppercase}
+.eyebrow::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.lead{color:var(--mute);margin:8px 0 14px}
+.card{background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.03));border:1px solid var(--line);border-radius:20px;padding:16px;margin:12px 0;overflow-wrap:anywhere;backdrop-filter:blur(6px)}
+.card.gold{border-color:rgba(242,193,78,.6)}.card.water{border-color:rgba(79,195,247,.5)}.card.warn{border-color:rgba(255,181,71,.6);background:rgba(255,181,71,.08)}
+.note{display:flex;gap:10px;align-items:flex-start;border-left:4px solid var(--water);background:rgba(79,195,247,.1);border-radius:12px;padding:10px 12px;margin:10px 0;font-size:.92em}
+.note.warn{border-color:var(--amber);background:rgba(255,181,71,.1)}
+.badge{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:3px 10px;font-size:.74rem;font-weight:700;letter-spacing:.02em;background:rgba(255,181,71,.16);color:var(--amber);border:1px solid rgba(255,181,71,.4)}
+.badge.ok{background:rgba(123,211,137,.15);color:var(--leaf);border-color:rgba(123,211,137,.4)}.badge.blue{background:rgba(79,195,247,.14);color:var(--water);border-color:rgba(79,195,247,.4)}.badge.bad{background:rgba(255,122,107,.15);color:var(--coral);border-color:rgba(255,122,107,.4)}
+.btn{position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:54px;padding:12px 18px;border-radius:18px;font-weight:700;font-size:1.05rem;color:#10202A;background:linear-gradient(135deg,#F7D26A,#E8A93A);box-shadow:0 10px 26px rgba(242,193,78,.25)}
+.btn::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.4) 50%,transparent 65%);transform:translateX(-120%);animation:shn 4.5s ease-in-out infinite}
+@keyframes shn{0%,60%{transform:translateX(-120%)}100%{transform:translateX(120%)}}
+.btn.alt{background:var(--panel);color:var(--ink);border:1px solid var(--line);box-shadow:none}.btn.alt::after{display:none}
+.btn.sm{min-height:44px;font-size:.95rem;width:auto;display:inline-flex}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{min-height:44px;padding:0 16px;border-radius:99px;border:1px solid var(--line);background:rgba(43,179,163,.14);font-weight:600}
+.chip.on{border:2px solid var(--gold);background:rgba(242,193,78,.18);color:var(--gold)}
+.src{display:inline-flex;align-items:center;min-height:30px;padding:0 10px;margin-left:4px;border-radius:99px;border:1px solid rgba(79,195,247,.55);background:rgba(79,195,247,.12);color:var(--water);font-size:.78rem;font-weight:700;vertical-align:middle}
+.row{display:flex;gap:12px;align-items:center}.sp{justify-content:space-between}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:6px 12px;font-size:.93em}.kv dt{color:var(--mute)}.kv dd{margin:0;font-weight:600}
+/* hero */
+.hero{display:flex;align-items:center;gap:6px}
+.hero .txt{flex:1;min-width:0}
+.orbit{position:relative;width:150px;height:150px;flex:none}
+.earthart{position:absolute;inset:18px;width:114px;height:114px;overflow:visible}
+.sat{position:absolute;inset:0;animation:spin 22s linear infinite}.satart{position:absolute;left:25px;top:-10px;width:100px;height:50px}
+.ring{position:absolute;border-radius:50%;border:1px dashed rgba(255,255,255,.2);inset:2px}
+@keyframes spin{to{transform:rotate(360deg)}}.pulse2{transform-box:fill-box;transform-origin:center;animation:pls 1.8s ease-out infinite}@keyframes pls{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+@media(max-width:420px){.orbit{width:110px;height:110px}.earthart{inset:13px;width:84px;height:84px}.satart{left:18px;width:74px;height:38px}}
+/* map */
+#map{height:300px;border-radius:20px;overflow:hidden;border:1px solid var(--line);background:#0b1b24}
+@media(min-width:900px){#map{height:430px}}
+.mapfb{display:grid;place-items:center;height:100%;text-align:center;color:var(--mute);padding:20px}
+.leaflet-container{font-family:var(--body)}
+.fieldcard{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:14px;margin:10px 0;border-radius:20px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(43,179,163,.22),rgba(18,56,44,.5))}
+.fieldcard.on{border:2px solid var(--gold)}.fieldcard small{color:var(--gold);font-weight:700;letter-spacing:.04em}.fieldcard b{display:block;font-size:1.05rem}.fieldcard span{color:var(--mute);font-size:.9em}
+/* crops */
+.crops{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.crop{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px 10px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.03));font-weight:600;text-align:center;min-height:124px;transition:transform .2s,border-color .2s}
+.crop:hover{transform:translateY(-3px)}.crop small{color:var(--mute);font-weight:500;font-size:.72rem;line-height:1.2}
+.crop.on{border:2px solid var(--gold);background:rgba(242,193,78,.12)}.crop.on::after{content:"✓";position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:var(--gold);color:#10202A;display:grid;place-items:center;font-weight:800;font-size:.85rem}
+.toggle{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:14px;border-radius:20px;border:1px solid var(--line);background:var(--panel)}
+.toggle.on{border-color:var(--water);background:rgba(79,195,247,.14)}
+.toggle .yn{margin-left:auto;padding:5px 14px;border-radius:99px;background:rgba(123,211,137,.2);color:var(--leaf);font-weight:700}.toggle.on .yn{background:var(--gold);color:#10202A}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{display:flex;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border-radius:16px;border:1px solid var(--line);background:var(--panel);font-weight:600;text-align:left}
+.opt.on{border:2px solid var(--gold);background:rgba(242,193,78,.14)}
+.bars{display:inline-flex;gap:3px}.bars i{width:6px;height:22px;border-radius:3px;background:rgba(255,255,255,.22)}.bars i.f{background:var(--gold)}
+.drops{display:inline-flex;gap:2px;color:rgba(255,255,255,.25)}.drops b.f{color:var(--water)}
+.opts4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.opts4 .opt{flex-direction:column;justify-content:center;text-align:center;font-size:.82rem;padding:10px 4px;min-height:84px}
+.opts4 .opt.on{border-color:var(--water);background:rgba(79,195,247,.16)}
+@media(max-width:380px){.opts4{grid-template-columns:1fr 1fr}}
+.when{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+input[type=date]{width:100%;min-height:48px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:0 12px;font:inherit}
+/* result */
+.big-date{display:flex;gap:14px;align-items:center}
+.cal{flex:none;width:76px;text-align:center;border-radius:16px;background:rgba(6,16,27,.7);border:1px solid var(--line);padding:8px 4px}
+.cal b{display:block;font-family:var(--head);font-size:1.9rem;line-height:1}.cal span{font-size:.72rem;font-weight:700;color:var(--mute);letter-spacing:.04em}
+.chain{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.step{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border-radius:99px;font-weight:700;background:rgba(255,255,255,.1)}
+.step.f{background:rgba(79,195,247,.2);padding:6px 14px}
+.arr{color:var(--gold);font-weight:800}
+.ring2{width:64px;height:64px;flex:none}
+.strat{position:relative;overflow:hidden}
+.strat.top{border:2px solid var(--gold);background:linear-gradient(160deg,rgba(242,193,78,.14),rgba(43,179,163,.08))}
+.rk{position:absolute;top:12px;right:14px;font-family:var(--head);font-weight:700;color:var(--gold)}
+.tag{display:flex;gap:10px;margin:10px 0;align-items:flex-start}.tag b{display:block;font-size:.8rem;letter-spacing:.04em;text-transform:uppercase;color:var(--mute)}
+.tag.g b{color:var(--leaf)}.tag.a b{color:var(--amber)}.tag.r b{color:var(--coral)}
+.tag p{margin:2px 0 0}
+details{border-top:1px solid var(--line);margin-top:10px;padding-top:6px}summary{cursor:pointer;font-weight:700;color:var(--water);min-height:36px;display:flex;align-items:center}
+table{width:100%;border-collapse:collapse;font-size:.88em}th,td{text-align:left;padding:7px 4px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--mute);font-weight:600}
+.issue{display:flex;gap:12px}.issue h3{margin-bottom:2px}
+.say{display:none}
+dialog{border:1px solid var(--line);border-radius:22px;background:#0B2630;color:var(--ink);max-width:min(460px,92vw);padding:20px}
+dialog::backdrop{background:rgba(0,0,0,.6)}
+.apibar{position:sticky;top:56px;z-index:30;display:flex;gap:10px;align-items:center;justify-content:center;flex-wrap:wrap;background:#10202A;border-bottom:1px solid var(--gold);padding:8px 16px;font-size:.95rem}.apibar[hidden]{display:none}.apibar .spin{width:14px;height:14px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;animation:apispin 1s linear infinite}@keyframes apispin{to{transform:rotate(360deg)}}.apibar button{min-height:36px}
+.toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#10202A;border:1px solid var(--gold);padding:10px 16px;border-radius:99px;z-index:50;opacity:0;pointer-events:none;transition:.3s;max-width:90vw}.toast.on{opacity:1}
+.sc-wrap{border-radius:20px;overflow:hidden;border:1px solid var(--line)}.sc-wrap svg{display:block;width:100%;height:auto}
+.sway{animation:swy 3.4s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:bottom center}@keyframes swy{from{transform:rotate(-2.2deg)}to{transform:rotate(2.2deg)}}
+
+body[data-mode="farmer"] .only-officer,body[data-mode="officer"] .only-farmer{display:none!important}
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
+.mcard{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.03));text-align:left}
+.mcard.on{border:2px solid var(--gold);background:rgba(242,193,78,.12)}.mcard b{font-size:1.05rem}.mcard span{color:var(--mute);font-size:.85em}
+@media(max-width:380px){.modes{grid-template-columns:1fr}}
+.ptiles{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}@media(min-width:900px){.ptiles{grid-template-columns:repeat(3,1fr)}}
+.ptile{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:16px 10px;border-radius:22px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(255,255,255,.1),rgba(255,255,255,.03));transition:transform .2s,border-color .2s}
+.ptile:hover{transform:translateY(-3px);border-color:var(--gold)}.ptile b{font-size:1.02rem}.ptile small{color:var(--mute)}.ptile .say2{display:inline-flex;align-items:center;gap:6px;color:var(--gold);font-weight:700}
+.legend{display:grid;grid-template-columns:1fr;gap:8px}@media(min-width:700px){.legend{grid-template-columns:1fr 1fr}}
+.legend .lg{display:flex;gap:12px;align-items:center;padding:10px;border-radius:16px;border:1px solid var(--line);background:var(--panel)}
+.scenewrap{position:relative;border-radius:22px;overflow:hidden;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.35)}.scenesvg{display:block;width:100%;height:auto}
+.wchip{position:absolute;left:12px;top:12px;background:rgba(6,16,27,.78);border-radius:99px;padding:6px 12px;font-weight:700;font-size:13px;color:#9BE3A6;max-width:calc(100% - 24px)}.wchip.warn{color:var(--amber)}
+.ssway{animation:swy2 3.4s ease-in-out infinite alternate}@keyframes swy2{from{transform:rotate(-2.2deg)}to{transform:rotate(2.2deg)}}
+.drop{animation:fall2 .9s linear infinite}@keyframes fall2{from{transform:translateY(-6px);opacity:0}25%{opacity:1}to{transform:translateY(80px);opacity:0}}
+.cloud{animation:drift 7s ease-in-out infinite alternate}@keyframes drift{from{transform:translateX(-6px)}to{transform:translateX(10px)}}
+.sunhot{animation:glow2 1.6s ease-in-out infinite alternate}@keyframes glow2{from{opacity:.65}to{opacity:1}}
+.scrub{display:flex;align-items:center;gap:12px;margin-top:12px}.playbtn{width:48px;height:48px;flex:none;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold),#E8A93A);color:#10202A;font-weight:800}
+#scrub{flex:1;accent-color:var(--gold);height:28px}.stages{display:flex;justify-content:space-between;margin-top:2px;font-size:.78em;color:var(--mute);padding-left:60px}
+.cmp{overflow-x:auto;-webkit-overflow-scrolling:touch}.cmp table{min-width:560px}
+body[data-mode="farmer"] .strat .quick{display:flex}body[data-mode="officer"] .strat .quick{display:none}
+.quick{align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0}.quick .sd{font-family:var(--head);font-size:1.25rem;font-weight:700}
+pre.json{white-space:pre-wrap;word-break:break-all;max-height:50vh;overflow:auto;font-size:.78rem;background:#06101B;padding:10px;border-radius:12px}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* v7 */
+#map{background:#0B2630}
+.mapfb{position:absolute;inset:0;z-index:600;background:#0B2630}
+#map{position:relative}
+.cols{display:grid;gap:16px;grid-template-columns:minmax(0,1fr)}
+.cols>.ctl{grid-area:ctl}.cols>.mapc{grid-area:map}.cols>.inf{grid-area:inf}
+.watch{display:inline-flex;align-items:center;gap:8px;margin:8px 8px 0 0;padding:9px 14px;border-radius:99px;border:1px solid var(--gold);color:var(--gold);background:rgba(242,193,78,.1);font-weight:700;font-size:.92rem}
+.watch:hover{background:rgba(242,193,78,.2)}
+.vgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.vcard{position:relative;display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 10px;border-radius:20px;border:1px solid var(--line);background:var(--panel);text-align:center;font-size:.95rem}
+.vcard span{position:absolute;right:10px;top:10px;color:var(--gold)}
+dialog#vid{width:min(560px,94vw);padding:14px;border-radius:24px;border:1px solid var(--line);background:#0B2630;color:var(--ink)}
+dialog#vid::backdrop{background:rgba(0,0,0,.7)}
+.vhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.vstage{border-radius:18px;overflow:hidden;border:1px solid var(--line)}.vsvg{display:block;width:100%;height:auto}
+.vcap{font-size:calc(1.15rem*var(--fs));line-height:1.45;margin:12px 4px;min-height:4.4em}
+.vdots{display:flex;gap:6px;justify-content:center;margin:6px 0}.vdots i{width:26px;height:6px;border-radius:3px;background:#ffffff26}.vdots i.on{background:var(--gold)}.vdots i.done{background:#7BD389}
+.vctl{display:flex;gap:10px;justify-content:center;margin-top:8px}.vctl .pill{min-width:52px;height:46px;font-size:1.1rem}
+body{background-attachment:fixed}
+.v-pop,.v-pop2,.v-glow{transform-box:fill-box}
+.v-pop{animation:vpop .5s both;transform-origin:center}@keyframes vpop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.v-pop2{animation:vpop .7s both;transform-origin:center}
+.v-fall{animation:vfall 1.1s linear infinite}@keyframes vfall{from{transform:translateY(0);opacity:0}20%{opacity:1}to{transform:translateY(60px);opacity:0}}
+.v-drift{animation:vdrift 6s ease-in-out infinite alternate}@keyframes vdrift{to{transform:translateX(26px)}}
+.v-glow{animation:vglow 2.4s ease-in-out infinite;transform-origin:center}@keyframes vglow{50%{opacity:.55;transform:scale(1.15)}}
+.v-sway{animation:vsway 2.6s ease-in-out infinite alternate;transform-box:view-box}@keyframes vsway{from{transform:rotate(-3deg)}to{transform:rotate(3deg)}}
+.v-bob{animation:vbob 2s ease-in-out infinite}@keyframes vbob{50%{transform:translateY(-6px)}}
+.v-drop{animation:vdrp 1.2s ease-in-out infinite alternate}@keyframes vdrp{from{transform:translateY(-10px)}to{transform:translateY(0)}}
+.v-crawl{animation:vcr 3s ease-in-out infinite alternate}@keyframes vcr{to{transform:translateX(18px)}}
+.v-leave{animation:vlv 3.5s ease-in forwards}@keyframes vlv{to{transform:translate(40px,-30px);opacity:0}}
+.v-up{animation:vup 2s ease-in infinite}@keyframes vup{from{transform:translateY(0);opacity:1}to{transform:translateY(-34px);opacity:0}}
+.v-slide{animation:vsl 4s ease-in-out forwards}@keyframes vsl{from{transform:translateX(-110px)}to{transform:translateX(var(--px,0px))}}
+.v-water{animation:vwt 2s ease-in-out infinite alternate}@keyframes vwt{to{transform:translateY(-5px)}}
+.v-drain{animation:vdn 4s ease-in forwards}@keyframes vdn{to{transform:translateY(24px);opacity:.2}}
+.v-grow{animation:vgr 4s ease-out both;transform-origin:50% 100%;transform-box:view-box}@keyframes vgr{from{transform:scaleY(.3)}}
+.v-fill{animation:vfl 3s ease-out forwards}@keyframes vfl{from{height:0}to{height:30px}}
+.v-fill2{animation:vf2 3s ease-out both}@keyframes vf2{from{width:0}}
+.v-pulse2{animation:vbob 1s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){.vsvg *{animation:none!important}}
+@media(max-width:899px){nav.bnav button.x{display:none}}
+@media(min-width:900px){
+ .shell{max-width:none!important;margin:0!important;padding:26px 40px 60px 264px!important}
+ .page{max-width:1100px;margin:0 auto}
+ .cols{grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);grid-template-areas:"ctl map" "inf map";align-items:start}
+ .cols>.mapc{position:sticky;top:78px}
+ #map{height:min(68vh,600px)!important}
+ .vgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+</head>
+<body data-mode="farmer">
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs><radialGradient id="g-bub" cx="50%" cy="50%" r="50%"><stop stop-color="#2F6B4A"/><stop offset="1" stop-color="#173828"/></radialGradient>
+<radialGradient id="g-bubw" cx="50%" cy="50%" r="50%"><stop stop-color="#1F6A86"/><stop offset="1" stop-color="#0E2A3E"/></radialGradient>
+<radialGradient id="g-bubh" cx="50%" cy="50%" r="50%"><stop stop-color="#86591A"/><stop offset="1" stop-color="#33200C"/></radialGradient>
+<radialGradient id="g-bubn" cx="50%" cy="50%" r="50%"><stop stop-color="#2D3E7D"/><stop offset="1" stop-color="#0B1230"/></radialGradient>
+<radialGradient id="g-bubp" cx="50%" cy="50%" r="50%"><stop stop-color="#8A4030"/><stop offset="1" stop-color="#34130E"/></radialGradient>
+</defs>
+<symbol id="a-mustard" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><path d="M32 34C38 30 42 32 44 26L32 34Z" fill="#6FBF5B"/><path d="M32 34C38 30 42 32 44 26" stroke="#6FBF5B" stroke-width="2" stroke-linecap="round"/><path d="M32 52V34" stroke="#6FBF5B" stroke-width="2.5" stroke-linecap="round"/><circle cx="26" cy="16" r="4" fill="#F7D23E"/><circle cx="34" cy="12" r="4" fill="#F7D23E"/><circle cx="42" cy="17" r="4" fill="#F7D23E"/><circle cx="30" cy="23" r="4" fill="#F7D23E"/><circle cx="39" cy="23" r="4" fill="#F7D23E"/><circle cx="34" cy="19" r="4" fill="#F7D23E"/></symbol>
+<symbol id="a-lentil" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><ellipse cx="38" cy="26.7" rx="5" ry="2.5" transform="rotate(30 38 26.7)" fill="#7BD389"/><ellipse cx="26.6" cy="27.7" rx="5" ry="2.5" transform="rotate(-30 26.6 27.7)" fill="#7BD389"/><ellipse cx="39.4" cy="39.7" rx="7" ry="3.5" transform="rotate(20 39.4 39.7)" fill="#C9A36A"/><ellipse cx="26.8" cy="16.9" rx="7" ry="3.5" transform="rotate(-20 26.8 16.9)" fill="#C9A36A"/><ellipse cx="25" cy="42" rx="6" ry="3" transform="rotate(-15 25 42)" fill="#C9A36A"/></symbol>
+<symbol id="a-wheat" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><path d="M32 54V20" stroke="#E8C15A" stroke-width="2.5" stroke-linecap="round"/><ellipse cx="27.5" cy="14" rx="3.5" ry="6" transform="rotate(-25 27.5 14)" fill="#E8C15A"/><ellipse cx="36.5" cy="17" rx="3.5" ry="6" transform="rotate(25 36.5 17)" fill="#E8C15A"/><ellipse cx="27.5" cy="21" rx="3.5" ry="6" transform="rotate(-25 27.5 21)" fill="#E8C15A"/><ellipse cx="36.5" cy="24" rx="3.5" ry="6" transform="rotate(25 36.5 24)" fill="#E8C15A"/><ellipse cx="27.5" cy="28" rx="3.5" ry="6" transform="rotate(-25 27.5 28)" fill="#E8C15A"/><ellipse cx="36.5" cy="31" rx="3.5" ry="6" transform="rotate(25 36.5 31)" fill="#E8C15A"/><ellipse cx="27.5" cy="35" rx="3.5" ry="6" transform="rotate(-25 27.5 35)" fill="#E8C15A"/><ellipse cx="36.5" cy="38" rx="3.5" ry="6" transform="rotate(25 36.5 38)" fill="#E8C15A"/></symbol>
+<symbol id="a-potato" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><ellipse cx="25" cy="38" rx="13" ry="9" fill="#B98A5A"/><ellipse cx="38" cy="28.5" rx="10" ry="7.5" fill="#C99B68"/><ellipse cx="35" cy="43" rx="9" ry="6.5" fill="#A8784A"/><circle cx="22" cy="37" r="1.4" fill="#8A6038"/><circle cx="41" cy="27" r="1.4" fill="#A47C4C"/><path d="M26 20L32 8L38 20" fill="#6FBF5B"/></symbol>
+<symbol id="a-boro" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><path d="M32 52C34 36 36 24 26 12" stroke="#7BD389" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M26 52C26 38 28 24 28 12" stroke="#7BD389" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M26 48C28 34 34 22 40 12" stroke="#7BD389" stroke-width="2.5" stroke-linecap="round" fill="none"/><path d="M26 34C30 24 38 16 46 12" stroke="#7BD389" stroke-width="2.5" stroke-linecap="round" fill="none"/><ellipse cx="37.1" cy="17.7" rx="3" ry="5" transform="rotate(20 37.1 17.7)" fill="#E8C15A"/><ellipse cx="40.1" cy="23.8" rx="3" ry="5" transform="rotate(30 40.1 23.8)" fill="#E8C15A"/></symbol>
+<symbol id="a-maize" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><rect x="25" y="12" width="14" height="30" rx="7" fill="#F2C14E"/><path d="M28 18h8M28 24h8M28 30h8" stroke="#D9A230" stroke-width="1.5" stroke-linecap="round"/><ellipse cx="28.6" cy="30.9" rx="6" ry="17" transform="rotate(-25 28.6 30.9)" fill="#5FA14A"/><ellipse cx="32.3" cy="35.9" rx="6" ry="17" transform="rotate(25 32.3 35.9)" fill="#5FA14A"/></symbol>
+<symbol id="a-sow" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><ellipse cx="32" cy="46" rx="14" ry="9" fill="#B98A5A"/><path d="M32 38C32 29 35 23 40 20" stroke="#7BD389" stroke-width="3" stroke-linecap="round" fill="none"/><ellipse cx="42" cy="21" rx="7" ry="4" transform="rotate(-30 42 21)" fill="#7BD389"/><ellipse cx="25" cy="29" rx="6" ry="3.4" transform="rotate(35 25 29)" fill="#9BE3A6"/></symbol>
+<symbol id="a-water" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubw)"/><path d="M32 11C32 11 46 28 46 36C46 44 40 51 32 51C24 51 18 44 18 36C18 28 32 11 32 11Z" fill="#4FC3F7"/><path d="M25 37c0 4.5 3 7.5 7 7.5" stroke="#fff" stroke-opacity=".65" stroke-width="2.6" stroke-linecap="round" fill="none"/></symbol>
+<symbol id="a-rain" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubw)"/><ellipse cx="24" cy="27" rx="9" ry="7" fill="#DDE8EE"/><ellipse cx="34" cy="23" rx="10" ry="9" fill="#DDE8EE"/><ellipse cx="43" cy="28" rx="8" ry="6" fill="#DDE8EE"/><rect x="21" y="38" width="3" height="9" rx="1.5" fill="#8FD8FA"/><rect x="30" y="41" width="3" height="9" rx="1.5" fill="#8FD8FA"/><rect x="39" y="38" width="3" height="9" rx="1.5" fill="#8FD8FA"/></symbol>
+<symbol id="a-heat" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubh)"/><circle cx="32" cy="32" r="10" fill="#F7D23E"/><g stroke="#FFB547" stroke-width="3.6" stroke-linecap="round"><path d="M32 10v5M32 49v5M10 32h5M49 32h5M16.5 16.5l3.5 3.5M44 44l3.5 3.5M16.5 47.5l3.5-3.5M44 20l3.5-3.5"/></g></symbol>
+<symbol id="a-night" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubn)"/><path d="M41 42a15 15 0 01-15-26 12 12 0 1015 26z" fill="#F7D23E"/><circle cx="43" cy="20" r="1.6" fill="#fff"/><circle cx="48" cy="29" r="1.2" fill="#fff"/><circle cx="36" cy="14" r="1.1" fill="#fff"/></symbol>
+<symbol id="a-flood" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubw)"/><g stroke="#4FC3F7" stroke-width="3.6" stroke-linecap="round" fill="none"><path d="M12 24c5-5 7 5 13 0s8 5 13 0 8 5 14 0"/><path d="M12 33c5-5 7 5 13 0s8 5 13 0 8 5 14 0"/><path d="M12 42c5-5 7 5 13 0s8 5 13 0 8 5 14 0"/></g></symbol>
+<symbol id="a-harvest" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubh)"/><path d="M24 52V28M32 52V18M40 52V28" stroke="#E8C15A" stroke-width="2.6" stroke-linecap="round"/><ellipse cx="29" cy="24" rx="3" ry="5.5" transform="rotate(-20 29 24)" fill="#F2C14E"/><ellipse cx="21" cy="30" rx="2.6" ry="5" transform="rotate(-20 21 30)" fill="#F2C14E"/><ellipse cx="35" cy="14" rx="3" ry="5.5" transform="rotate(20 35 14)" fill="#F2C14E"/><ellipse cx="29" cy="14" rx="3" ry="5.5" transform="rotate(-20 29 14)" fill="#F2C14E"/><ellipse cx="43" cy="24" rx="3" ry="5.5" transform="rotate(20 43 24)" fill="#F2C14E"/><ellipse cx="35" cy="24" rx="3" ry="5.5" transform="rotate(20 35 24)" fill="#F2C14E"/><path d="M18 50h28" stroke="#B98A5A" stroke-width="4" stroke-linecap="round"/></symbol>
+<symbol id="a-cal" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><rect x="13" y="16" width="38" height="35" rx="7" fill="#F4F1E6"/><path d="M13 23a7 7 0 017-7h24a7 7 0 017 7v3H13z" fill="#F2C14E"/><rect x="21" y="11" width="3.5" height="10" rx="1.7" fill="#DDE8EE"/><rect x="39.5" y="11" width="3.5" height="10" rx="1.7" fill="#DDE8EE"/><circle cx="23" cy="35" r="3" fill="#7BD389"/><circle cx="32" cy="35" r="3" fill="#7BD389"/><circle cx="41" cy="35" r="3" fill="#7BD389"/><circle cx="23" cy="44" r="3" fill="#7BD389"/><circle cx="32" cy="44" r="3" fill="#C9D3D8"/></symbol>
+<symbol id="a-pest" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubp)"/><g stroke="#FFB5AC" stroke-width="2.2" stroke-linecap="round" fill="none"><path d="M25 32l-8-5M25 38l-9 1M26 44l-7 6M39 32l8-5M39 38l9 1M38 44l7 6M29 21l-3-6M35 21l3-6"/></g><ellipse cx="32" cy="38" rx="9" ry="12" fill="#FF7A6B"/><circle cx="32" cy="24" r="6" fill="#FF9A8C"/><path d="M32 28v22" stroke="#7A2A1E" stroke-width="1.8"/><circle cx="29.5" cy="23" r="1.3" fill="#34130E"/><circle cx="34.5" cy="23" r="1.3" fill="#34130E"/></symbol>
+<symbol id="a-ph" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><g transform="translate(3.5 3) scale(.84)"><path d="M31.3 16H41.3M33.3 16V30L23.3 50C22.3 53 24.3 56 27.3 56H45.3C48.3 56 50.3 53 49.3 50L39.3 30V16" stroke="#DDE8EE" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M30.4 42H44.4L48.4 51C49.4 53 48.4 54 46.4 54H28.4C26.4 54 25.4 53 26.4 51L30.4 42Z" fill="#9BE3A6"/></g></symbol>
+<symbol id="a-carbon" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><rect x="13" y="38" width="38" height="11" rx="5" fill="#3B2616"/><rect x="13" y="27" width="38" height="11" fill="#6B4A2B"/><path d="M13 27a5 5 0 015-5h28a5 5 0 015 5z" fill="#8A6038"/><path d="M32 22V13" stroke="#7BD389" stroke-width="2.8" stroke-linecap="round"/><ellipse cx="37" cy="13" rx="5.5" ry="3" transform="rotate(-25 37 13)" fill="#7BD389"/><ellipse cx="27" cy="15" rx="5" ry="2.8" transform="rotate(25 27 15)" fill="#9BE3A6"/></symbol>
+<symbol id="a-check" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><circle cx="32" cy="32" r="15" fill="#7BD389"/><path d="M24.5 32.5l5.5 5.5 10-12" stroke="#06101B" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></symbol>
+<symbol id="a-warn" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubh)"/><path d="M32 14L52 49H12z" fill="#FFB547" stroke="#FFB547" stroke-width="4" stroke-linejoin="round"/><path d="M32 26v10" stroke="#33200C" stroke-width="3.6" stroke-linecap="round"/><circle cx="32" cy="43" r="2.2" fill="#33200C"/></symbol>
+<symbol id="a-twin" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubw)"/><circle cx="32" cy="32" r="15" fill="none" stroke="#4FC3F7" stroke-width="3.2"/><path d="M28 24l13 8-13 8z" fill="#F2C14E"/></symbol><symbol id="a-jute" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><path d="M24 54V20M32 54V14M40 54V22" stroke="#7BD389" stroke-width="3" stroke-linecap="round"/><path d="M24 30l-7-5M32 26l8-5M40 34l7-5" stroke="#9BE3A6" stroke-width="2.4" stroke-linecap="round"/></symbol><symbol id="a-veg" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bub)"/><path d="M32 52V30" stroke="#6FBF5B" stroke-width="2.5" stroke-linecap="round"/><path d="M32 40c-8-1-12-5-13-11 8 0 12 4 13 11zM32 36c7-1 11-5 12-11-7 0-11 4-12 11z" fill="#6FBF5B"/><circle cx="26" cy="20" r="6" fill="#FF7A6B"/><circle cx="38" cy="18" r="5" fill="#FFB547"/></symbol><symbol id="a-fallow" viewBox="0 0 64 64"><rect width="64" height="64" rx="32" fill="url(#g-bubh)"/><rect x="14" y="38" width="36" height="12" rx="3" fill="#8A5A2B"/><path d="M18 43h28M18 47h28" stroke="#5B3A19" stroke-width="2"/><path d="M26 34c1-4 4-6 6-6" stroke="#B0A07A" stroke-width="2" fill="none" stroke-linecap="round"/></symbol>
+
+
+<symbol id="i-pic" viewBox="0 0 24 24"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></symbol>
+<symbol id="i-field" viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/></symbol>
+<symbol id="i-farm" viewBox="0 0 24 24"><path d="M12 21v-9"/><path d="M12 12c0-4 3-6 7-6 0 4-3 6-7 6z"/><path d="M12 15c0-3-2-5-6-5 0 3 2 5 6 5z"/></symbol>
+<symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></symbol>
+<symbol id="i-rot" viewBox="0 0 24 24"><path d="M20 11a8 8 0 0 0-14-4M4 5v3h3"/><path d="M4 13a8 8 0 0 0 14 4M20 19v-3h-3"/></symbol>
+<symbol id="i-plan" viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M8 8h8M8 12h8M8 16h5"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
+<symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
+<symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+<symbol id="i-spk" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></symbol>
+<symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5"/></symbol>
+</svg>
+
+<header class="top">
+ <button class="pill back" id="backBtn" data-act="back" aria-label="Back"><svg class="ic"><use href="#i-back"/></svg><span data-t="back">Back</span></button>
+ <div class="brand"><span class="dot"></span><span>Survey Crops</span></div>
+ <button class="pill" id="modeBtn" data-act="mode" aria-label="Switch mode"><svg class="ic"><use href="#i-farm"/></svg><span id="modeLbl">Farmer</span></button>
+ <div class="seg" role="group" aria-label="Language"><button data-act="lang" data-v="en" class="on">EN</button><button data-act="lang" data-v="bn">বাংলা</button></div>
+ <button class="pill" data-act="big" aria-label="Bigger text">Aa</button>
+ <button class="pill" data-act="go" data-v="sources" aria-label="Sources"><svg class="ic"><use href="#i-info"/></svg></button>
+ <button class="pill gold" data-act="speak" aria-label="Read aloud"><svg class="ic"><use href="#i-spk"/></svg></button>
+</header>
+<div class="apibar" id="apibar" role="status" aria-live="polite" hidden></div>
+<main class="shell" id="app"></main>
+<nav class="bnav" id="nav"></nav>
+<dialog id="dlg"></dialog><dialog id="vid"></dialog><div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.js"></script>
+<script src="config.js"></script>
+<script src="api-client.js"></script>
+<script src="adapters/advisory.js"></script>
+<script src="adapters/postflood.js"></script>
+<script src="adapters/twin.js"></script>
+<script src="adapters/soil.js"></script>
+<script src="adapters/passport.js"></script>
+<script src="adapters/scenario.js"></script>
+<script src="pages/twin.js"></script>
+<script src="adapters/riskcal.js"></script>
+<script src="pages/risk.js"></script>
+<script src="pages/price.js"></script>
+<script src="adapters/warnings.js"></script>
+<script src="adapters/enso.js"></script>
+<script src="pages/outlook.js"></script>
+<script src="adapters/dataset.js"></script>
+<script src="adapters/models.js"></script>
+<script src="adapters/strategies.js"></script>
+<script src="pages/voice.js"></script>
+<script src="pages/officer.js"></script>
+<script src="pages/view.js"></script>
+<script src="pages/data.js"></script>
+<script>
+window.SATART="<svg class=\"satart\" viewBox=\"0 0 290 150\" fill=\"none\" aria-hidden=\"true\"><defs><linearGradient id=\"beam\" x1=\"145\" y1=\"20\" x2=\"145\" y2=\"150\" gradientUnits=\"userSpaceOnUse\"><stop stop-color=\"#F2C14E\" stop-opacity=\".55\"/><stop offset=\"1\" stop-color=\"#F2C14E\" stop-opacity=\"0\"/></linearGradient></defs><path d=\"M132 20h26l14 130h-54z\" fill=\"url(#beam)\"/><rect x=\"110\" y=\"3\" width=\"22\" height=\"10\" rx=\"2\" fill=\"#4FC3F7\"/><rect x=\"158\" y=\"3\" width=\"22\" height=\"10\" rx=\"2\" fill=\"#4FC3F7\"/><rect x=\"136\" width=\"18\" height=\"16\" rx=\"4\" fill=\"#F4F1E6\"/></svg>";window.EARTHART="<svg class=\"earthart\" viewBox=\"0 0 278 278\" fill=\"none\" aria-hidden=\"true\"><defs><filter id=\"ef\" x=\"0\" y=\"0\" width=\"278\" height=\"278\" filterUnits=\"userSpaceOnUse\" color-interpolation-filters=\"sRGB\"><feFlood flood-opacity=\"0\" result=\"b\"/><feColorMatrix in=\"SourceAlpha\" type=\"matrix\" values=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0\" result=\"h\"/><feMorphology radius=\"4\" operator=\"dilate\" in=\"SourceAlpha\" result=\"e\"/><feGaussianBlur stdDeviation=\"30\"/><feColorMatrix type=\"matrix\" values=\"0 0 0 0 0.1686 0 0 0 0 0.702 0 0 0 0 0.6392 0 0 0 0.55 0\"/><feBlend mode=\"normal\" in=\"SourceGraphic\" result=\"s\"/></filter><radialGradient id=\"eg\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(139 139) scale(75)\"><stop stop-color=\"#35C9B4\"/><stop offset=\".55\" stop-color=\"#12605A\"/><stop offset=\"1\" stop-color=\"#08282C\"/></radialGradient><radialGradient id=\"eglow\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop stop-color=\"#2BB3A3\" stop-opacity=\".55\"/><stop offset=\"1\" stop-color=\"#2BB3A3\" stop-opacity=\"0\"/></radialGradient></defs><circle cx=\"139\" cy=\"139\" r=\"128\" fill=\"url(#eglow)\"/><rect x=\"64\" y=\"64\" width=\"150\" height=\"150\" rx=\"75\" fill=\"url(#eg)\"/><g fill=\"#7BD389\" fill-opacity=\".55\" opacity=\".7\"><ellipse cx=\"119\" cy=\"117\" rx=\"35\" ry=\"23\"/><ellipse cx=\"164\" cy=\"164\" rx=\"30\" ry=\"20\"/><ellipse cx=\"94\" cy=\"174\" rx=\"20\" ry=\"15\"/><ellipse cx=\"179\" cy=\"98\" rx=\"20\" ry=\"14\"/></g><path d=\"M64 139a75 75 0 0075 75\" stroke=\"#06101B\" stroke-opacity=\".25\" stroke-width=\"20\" fill=\"none\"/><circle cx=\"154\" cy=\"136\" r=\"7\" fill=\"#F2C14E\" stroke=\"#10202A\" stroke-width=\"3\"/><circle class=\"pulse2\" cx=\"154\" cy=\"136\" r=\"7\" stroke=\"#F2C14E\" stroke-width=\"2\" fill=\"none\"/></svg>";
+'use strict';
+/* ===== state ===== */
+var lang='en',big=false;
+var st={district:'cumilla',field:'ARF',lat:23.47051,lon:91.15637,areaM2:2064,current:'aman',flooded:false,floodMode:null,floodDate:null,harvest:'w1',harvestDate:null,water:'regular',prio:null,chosen:null,fromField:true,mode:'farmer'};
+var NOW=new Date();NOW.setHours(0,0,0,0);
+try{var _q=new URLSearchParams(location.search).get('api');if(_q)window.API_BASE=_q}catch(e){}
+var DEMO=true;
+/* ===== helpers ===== */
+function T(o){return o==null?'':(typeof o==='string'?o:(o[lang]||o.en))}
+var BD='০১২৩৪৫৬৭৮৯';
+function N(x){x=String(x);return lang==='bn'?x.replace(/\d/g,function(d){return BD[d]}):x}
+var MON={en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],bn:['জানু','ফেব্রু','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টে','অক্টো','নভে','ডিসে']};
+function fd(d){return N(d.getDate())+' '+MON[lang][d.getMonth()]+' '+N(d.getFullYear())}
+function addD(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+function art(n,s){return '<svg class="art" width="'+s+'" height="'+s+'" aria-hidden="true"><use href="#a-'+n+'"/></svg>'}
+function ic(n){return '<svg class="ic" aria-hidden="true"><use href="#i-'+n+'"/></svg>'}
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function $(s){return document.querySelector(s)}
+/* ===== UI strings ===== */
+var S={
+ en:{back:'Back',nav:['Field','Farm','Issues','Rotation','My plan','Pictures'],
+  eye:'NASA Space Apps 2026 · Field Shift',h1:'What to sow, and when?',lead:'NASA satellite and climate data for the area around your field, 24 seasons deep. It supports your agriculture officer and never replaces them.',
+  gps:'Use my location (GPS)',pick:'Or pick your district',real:'Or choose a real field in Cumilla',yes:'Yes, this is my field',step1:'Step 1 of 4 · your field',q1:'Is this your field?',mapnote:'Drag and zoom the map, then tap your field to move the gold outline.',
+  rec:'FIELD RECORD',recnote:'From the field record the team provided, not from a NASA dataset. Check on site.',loc:'Location',addr:'Address',type:'Type',soil:'Soil',water:'Water',main:'Main crops',
+  area:'Field about {d} decimals ({b} bigha)',areaS:'{m} m² · outline is a typical size, tap the map to move it',nasaarea:'NASA data covers the area around your field, not the exact plot. Each source and its grid size is listed under Sources (i).',
+  demo:'DEMO DATA – example numbers from Cumilla',demonote:'Until the live server is connected, every district shows the Cumilla example (flood of 21 Aug 2024). Nothing here is a forecast.',
+  step2:'Step 2 of 4 · about your farm',q2:'What’s in your field now?',q2s:'The next crop can only go in after this one is cut. Tap a picture.',
+  fl:'My field flooded',fls:'Tap to see when the soil will be ready, from NASA data',no:'No',yesb:'Yes',whenfl:'When was the water highest?',
+  cut:'When will you cut it?',cutO:['Already cut','In about 1 week','In 2–4 weeks','In 5 or more weeks'],
+  wat:'How much water can you give the crop?',watO:['Rain only','1–2 irrigations','Regular (pump/canal)','Plenty (deep tube well)'],
+  prio:'What matters most to you?',prioO:{water:'Save water',soil:'Healthier soil',risk:'Lowest risk',more:'More crops a year'},prioS:'Pick one (optional). It only changes the order of the plans.',
+  find:'Find my best rotation',earliest:'Earliest sowing after the flood',later:'The later of: soil back to normal, flood water mostly gone.',
+  soilN:'Soil back to normal after',days:'days',noflood:'No NASA flood record yet for this district, so the ready date cannot be computed. The live server will add more districts.',
+  floodlbl:['About 1 week ago','About 2 weeks ago','About 1 month ago','Over 6 weeks ago','August 2024 flood (NASA example)'],pickdate:'Or pick the date',
+  step3:'Step 3 of 4 · what could go wrong',q3:'Problems and what to do',q3s:'General reminders for each problem: what it means, what you can do, and when. They are not NASA results. Confirm with your Upazila Agriculture Office.',
+  what:'What it means',do:'What you can do',whenl:'When',
+  step4:'Step 4 of 4 · best rotation',q4:'Best rotation for your field',q4s:'Your usual pattern is shown next to other options, so you can compare at least three. Past seasons only, not a forecast.',
+  why:'Why it is suggested',evid:'Evidence',ben:'Benefits',gap:'Information gaps',risk:'Risks to check locally',choose:'Choose this plan',chosen:'Chosen ✓',usual:'Your usual rotation',rank:'Rank',notrank:'Not ranked',
+  probS:'Problems in {x} of 24 seasons (2001–2024)',checked:'Checked: ',sowon:'Sow from',irr:'Irrigation, average',window:'Recommended window opens',notall:'Not all risks for this crop are checked yet.',
+  late:'This looks late for the usual rabi window. Check the live plan.',pest:'Insect pests are not scored. Disease weather risk is counted only where a sourced rule exists. Changing the crop family can interrupt pest cycles.',
+  ranking:'Ranked by problem years, then by irrigation need. Your priority only changes the order.',
+  step5:'Your plan',q5:'My plan',noplan:'You have not chosen a plan yet. Open Rotation and tap “Choose this plan”.',sms:'Copy as SMS',copied:'Copied',timeline:'Timeline',
+  src:'Sources and limits',lim:['Counts over past seasons, not a forecast of this season.','NASA data describes the area around your field (about 0.1° rain, 0.5° temperature, 9 km soil moisture), not the exact plot.','Only the weather risks listed for each crop are checked. Insect pests, soil nutrients and prices are not; disease weather risk is counted only where a sourced rule exists.','Pest and legume notes are general agronomy, source pending. Do not rely on them without local advice.','The 7-day gap between harvest and the next sowing is a CropShift assumption.','This tool supports farmer judgment and local expertise. It does not replace them.','Bangla text is AI-written and needs a native review.'],
+  openm:'Open source',ext:'Open',srcl:'Data and sources',
+ },
+ bn:{back:'পিছনে',nav:['জমি','খামার','সমস্যা','ফসলক্রম','আমার পরিকল্পনা','ছবি'],
+  eye:'নাসা স্পেস অ্যাপস ২০২৬ · ফিল্ড শিফট',h1:'কী বুনবেন, আর কখন?',lead:'আপনার জমির আশপাশের এলাকার জন্য নাসার স্যাটেলাইট ও আবহাওয়া তথ্য, ২৪ মৌসুমের। এটি আপনার কৃষি কর্মকর্তাকে সাহায্য করে, তাঁর বিকল্প নয়।',
+  gps:'আমার অবস্থান ব্যবহার করুন (GPS)',pick:'অথবা আপনার জেলা বাছুন',real:'অথবা কুমিল্লার একটি আসল জমি বাছুন',yes:'হ্যাঁ, এটাই আমার জমি',step1:'ধাপ ১/৪ · আপনার জমি',q1:'এটাই কি আপনার জমি?',mapnote:'মানচিত্র টেনে বড় করুন, তারপর জমিতে ট্যাপ করে সোনালি দাগ সরান।',
+  rec:'জমির রেকর্ড',recnote:'দলের দেওয়া জমির রেকর্ড থেকে, নাসার ডেটা নয়। মাঠে গিয়ে যাচাই করুন।',loc:'অবস্থান',addr:'ঠিকানা',type:'ধরন',soil:'মাটি',water:'পানি',main:'প্রধান ফসল',
+  area:'জমি প্রায় {d} শতক ({b} বিঘা)',areaS:'{m} বর্গমিটার · দাগটি সাধারণ মাপের, সরাতে মানচিত্রে ট্যাপ করুন',nasaarea:'নাসার ডেটা আপনার জমির আশপাশের এলাকার, ঠিক প্লটের নয়। প্রতিটি উৎস ও গ্রিডের মাপ “উৎস (i)” অংশে আছে।',
+  demo:'ডেমো ডেটা – কুমিল্লার উদাহরণ সংখ্যা',demonote:'লাইভ সার্ভার যুক্ত না হওয়া পর্যন্ত প্রতিটি জেলায় কুমিল্লার উদাহরণ (২১ আগস্ট ২০২৪-এর বন্যা) দেখানো হয়। এখানে কিছুই পূর্বাভাস নয়।',
+  step2:'ধাপ ২/৪ · আপনার খামার',q2:'এখন জমিতে কী আছে?',q2s:'এটি কাটার পরই পরের ফসল দেওয়া যাবে। একটি ছবিতে ট্যাপ করুন।',
+  fl:'আমার জমিতে বন্যা হয়েছে',fls:'ট্যাপ করুন, নাসার ডেটা থেকে জানুন মাটি কবে তৈরি হবে',no:'না',yesb:'হ্যাঁ',whenfl:'পানি সবচেয়ে বেশি কবে ছিল?',
+  cut:'কবে কাটবেন?',cutO:['কাটা হয়ে গেছে','প্রায় ১ সপ্তাহে','২–৪ সপ্তাহে','৫ বা তার বেশি সপ্তাহে'],
+  wat:'ফসলকে কতটা পানি দিতে পারবেন?',watO:['শুধু বৃষ্টি','১–২ বার সেচ','নিয়মিত (পাম্প/খাল)','প্রচুর (গভীর নলকূপ)'],
+  prio:'আপনার কাছে কোনটা সবচেয়ে জরুরি?',prioO:{water:'পানি বাঁচানো',soil:'ভালো মাটি',risk:'কম ঝুঁকি',more:'বছরে বেশি ফসল'},prioS:'একটি বাছুন (ঐচ্ছিক)। এতে শুধু পরিকল্পনার ক্রম বদলায়।',
+  find:'আমার সেরা ফসলক্রম খুঁজুন',earliest:'বন্যার পর সবচেয়ে আগে বোনার তারিখ',later:'দুটির পরেরটি: মাটি স্বাভাবিক হওয়া, বন্যার পানি প্রায় নেমে যাওয়া।',
+  soilN:'মাটি স্বাভাবিক হয়েছে',days:'দিন পর',noflood:'এই জেলার জন্য নাসার বন্যার রেকর্ড এখনো নেই, তাই তৈরি হওয়ার তারিখ হিসাব করা যায়নি। লাইভ সার্ভারে আরও জেলা যুক্ত হবে।',
+  floodlbl:['প্রায় ১ সপ্তাহ আগে','প্রায় ২ সপ্তাহ আগে','প্রায় ১ মাস আগে','৬ সপ্তাহের বেশি আগে','আগস্ট ২০২৪-এর বন্যা (নাসা উদাহরণ)'],pickdate:'অথবা তারিখ বাছুন',
+  step3:'ধাপ ৩/৪ · কী ভুল হতে পারে',q3:'সমস্যা ও করণীয়',q3s:'প্রতিটি সমস্যার সাধারণ মনে করিয়ে দেওয়া: এর মানে কী, কী করা যায়, কখন। এগুলো নাসার ফল নয়। উপজেলা কৃষি অফিসে যাচাই করুন।',
+  what:'এর মানে কী',do:'কী করতে পারেন',whenl:'কখন',
+  step4:'ধাপ ৪/৪ · সেরা ফসলক্রম',q4:'আপনার জমির সেরা ফসলক্রম',q4s:'আপনার নিয়মিত ধরনটি অন্য বিকল্পের পাশে দেখানো হয়েছে, যাতে কমপক্ষে তিনটি তুলনা করতে পারেন। শুধু অতীত মৌসুম, পূর্বাভাস নয়।',
+  why:'কেন প্রস্তাব করা হলো',evid:'প্রমাণ',ben:'সুবিধা',gap:'তথ্যের ঘাটতি',risk:'স্থানীয়ভাবে যাচাইয়ের ঝুঁকি',choose:'এই পরিকল্পনা বাছুন',chosen:'বাছাই করা হয়েছে ✓',usual:'আপনার নিয়মিত ফসলক্রম',rank:'ক্রম',notrank:'ক্রম নেই',
+  probS:'২৪ মৌসুমের {x}টিতে সমস্যা (২০০১–২০২৪)',checked:'যাচাই করা হয়েছে: ',sowon:'বোনা শুরু',irr:'সেচ, গড়',window:'প্রস্তাবিত সময় শুরু',notall:'এই ফসলের সব ঝুঁকি এখনো যাচাই করা হয়নি।',
+  late:'এটি সাধারণ রবি মৌসুমের জন্য দেরি মনে হচ্ছে। লাইভ পরিকল্পনা দেখুন।',pest:'পোকা হিসাবে ধরা হয়নি; রোগের আবহাওয়া-ঝুঁকি শুধু সূত্রসহ নিয়ম থাকলে গণনা হয়। ফসলের পরিবার বদলালে পোকার চক্র ভাঙতে পারে।',
+  ranking:'সমস্যার বছর, তারপর সেচের প্রয়োজন দিয়ে সাজানো। আপনার অগ্রাধিকার শুধু ক্রম বদলায়।',
+  step5:'আপনার পরিকল্পনা',q5:'আমার পরিকল্পনা',noplan:'আপনি এখনো পরিকল্পনা বাছেননি। “ফসলক্রম” খুলে “এই পরিকল্পনা বাছুন” চাপুন।',sms:'এসএমএস হিসেবে কপি',copied:'কপি হয়েছে',timeline:'সময়রেখা',
+  src:'উৎস ও সীমাবদ্ধতা',lim:['অতীত মৌসুমের গণনা, এই মৌসুমের পূর্বাভাস নয়।','নাসার ডেটা আপনার জমির আশপাশের এলাকার (বৃষ্টি প্রায় ০.১°, তাপমাত্রা ০.৫°, মাটির আর্দ্রতা ৯ কিমি), ঠিক প্লটের নয়।','প্রতিটি ফসলের জন্য তালিকাভুক্ত আবহাওয়া-ঝুঁকিই শুধু যাচাই হয়েছে। পোকা, মাটির পুষ্টি ও দাম (রোগের আবহাওয়া-ঝুঁকি শুধু সূত্রসহ নিয়ম থাকলে গণনা হয়) হয়নি।','পোকা ও ডাল-জাতীয় ফসলের তথ্য সাধারণ কৃষি-জ্ঞান, উৎস বাকি। স্থানীয় পরামর্শ ছাড়া ভরসা করবেন না।','ফসল তোলা ও পরের বোনার মাঝের ৭ দিন CropShift-এর অনুমান।','এই টুল কৃষকের বিবেচনা ও স্থানীয় বিশেষজ্ঞতাকে সাহায্য করে, বিকল্প নয়।','বাংলা লেখা এআই-লিখিত, মাতৃভাষী কাউকে দিয়ে দেখাতে হবে।'],
+  openm:'উৎস খুলুন',ext:'খুলুন',srcl:'ডেটা ও উৎস'}
+};
+
+Object.assign(S.en,{who:'Who is using this?',farmer:'Farmer',farmerS:'Pictures, big buttons, read aloud',officer:'Agriculture officer',officerS:'Tables, evidence, sources, raw data',
+ picT:'Pictures',picS:'The steps as pictures. Tap a picture to hear it.',steps:'Steps for your plan',legT:'What the pictures mean',
+ stepsT:{sow:'Sow',water:'Water',risk:'Watch the weather',harvest:'Harvest',pest:'Look for pests',twin:'See the season'},
+ stepsD:{sow:'Sow from the date shown. Keep the soil moist.',water:'Give water at the sensitive stages. Rain may not be enough.',risk:'Hot days at flowering and cold nights can hurt the crop.',harvest:'Harvest when the crop is ripe. Then change the crop family.',pest:'Walk the field every week. Ask the Upazila Agriculture Office.',twin:'Slide to see how a season can look (an example picture).'},
+ legN:{water:'Water or irrigation',rain:'Rain',heat:'Heat',night:'Cold night',flood:'Flood',harvest:'Harvest',cal:'Date or calendar',pest:'Pests and disease',ph:'Soil acidity (pH)',carbon:'Organic carbon in soil',check:'Checked',warn:'Warning, check locally'},
+ more:'More details',cmp:'Compare all options',cmpH:['Option','Problem years','Irrigation (avg)','Sow from','Risks checked'],prov:'Where each number comes from',provH:['Number','Dataset','Link'],raw:'Show raw data (JSON)',
+ method:'Method',methodT:'Each crop is checked at its sowing date against every season 2001–2024 of NASA data for the area around the field (IMERG rain, POWER temperature). Options are ranked by problem years, then by irrigation need. This demo ranks by average irrigation; the live plan uses the worst 20% of years. The data sit on different grids (rain 0.1°, temperature 0.5°, soil moisture 9 km), so each result describes the area around the field.',
+ conf:'Confidence: counts over 24 past seasons, not a forecast. Local validation by farmers and agricultural experts is needed.',
+ sceneNote:'This is a general picture of a season, not your field’s data.',scene:'Illustration, an example',play:'Play',pause:'Pause',
+ ph:['Sowing: keep the soil moist','Growing: the crop needs steady water','Flowering: hot days are a risk now','Seeds filling: keep water steady','Harvest time'],stg:['Sow','Grow','Flower','Seeds','Harvest'],hear:'Hear it'});
+Object.assign(S.bn,{who:'কে ব্যবহার করছেন?',farmer:'কৃষক',farmerS:'ছবি, বড় বোতাম, পড়ে শোনানো',officer:'কৃষি কর্মকর্তা',officerS:'টেবিল, প্রমাণ, উৎস, কাঁচা ডেটা',
+ picT:'ছবি',picS:'ধাপগুলো ছবিতে। ছবিতে ট্যাপ করলে শুনতে পাবেন।',steps:'আপনার পরিকল্পনার ধাপ',legT:'ছবিগুলোর মানে',
+ stepsT:{sow:'বুনুন',water:'পানি দিন',risk:'আবহাওয়া দেখুন',harvest:'ফসল তুলুন',pest:'পোকা দেখুন',twin:'মৌসুমটি দেখুন'},
+ stepsD:{sow:'দেখানো তারিখ থেকে বুনুন। মাটি ভেজা রাখুন।',water:'সংবেদনশীল ধাপে পানি দিন। শুধু বৃষ্টি যথেষ্ট নাও হতে পারে।',risk:'ফুল ফোটার সময় গরম দিন আর ঠান্ডা রাত ফসলের ক্ষতি করতে পারে।',harvest:'ফসল পাকলে তুলুন। তারপর ফসলের পরিবার বদলান।',pest:'প্রতি সপ্তাহে জমি ঘুরে দেখুন। উপজেলা কৃষি অফিসে জানুন।',twin:'স্লাইড করে দেখুন একটি মৌসুম কেমন হতে পারে (উদাহরণ ছবি)।'},
+ legN:{water:'পানি বা সেচ',rain:'বৃষ্টি',heat:'গরম',night:'ঠান্ডা রাত',flood:'বন্যা',harvest:'ফসল তোলা',cal:'তারিখ বা ক্যালেন্ডার',pest:'পোকা ও রোগ',ph:'মাটির অম্লতা (pH)',carbon:'মাটির জৈব কার্বন',check:'যাচাই হয়েছে',warn:'সতর্কতা, স্থানীয়ভাবে যাচাই করুন'},
+ more:'আরও বিস্তারিত',cmp:'সব বিকল্প তুলনা করুন',cmpH:['বিকল্প','সমস্যার বছর','সেচ (গড়)','বোনা শুরু','যাচাই করা ঝুঁকি'],prov:'প্রতিটি সংখ্যা কোথা থেকে',provH:['সংখ্যা','ডেটাসেট','লিঙ্ক'],raw:'কাঁচা ডেটা দেখুন (JSON)',
+ method:'পদ্ধতি',methodT:'প্রতিটি ফসল তার বোনার তারিখে জমির আশপাশের এলাকার নাসার ২০০১–২০২৪ সব মৌসুমের ডেটার (IMERG বৃষ্টি, POWER তাপমাত্রা) সঙ্গে যাচাই করা হয়। বিকল্পগুলো সমস্যার বছর, তারপর সেচের প্রয়োজন দিয়ে সাজানো। এই ডেমো গড় সেচ দিয়ে সাজায়; লাইভ পরিকল্পনা সবচেয়ে খারাপ ২০% বছর ব্যবহার করে। ডেটা ভিন্ন গ্রিডে (বৃষ্টি ০.১°, তাপমাত্রা ০.৫°, মাটির আর্দ্রতা ৯ কিমি), তাই প্রতিটি ফল জমির আশপাশের এলাকার।',
+ conf:'নির্ভরযোগ্যতা: ২৪টি অতীত মৌসুমের গণনা, পূর্বাভাস নয়। কৃষক ও কৃষি বিশেষজ্ঞদের স্থানীয় যাচাই দরকার।',
+ sceneNote:'এটি একটি মৌসুমের সাধারণ ছবি, আপনার জমির তথ্য নয়।',scene:'ছবি, উদাহরণ',play:'চালু',pause:'বিরতি',
+ ph:['বপন: মাটি ভেজা রাখুন','বাড়ন্ত: ফসলের নিয়মিত পানি লাগে','ফুল আসা: এখন গরম দিন ঝুঁকির','দানা ভরা: পানি নিয়মিত রাখুন','ফসল তোলার সময়'],stg:['বপন','বাড়ন্ত','ফুল','দানা','তোলা'],hear:'শুনুন'});
+/* ===== v7 additions ===== */
+Object.assign(S.en,{getplan:'Get my plan from the server',planWait:'Asking the server…',earliestAny:'Earliest sowing date',hdate:'Or pick the exact harvest date',hdateS:'We fill in a date from your choice. Change it if it is wrong.',planLive:'Live answer from the server',planDemo:'DEMO – saved example, not your answer',planFor:'Your answers sent: harvest',planSrc:'Sources for these numbers',planNo:'Not suitable now',notfc:'Based on past seasons. Not a forecast.',planNone:'The server did not give an answer. Please try again.',waking:'Waking up the server. This can take up to a minute…',offline:'Cannot reach the server right now. Showing saved example numbers.',retry:'Try again',loadingApi:'Loading…',watch:'Watch (short video)',watch2:'What does this mean?',learn:'Learn',navx:['Field','Farm','Issues','Rotation','Twin','My plan','Learn','Pictures'],
+ learnH:'Learn with short videos',learnS:'Tap a picture to watch a short animation. Tap the speaker to hear it.',tutH:'Start here: how this app works',
+ twinH:'Field twin: replay a past year',twinS:'A twin replays one past year for your area, week by week. It is not a forecast.',
+ pestH:'Pests and changing crops',pestG:'Growing the same kind of crop again and again can let its pests build up. A different kind of crop can break that cycle. This is general advice. We do not measure pests and our source is still being added.',
+ pestL:'From the server',live:'Live server',livenote:'Connected to the server. The panels below show what it returned.',notlive:'Not connected. Pages use example numbers. Add ?api=YOUR_SERVER_URL to the page address to test.',
+ vhear:'Voice',novoice:'Voice file not added yet',noBnTts:'Bangla voice file not added yet. We never use the phone’s robot voice for Bangla.',
+ mapfail:'The satellite map could not load here. Your field position is shown below.',openmap:'Open in Google Maps ↗',server:'Server',
+ hz:'Checked for this crop',hz1:'Heat when flowering',hz2:'Heat when grain fills',hz3:'Cold nights',hzs:'Tap Watch to see what these numbers mean.'});
+Object.assign(S.bn,{getplan:'সার্ভার থেকে আমার পরিকল্পনা নিন',planWait:'সার্ভারকে জিজ্ঞেস করা হচ্ছে…',earliestAny:'বপনের সবচেয়ে আগের তারিখ',hdate:'অথবা ফসল কাটার সঠিক তারিখ বাছুন',hdateS:'আপনার পছন্দ থেকে আমরা একটি তারিখ বসিয়েছি। ভুল হলে বদলান।',planLive:'সার্ভারের সরাসরি উত্তর',planDemo:'ডেমো – সংরক্ষিত উদাহরণ, আপনার উত্তর নয়',planFor:'আপনার পাঠানো উত্তর: ফসল কাটা',planSrc:'এই সংখ্যাগুলোর উৎস',planNo:'এখন উপযুক্ত নয়',notfc:'অতীত মৌসুমের ভিত্তিতে। পূর্বাভাস নয়।',planNone:'সার্ভার উত্তর দেয়নি। আবার চেষ্টা করুন।',waking:'সার্ভার জাগানো হচ্ছে। এক মিনিট পর্যন্ত লাগতে পারে…',offline:'এখন সার্ভারের সঙ্গে যোগ হচ্ছে না। সংরক্ষিত উদাহরণ সংখ্যা দেখানো হচ্ছে।',retry:'আবার চেষ্টা করুন',loadingApi:'লোড হচ্ছে…',watch:'দেখুন (ছোট ভিডিও)',watch2:'এর মানে কী?',learn:'শিখুন',navx:['জমি','খামার','সমস্যা','ফসলক্রম','টুইন','আমার পরিকল্পনা','শিখুন','ছবি'],
+ learnH:'ছোট ভিডিওতে শিখুন',learnS:'ছবিতে ট্যাপ করে ছোট অ্যানিমেশন দেখুন। শুনতে স্পিকারে ট্যাপ করুন।',tutH:'এখান থেকে শুরু: অ্যাপটি কীভাবে কাজ করে',
+ twinH:'ফিল্ড টুইন: অতীতের একটি বছর আবার দেখুন',twinS:'টুইন আপনার এলাকার অতীতের একটি বছর সপ্তাহ ধরে ধরে আবার দেখায়। এটি পূর্বাভাস নয়।',
+ pestH:'পোকা ও ফসল বদল',pestG:'একই ধরনের ফসল বারবার চাষ করলে তার পোকা বাড়তে পারে। ভিন্ন ধরনের ফসল সেই চক্র ভাঙতে পারে। এটি সাধারণ পরামর্শ। আমরা পোকা মাপি না, আর এর উৎস এখনো যোগ হচ্ছে।',
+ pestL:'সার্ভার থেকে',live:'সরাসরি সার্ভার',livenote:'সার্ভারের সঙ্গে যুক্ত। নিচের অংশে সার্ভার যা দিয়েছে তা দেখানো হয়েছে।',notlive:'যুক্ত নয়। পাতাগুলো উদাহরণ সংখ্যা দেখায়। পরীক্ষা করতে ঠিকানার শেষে ?api=আপনার_সার্ভার_ঠিকানা যোগ করুন।',
+ vhear:'কণ্ঠ',novoice:'কণ্ঠের ফাইল এখনো যোগ হয়নি',noBnTts:'বাংলা কণ্ঠের ফাইল এখনো যোগ হয়নি। বাংলার জন্য আমরা ফোনের যান্ত্রিক কণ্ঠ ব্যবহার করি না।',
+ mapfail:'এখানে স্যাটেলাইট মানচিত্র লোড হয়নি। নিচে আপনার জমির অবস্থান দেখানো হলো।',openmap:'গুগল ম্যাপে খুলুন ↗',server:'সার্ভার',
+ hz:'এই ফসলের জন্য যাচাই করা হয়েছে',hz1:'ফুল ফোটার সময় গরম',hz2:'দানা ভরার সময় গরম',hz3:'ঠান্ডা রাত',hzs:'এই সংখ্যাগুলোর মানে বুঝতে “দেখুন” ট্যাপ করুন।'});
+/* ---- API client (the page only asks the server and shows the answer) ---- */
+var LIVE={ok:false,tried:false,err:null,adv:null,twin:null,warn:null};
+/* The shared client is in api-client.js (60 s timeout, one retry, saved-sample fallback). */
+var APIBAR={state:'',failed:false};
+function apiBarDraw(){var b=$('#apibar');if(!b)return;if(!APIBAR.state){b.hidden=true;b.innerHTML='';return}
+ b.hidden=false;b.innerHTML=(APIBAR.state==='waking'?'<span class="spin"></span>':'')+'<span>'+esc(s(APIBAR.state))+'</span>'+(APIBAR.state==='offline'?'<button class="pill" data-act="apiretry">'+esc(s('retry'))+'</button>':'')}
+if(window.CS_API)CS_API.on(function(ev){
+ if(ev.type==='start'&&ev.pending===1)APIBAR.failed=false;
+ if(ev.type==='waking')APIBAR.state='waking';
+ if(ev.type==='end'){if(ev.source!=='live')APIBAR.failed=true;if(ev.pending===0)APIBAR.state=APIBAR.failed?'offline':''}
+ apiBarDraw()});
+function findKeys(o,re,out,p){out=out||[];p=p||'';if(o&&typeof o==='object'){Object.keys(o).forEach(function(k){var v=o[k];if(re.test(k)&&v!=null&&typeof v!=='object')out.push([p+k,v]);else if(re.test(k)&&v&&typeof v==='object'&&(v.en||v.bn))out.push([p+k,T(v)]);if(v&&typeof v==='object')findKeys(v,re,out,p+k+'.')})}return out}
+function liveLoad(force){if(!window.API_BASE||!window.CS_API)return;if(LIVE.tried&&!force)return;LIVE.tried=true;LIVE.err=null;
+ CS_API.get('/api/v1/advisory?district='+st.district+'&lang='+lang+'&prev_harvest='+harvestISO()).then(function(r){LIVE.adv=r.data;LIVE.src=r.source;LIVE.ok=r.source==='live';LIVE.real=CS_API.isLive(r);LIVE.err=r.source==='live'?null:(r.error||'offline');/* every page stays DEMO until its adapter shows these numbers (Task 4) */refreshLive()});
+ CS_API.get('/api/v1/warnings?district='+st.district).then(function(r){LIVE.warn=r.data;refreshLive()})}
+function refreshLive(){if(cur==='server')renderServer();if(cur==='issues')renderIssues()}
+function renderServer(){if(window.renderStatus)renderStatus()}
+function pestCard(){var f=LIVE.adv?findKeys(LIVE.adv,/pest/i):[];
+ var h='<div class="card"><div class="issue">'+art('pest',56)+'<div><h3>'+esc(s('pestH'))+'</h3>';
+ if(f.length)h+='<p><b>'+esc(s('pestL'))+':</b> '+f.slice(0,3).map(function(x){return esc(String(x[1]))}).join('<br>')+'</p>';else h+='<p style="color:var(--mute)">'+esc(s('pestG'))+'</p>';
+ h+='<div id="pestdis">'+(window.rkPestHtml?rkPestHtml():'')+'</div>';
+ return h+'<div class="only-farmer">'+watchBtn('pest')+'</div></div></div></div>'}
+/* ---- pages ---- */
+function renderLearn(){
+ var h='<div class="eyebrow">'+esc(s('learn'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('learnH'))+'</h1><p class="lead">'+esc(s('learnS'))+'</p>'+
+ '<button class="btn" data-act="vid" data-v="tutorial">'+art('twin',34)+'<span>'+esc(s('tutH'))+'</span></button><div class="vgrid">'+
+ VORDER.filter(function(x){return x!=='tutorial'}).map(function(id){return '<button class="vcard" data-act="vid" data-v="'+id+'">'+art(VART[id],56)+'<b>'+esc(T(VT[id]))+'</b><span>▶</span></button>'}).join('')+'</div>';
+ $('#pg-learn').innerHTML=h}
+
+/* ---- map with fallbacks ---- */
+function mapFail(){var el=$('#map');if(!el||el.querySelector('.mapfb'))return;
+ var d=document.createElement('div');d.className='mapfb';d.innerHTML='<div>'+art('twin',64)+'<p><b>'+N(st.lat.toFixed(4))+'° N, '+N(st.lon.toFixed(4))+'° E</b></p><p>'+esc(s('mapfail'))+'</p><a class="chip" style="display:inline-flex;text-decoration:none;color:var(--water)" target="_blank" rel="noopener" href="https://www.google.com/maps/@?api=1&map_action=map&center='+st.lat+','+st.lon+'&zoom=18&basemap=satellite">'+esc(s('openmap'))+'</a></div>';el.appendChild(d)}
+
+/* ===== animated explainers (in-page, no video files) ===== */
+function vsvg(inner){return '<svg viewBox="0 0 320 180" class="vsvg" role="img" aria-hidden="true">'+inner+'</svg>'}
+function ico(n,x,y,s,cls,d){return '<use href="#a-'+n+'" x="'+x+'" y="'+y+'" width="'+s+'" height="'+s+'" class="'+(cls||'')+'" style="animation-delay:'+(d||0)+'s"/>'}
+function bg(c){return '<rect width="320" height="180" fill="'+(c||'#0E2A3E')+'"/>'}
+function gnd(){return '<rect y="128" width="320" height="52" fill="#5B3F25"/><rect y="128" width="320" height="5" fill="#7A5733"/>'}
+function sun(x,y,hot){return '<g class="v-glow"><circle cx="'+x+'" cy="'+y+'" r="'+(hot?30:24)+'" fill="#FFB547" opacity=".35"/><circle cx="'+x+'" cy="'+y+'" r="14" fill="#F7D23E"/></g>'}
+function cloud(x,y){return '<g class="v-drift"><ellipse cx="'+x+'" cy="'+y+'" rx="22" ry="12" fill="#DDE8EE"/><ellipse cx="'+(x+18)+'" cy="'+(y-8)+'" rx="20" ry="14" fill="#DDE8EE"/><ellipse cx="'+(x+38)+'" cy="'+y+'" rx="18" ry="11" fill="#DDE8EE"/></g>'}
+function rain(x,n){var s='';for(var i=0;i<n;i++)s+='<rect class="v-fall" style="animation-delay:'+(i*.18).toFixed(2)+'s" x="'+(x+i*10)+'" y="46" width="2.5" height="10" rx="1" fill="#8FD8FA"/>';return s}
+function plant(x,h,c){return '<g class="v-sway" style="transform-origin:'+x+'px 128px"><rect x="'+(x-2)+'" y="'+(128-h)+'" width="4" height="'+h+'" rx="2" fill="'+(c||'#7BD389')+'"/><ellipse cx="'+(x+8)+'" cy="'+(128-h*.6)+'" rx="9" ry="3.5" transform="rotate(-25 '+(x+8)+' '+(128-h*.6)+')" fill="#6FBF5B"/><ellipse cx="'+(x-8)+'" cy="'+(128-h*.4)+'" rx="9" ry="3.5" transform="rotate(25 '+(x-8)+' '+(128-h*.4)+')" fill="#6FBF5B"/></g>'}
+function row(h,c){var s='';for(var i=0;i<7;i++)s+=plant(40+i*40,h+(i%3)*6,c);return s}
+function drop(x,y,sz,c){return '<path class="v-bob" d="M'+x+' '+y+'c'+(-sz*.9)+' '+(sz*1.2)+' '+(-sz*.9)+' '+(sz*2)+' 0 '+(sz*2)+'s'+(sz*.9)+' '+(-sz*.8)+' 0 '+(-sz*2)+'z" fill="'+(c||'#4FC3F7')+'"/>'}
+function grid24(hits,delay){var s='',h=hits||[];for(var i=0;i<24;i++){var cx=36+(i%8)*30,cy=40+Math.floor(i/8)*34,bad=h.indexOf(i)>=0;s+='<rect class="v-pop" style="animation-delay:'+((delay||0)+i*.07).toFixed(2)+'s" x="'+cx+'" y="'+cy+'" width="24" height="26" rx="5" fill="'+(bad?'#FF7A6B':'#7BD389')+'"/>'}return s}
+function satel(x,y){return '<g class="v-bob"><polygon points="'+x+','+(y+8)+' '+(x-30)+','+(y+80)+' '+(x+30)+','+(y+80)+'" fill="#F2C14E" opacity=".28"/><rect x="'+(x-8)+'" y="'+(y-6)+'" width="16" height="14" rx="3" fill="#F4F1E6"/><rect x="'+(x-30)+'" y="'+(y-3)+'" width="18" height="8" fill="#4FC3F7"/><rect x="'+(x+12)+'" y="'+(y-3)+'" width="18" height="8" fill="#4FC3F7"/></g>'}
+function pin(x,y){return '<g class="v-drop"><path d="M'+x+' '+(y+30)+'c-14-14-18-20-18-28a18 18 0 0 1 36 0c0 8-4 14-18 28z" fill="#F2C14E"/><circle cx="'+x+'" cy="'+(y+2)+'" r="6" fill="#10202A"/></g>'}
+function bug(x,y,d){return '<g class="v-crawl" style="animation-delay:'+(d||0)+'s"><ellipse cx="'+x+'" cy="'+y+'" rx="9" ry="6" fill="#FF7A6B"/><circle cx="'+(x+9)+'" cy="'+y+'" r="4" fill="#FF9A8C"/><path d="M'+(x-4)+' '+(y+5)+'l-3 5M'+x+' '+(y+6)+'l0 6M'+(x+4)+' '+(y+5)+'l3 5" stroke="#7A2A1E" stroke-width="1.6"/></g>'}
+function phbar(px){return '<defs><linearGradient id="phg" x1="0" x2="1"><stop stop-color="#FF7A6B"/><stop offset=".5" stop-color="#7BD389"/><stop offset="1" stop-color="#4FC3F7"/></linearGradient></defs><rect x="30" y="80" width="260" height="22" rx="11" fill="url(#phg)"/><g class="v-slide" style="--px:'+px+'px"><path d="M160 70l-9-14h18z" fill="#F4F1E6"/></g>'}
+function waves(){return '<g class="v-water"><rect x="0" y="108" width="320" height="30" fill="#4FC3F7" opacity=".55"/></g>'}
+function spk(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M0 -12v24l16 14V-26z" fill="#F4F1E6" transform="scale(1.2)"/><path class="v-pulse2" d="M30 -14a22 22 0 0 1 0 28M42 -24a36 36 0 0 1 0 48" stroke="#F2C14E" stroke-width="5" fill="none" stroke-linecap="round"/></g>'}
+function big_(n){return bigic(n)}
+function bigic(n){return bg()+ico(n,110,36,100,"v-pop2",0)}
+function cal(x,y,txt){return '<g class="v-pop2"><rect x="'+x+'" y="'+y+'" width="86" height="80" rx="12" fill="#F4F1E6"/><rect x="'+x+'" y="'+y+'" width="86" height="22" rx="12" fill="#FF7A6B"/><text x="'+(x+43)+'" y="'+(y+62)+'" text-anchor="middle" font-size="34" font-weight="800" fill="#10202A" font-family="sans-serif">'+txt+'</text></g>'}
+var VT={ // titles
+ tutorial:{en:'How to use this app',bn:'অ্যাপটি কীভাবে ব্যবহার করবেন'},icons:{en:'What the pictures mean',bn:'ছবিগুলোর মানে'},years24:{en:'What “0 of 24 years” means',bn:'“২৪ বছরের ০টি” মানে কী'},
+ irrigation:{en:'Extra water (irrigation)',bn:'বাড়তি পানি (সেচ)'},ph:{en:'Soil pH',bn:'মাটির pH'},flood:{en:'After a flood: when can I sow?',bn:'বন্যার পর: কবে বুনব?'},twin:{en:'What is the field twin?',bn:'ফিল্ড টুইন কী?'},
+ pest:{en:'Pests and changing crops',bn:'পোকা ও ফসল বদল'},legume:{en:'Lentil and pulses feed the soil',bn:'মসুর ও ডাল মাটিকে খাবার দেয়'},satmoist:{en:'How satellites see wet soil',bn:'স্যাটেলাইট কীভাবে ভেজা মাটি দেখে'}};
+var VIDS={
+ tutorial:[
+  {s:function(){return bg()+gnd()+row(26)+satel(160,18)},t:{en:'NASA satellites look at the weather and water around your field.',bn:'নাসার স্যাটেলাইট আপনার জমির আশপাশের আবহাওয়া ও পানি দেখে।'}},
+  {s:function(){var g='';for(var i=0;i<6;i++)for(var j=0;j<3;j++)g+='<rect x="'+(40+i*40)+'" y="'+(30+j*34)+'" width="36" height="30" rx="4" fill="'+((i+j)%2?'#2F6B4A':'#3C7A52')+'"/>';return bg('#173828')+g+pin(160,60)},t:{en:'First, tap your field on the map, or use your phone’s location.',bn:'প্রথমে মানচিত্রে আপনার জমিতে ট্যাপ করুন, অথবা ফোনের অবস্থান ব্যবহার করুন।'}},
+  {s:function(){return bg()+ico('boro',30,40,72,'v-pop2',0)+ico('wheat',124,40,72,'v-pop2',.3)+ico('flood',218,40,72,'v-pop2',.6)},t:{en:'Tell us what is growing now, and if water covered your field.',bn:'এখন জমিতে কী আছে আর জমিতে পানি উঠেছিল কি না জানান।'}},
+  {s:function(){return bg()+ico('warn',20,50,64,'v-pop2',0)+ico('heat',96,50,64,'v-pop2',.3)+ico('night',172,50,64,'v-pop2',.6)+ico('pest',248,50,64,'v-pop2',.9)},t:{en:'See what can go wrong, and what you can do about it.',bn:'কী ভুল হতে পারে আর আপনি কী করতে পারেন তা দেখুন।'}},
+  {s:function(){return bg()+grid24([3,9,15],0)+ico('check',250,6,52,'v-pop2',1.2)},t:{en:'Compare crop plans side by side. Fewer bad years is better.',bn:'ফসলের পরিকল্পনাগুলো পাশাপাশি তুলনা করুন। কম খারাপ বছর ভালো।'}},
+  {s:function(){return bg()+spk(90,90)+ico('check',190,40,100,'v-pop2',.3)},t:{en:'Choose a plan. Tap the speaker to hear it. Always ask your agriculture officer too.',bn:'একটি পরিকল্পনা বাছুন। শুনতে স্পিকারে ট্যাপ করুন। সবসময় আপনার কৃষি কর্মকর্তাকেও জিজ্ঞাসা করুন।'}}],
+ icons:[
+  {s:function(){return bigic('water')},t:{en:'Water: the extra water a crop may need. 100 mm is about 10 cm of water over the field.',bn:'পানি: ফসলের বাড়তি পানির প্রয়োজন। ১০০ মিমি মানে জমিতে প্রায় ১০ সেমি পানি।'}},
+  {s:function(){return big_('rain')},t:{en:'Rain: how much rain the satellites saw.',bn:'বৃষ্টি: স্যাটেলাইট কত বৃষ্টি দেখেছে।'}},
+  {s:function(){return bg()+sun(160,60,true)+ico('heat',110,64,80,'v-pop2',0)},t:{en:'Heat: very hot days can hurt a crop when it is flowering.',bn:'গরম: ফুল ফোটার সময় খুব গরম দিন ফসলের ক্ষতি করতে পারে।'}},
+  {s:function(){return bigic('night')},t:{en:'Cold night: cold can hurt young rice and other crops.',bn:'ঠান্ডা রাত: ঠান্ডা কচি ধান ও অন্য ফসলের ক্ষতি করতে পারে।'}},
+  {s:function(){return bg()+waves()+ico('flood',110,36,100,'v-pop2',0)},t:{en:'Flood: water covered the field.',bn:'বন্যা: জমি পানিতে ডুবেছিল।'}},
+  {s:function(){return bigic('pest')},t:{en:'Pests and disease: insects and sickness. Satellites cannot see them.',bn:'পোকা ও রোগ: পোকামাকড় আর অসুখ। স্যাটেলাইট এগুলো দেখতে পারে না।'}},
+  {s:function(){return bigic('ph')},t:{en:'Soil pH: how sour or sweet the soil is. A soil test gives the real value.',bn:'মাটির pH: মাটি কতটা টক বা মিষ্টি। মাটি পরীক্ষায় আসল মান জানা যায়।'}},
+  {s:function(){return bigic('cal')},t:{en:'Calendar: the date to sow.',bn:'ক্যালেন্ডার: বোনার তারিখ।'}},
+  {s:function(){return bigic('check')},t:{en:'Tick: we checked this risk.',bn:'টিক: আমরা এই ঝুঁকি যাচাই করেছি।'}},
+  {s:function(){return bigic('warn')},t:{en:'Warning: check locally with your officer before you decide.',bn:'সতর্কতা: সিদ্ধান্তের আগে আপনার কর্মকর্তার সঙ্গে স্থানীয়ভাবে যাচাই করুন।'}},
+  {s:function(){return bg()+'<rect x="70" y="70" width="180" height="40" rx="20" fill="#4FC3F7" opacity=".2" stroke="#4FC3F7" stroke-width="3"/><text x="160" y="97" text-anchor="middle" font-size="22" font-weight="700" fill="#4FC3F7" font-family="sans-serif">Source ›</text>'},t:{en:'Source: tap to see where a number comes from.',bn:'উৎস: সংখ্যাটি কোথা থেকে এসেছে দেখতে ট্যাপ করুন।'}}],
+ years24:[
+  {s:function(){return bg()+grid24([],0)},t:{en:'Each square is one past year, from 2001 to 2024.',bn:'প্রতিটি বর্গ একটি অতীত বছর, ২০০১ থেকে ২০২৪।'}},
+  {s:function(){return bg()+grid24([4,13,19],0)},t:{en:'A red square means bad weather hurt the crop that year.',bn:'লাল বর্গ মানে সেই বছর খারাপ আবহাওয়া ফসলের ক্ষতি করেছিল।'}},
+  {s:function(){return bg()+grid24([],0)+ico('check',250,6,56,'v-pop2',1)},t:{en:'“0 of 24” means no bad years. It describes the past. It is not a promise for this year.',bn:'“২৪টির ০টি” মানে কোনো খারাপ বছর ছিল না। এটা অতীতের কথা, এ বছরের প্রতিশ্রুতি নয়।'}}],
+ irrigation:[
+  {s:function(){return bg()+gnd()+row(40)+sun(270,40,false)},t:{en:'Crops need water to grow.',bn:'ফসল বাড়তে পানি লাগে।'}},
+  {s:function(){return bg('#2B2418')+gnd()+row(18,'#B8A24E')+sun(270,40,true)+ico('warn',20,8,44,'v-pop2',0)},t:{en:'Sometimes rain is not enough.',bn:'কখনো কখনো বৃষ্টি যথেষ্ট নয়।'}},
+  {s:function(){return bg()+gnd()+row(40)+cloud(40,30)+drop(260,40,10)+drop(240,60,8)+waves()},t:{en:'The number shows the extra water you may need, in millimetres.',bn:'সংখ্যাটি দেখায় আপনার বাড়তি কত পানি লাগতে পারে, মিলিমিটারে।'}}],
+ ph:[
+  {s:function(){return bg()+phbar(0)+'<text x="40" y="130" font-size="22" fill="#FF7A6B" font-family="sans-serif">sour</text><text x="230" y="130" font-size="22" fill="#4FC3F7" font-family="sans-serif">sweet</text>'},t:{en:'pH shows how sour or sweet the soil is.',bn:'pH দেখায় মাটি কতটা টক বা মিষ্টি।'}},
+  {s:function(){return bg()+phbar(0)+plant(160,40)},t:{en:'Most crops like the middle.',bn:'বেশিরভাগ ফসল মাঝামাঝি পছন্দ করে।'}},
+  {s:function(){return bg()+ico('ph',40,40,90,'v-pop2',0)+ico('warn',190,40,90,'v-pop2',.4)},t:{en:'Satellites cannot measure pH. Get a soil test at your Upazila Agriculture Office.',bn:'স্যাটেলাইট pH মাপতে পারে না। উপজেলা কৃষি অফিসে মাটি পরীক্ষা করান।'}}],
+ flood:[
+  {s:function(){return bg()+gnd()+row(34)+waves()+cloud(120,30)+rain(110,8)},t:{en:'Water covers the field.',bn:'জমি পানিতে ডুবে যায়।'}},
+  {s:function(){return bg()+gnd()+row(34)+'<g class="v-drain"><rect x="0" y="108" width="320" height="30" fill="#4FC3F7" opacity=".55"/></g>'},t:{en:'The water goes down slowly.',bn:'পানি ধীরে ধীরে নামে।'}},
+  {s:function(){return bg()+gnd()+sun(60,40,false)+cal(190,30,'✓')},t:{en:'The soil needs time to dry. We show the first date it is ready to sow.',bn:'মাটি শুকাতে সময় লাগে। বোনার জন্য প্রথম প্রস্তুত তারিখটি আমরা দেখাই।'}}],
+ twin:[
+  {s:function(){return bg()+cal(30,40,'1')+ico('twin',170,40,90,'v-pop2',.3)},t:{en:'The field twin replays a past year, week by week.',bn:'ফিল্ড টুইন একটি অতীত বছর সপ্তাহ ধরে ধরে আবার দেখায়।'}},
+  {s:function(){return bg()+gnd()+'<g class="v-grow">'+row(50)+'</g>'+cloud(40,34)+rain(34,5)+sun(270,40,true)},t:{en:'Watch the plants grow, with rain and hot days.',bn:'বৃষ্টি আর গরম দিনসহ গাছ বড় হওয়া দেখুন।'}},
+  {s:function(){return bg()+ico('warn',110,36,100,'v-pop2',0)},t:{en:'It is a picture of the past. It is not a forecast.',bn:'এটি অতীতের ছবি। পূর্বাভাস নয়।'}}],
+ pest:[
+  {s:function(){return bg('#2B2418')+gnd()+row(34)+bug(60,100,0)+bug(150,104,.4)+bug(240,100,.8)},t:{en:'The same crop again and again lets its pests grow.',bn:'একই ফসল বারবার চাষ করলে তার পোকা বাড়ে।'}},
+  {s:function(){return bg()+gnd()+plant(60,50,'#F7D23E')+plant(140,50,'#E8C15A')+plant(220,50,'#7BD389')+bug(280,40,0).replace('v-crawl','v-leave')},t:{en:'A different kind of crop breaks the pest cycle.',bn:'ভিন্ন ধরনের ফসল পোকার চক্র ভাঙে।'}},
+  {s:function(){return bg()+ico('pest',40,40,90,'v-pop2',0)+ico('warn',190,40,90,'v-pop2',.4)},t:{en:'We do not score pests. Walk your field every week and ask your officer.',bn:'আমরা পোকার স্কোর দিই না। প্রতি সপ্তাহে জমি ঘুরে দেখুন আর কর্মকর্তাকে জিজ্ঞাসা করুন।'}}],
+ legume:[
+  {s:function(){return bg()+gnd()+ico('lentil',124,18,72,'v-pop2',0)+'<g stroke="#C9A36B" stroke-width="3"><path d="M160 128v30M160 140l-24 14M160 140l24 14"/></g><circle cx="136" cy="154" r="5" fill="#F7D23E"/><circle cx="184" cy="154" r="5" fill="#F7D23E"/><circle class="v-up" cx="150" cy="150" r="4" fill="#7BD389"/><circle class="v-up" style="animation-delay:.6s" cx="172" cy="150" r="4" fill="#7BD389"/>'},t:{en:'Lentil and other pulses (legumes) put nitrogen, a plant food, into the soil.',bn:'মসুর ও অন্য ডাল (লেগিউম) মাটিতে নাইট্রোজেন, অর্থাৎ গাছের খাবার, দেয়।'}},
+  {s:function(){return bg()+gnd()+plant(100,50)+plant(160,60,'#E8C15A')+plant(220,50)+ico('check',250,6,50,'v-pop2',.5)},t:{en:'The next crop gets this food. Our source for this is still being added.',bn:'পরের ফসল এই খাবার পায়। এর উৎস আমরা এখনো যোগ করছি।'}}],
+ satmoist:[
+  {s:function(){return bg()+gnd()+satel(160,16)+'<rect class="v-fill" x="150" y="140" width="20" height="30" fill="#4FC3F7"/>'},t:{en:'Satellites measure how wet the soil is.',bn:'স্যাটেলাইট মাপে মাটি কতটা ভেজা।'}},
+  {s:function(){return bg()+gnd()+'<rect x="60" y="60" width="200" height="12" rx="6" fill="#ffffff22"/><rect class="v-fill2" x="60" y="60" width="140" height="12" rx="6" fill="#4FC3F7"/><path d="M200 50v32" stroke="#F2C14E" stroke-width="3" stroke-dasharray="4 3"/>'},t:{en:'We compare it with a normal year to know when the soil is ready.',bn:'মাটি কবে প্রস্তুত তা জানতে আমরা এটিকে স্বাভাবিক বছরের সঙ্গে মেলাই।'}}]
+};
+var VORDER=['tutorial','icons','years24','irrigation','ph','flood','twin','pest','legume','satmoist'];
+var VART={tutorial:'twin',icons:'check',years24:'cal',irrigation:'water',ph:'ph',flood:'flood',twin:'twin',pest:'pest',legume:'lentil',satmoist:'rain'};
+var vid={id:null,i:0,play:true,timer:null,hear:false};
+function vidHTML(){var sc=VIDS[vid.id][vid.i],n=VIDS[vid.id].length;
+ var dots='';for(var i=0;i<n;i++)dots+='<i class="'+(i===vid.i?'on':(i<vid.i?'done':''))+'"></i>';
+ return '<div class="vhead"><b>'+esc(T(VT[vid.id]))+'</b><button class="pill" data-act="vclose" aria-label="Close">✕</button></div><div class="vstage">'+vsvg(sc.s())+'</div><p class="vcap">'+esc(T(sc.t))+'</p><div class="vdots">'+dots+'</div><div class="vctl"><button class="pill" data-act="vprev" aria-label="Previous">‹</button><button class="pill gold" data-act="vplay" id="vplay">'+(vid.play?'❚❚':'▶')+'</button><button class="pill" data-act="vnext" aria-label="Next">›</button><button class="pill'+(vid.hear?' gold':'')+'" data-act="vhear" aria-label="Voice">'+ic('spk')+'</button></div>'}
+function vidDraw(){var d=$('#vid');d.innerHTML=vidHTML();if(vid.hear)vidSpeak()}
+function vidSpeak(){var sc=VIDS[vid.id][vid.i];speakText(T(sc.t),'vid-'+vid.id+'-'+(vid.i+1),true)}
+function vidTick(){clearInterval(vid.timer);if(!vid.play)return;vid.timer=setInterval(function(){if(vid.i<VIDS[vid.id].length-1){vid.i++;vidDraw()}else{vid.play=false;clearInterval(vid.timer);vidDraw()}},5200)}
+function vidOpen(id){if(!VIDS[id])return;vid.id=id;vid.i=0;vid.play=true;var d=$('#vid');d.className='';vidDraw();d.showModal?d.showModal():d.setAttribute('open','');vidTick()}
+function vidClose(){clearInterval(vid.timer);if(window.speechSynthesis)speechSynthesis.cancel();var d=$('#vid');d.close?d.close():d.removeAttribute('open')}
+function watchBtn(id,label){return '<button class="watch" data-act="vid" data-v="'+id+'">▶ <span>'+esc(label||s('watch'))+'</span></button>'}
+
+function s(k){return (S[lang][k]!==undefined?S[lang][k]:S.en[k])}
+/* ===== data ===== */
+var DIST={cumilla:{n:{en:'Cumilla',bn:'কুমিল্লা'},c:[23.4607,91.1809],rec:57},feni:{n:{en:'Feni',bn:'ফেনী'},c:[23.0159,91.3976],rec:49},noakhali:{n:{en:'Noakhali',bn:'নোয়াখালী'},c:[22.8696,91.0995],rec:null},brahmanbaria:{n:{en:'Brahmanbaria',bn:'ব্রাহ্মণবাড়িয়া'},c:[23.9571,91.1115],rec:null},sylhet:{n:{en:'Sylhet',bn:'সিলেট'},c:[24.8949,91.8687],rec:null}};
+var FIELDS={ARF:{id:'CUM-ARF-01',n:{en:'BARI Agricultural Research Field',bn:'বারি কৃষি গবেষণা মাঠ'},lat:23.47051,lon:91.15637,dec:51,
+  addr:{en:'BARI Regional Agricultural Research Station, Shashongasa, Cumilla Adarsha Sadar',bn:'বারি আঞ্চলিক কৃষি গবেষণা কেন্দ্র, শশাংগাসা, কুমিল্লা আদর্শ সদর'},type:{en:'Open research plot',bn:'উন্মুক্ত গবেষণা প্লট'},soil:{en:'Alluvial silt loam',bn:'পলি দোআঁশ মাটি'},soilS:{en:'Alluvial silt loam',bn:'পলি দোআঁশ'},wat:{en:'Deep tube-well system',bn:'গভীর নলকূপ'},mainc:{en:'High-yield paddy, pulses, oilseeds',bn:'উচ্চফলনশীল ধান, ডাল, তেলবীজ'},w:'plenty'},
+ BRRI:{id:'CUM-BRRI-02',n:{en:'BRRI Paddy Cultivation Field',bn:'ব্রি ধান চাষের মাঠ'},lat:23.46915,lon:91.1588,dec:47,
+  addr:{en:'BRRI Regional Station, Cumilla',bn:'ব্রি আঞ্চলিক কার্যালয়, কুমিল্লা'},type:{en:'Paddy plot',bn:'ধানের প্লট'},soil:{en:'Clay loam',bn:'এঁটেল দোআঁশ'},soilS:{en:'Clay loam',bn:'এঁটেল দোআঁশ'},wat:{en:'Canal and irrigation pump',bn:'খাল ও সেচ পাম্প'},mainc:{en:'Paddy',bn:'ধান'},w:'regular'}};
+var CROPS={aman:{n:{en:'Aman rice',bn:'আমন ধান'},a:'boro'},aus:{n:{en:'Aus rice',bn:'আউশ ধান'},a:'boro'},boro:{n:{en:'Boro rice',bn:'বোরো ধান'},a:'boro'},wheat:{n:{en:'Wheat',bn:'গম'},a:'wheat'},mustard:{n:{en:'Mustard',bn:'সরিষা'},a:'mustard'},potato:{n:{en:'Potato',bn:'আলু'},a:'potato'},lentil:{n:{en:'Lentil',bn:'মসুর'},a:'lentil'},maize:{n:{en:'Maize',bn:'ভুট্টা'},a:'maize'},jute:{n:{en:'Jute',bn:'পাট'},a:'jute'},veg:{n:{en:'Vegetables',bn:'সবজি'},a:'veg'},fallow:{n:{en:'Nothing / fallow',bn:'কিছু নেই / পতিত'},a:'fallow'}};
+var CORDER=['aman','aus','boro','wheat','mustard','potato','lentil','maize','jute','veg','fallow'];
+/* next-crop data from the live app (Cumilla, season 2001-2024, example run) */
+var ISSUES=[
+ {a:'pest',t:{en:'Pests and diseases',bn:'পোকা ও রোগ'},
+  w:{en:'Pests and disease build up when the same crop family follows itself. NASA data cannot see them, so they are not scored.',bn:'একই ফসলের পরিবার বারবার চাষ করলে পোকা ও রোগ বাড়ে। নাসার ডেটায় তা দেখা যায় না, তাই স্কোরে নেই।'},
+  d:{en:'Change the crop family in the next season (see Rotation). Walk the field once a week and look at leaves and stems. Remove badly affected plants early. Ask the Upazila Agriculture Office before spraying anything.',bn:'পরের মৌসুমে ফসলের পরিবার বদলান (ফসলক্রম দেখুন)। সপ্তাহে একবার জমি ঘুরে পাতা ও কাণ্ড দেখুন। বেশি আক্রান্ত গাছ আগেই তুলে ফেলুন। কিছু স্প্রে করার আগে উপজেলা কৃষি অফিসে জানুন।'},
+  n:{en:'Between seasons, and weekly while the crop grows.',bn:'মৌসুমের মাঝে, আর ফসল বাড়ার সময় প্রতি সপ্তাহে।'}},
+ {a:'heat',t:{en:'Heat at flowering',bn:'ফুল ফোটার সময় গরম'},
+  w:{en:'Very hot days while the crop flowers can reduce grain set. Wheat, lentil and Aman are checked for this where a sourced limit exists.',bn:'ফুল ফোটার সময় খুব গরম দিন দানা বাঁধা কমাতে পারে। যেখানে উৎসসহ সীমা আছে, সেখানে গম, মসুর ও আমন যাচাই হয়।'},
+  d:{en:'Sow inside the recommended window so flowering falls in cooler weeks. If sowing is late, ask about shorter-duration varieties. Keep soil moist at flowering if you can irrigate.',bn:'প্রস্তাবিত সময়ের মধ্যে বুনুন, যাতে ফুল ফোটা ঠান্ডা সপ্তাহে পড়ে। দেরি হলে কম মেয়াদি জাতের কথা জিজ্ঞাসা করুন। সেচ দিতে পারলে ফুলের সময় মাটি ভেজা রাখুন।'},
+  n:{en:'Decide at sowing time. Watch the weather at flowering.',bn:'বোনার সময় ঠিক করুন। ফুল ফোটার সময় আবহাওয়া দেখুন।'}},
+ {a:'night',t:{en:'Cold nights',bn:'ঠান্ডা রাত'},
+  w:{en:'Cold at seedling or booting stage can damage rice. Some cold limits are still missing sources, so they are marked “not checked”.',bn:'চারা বা থোড় অবস্থায় ঠান্ডা ধানের ক্ষতি করতে পারে। কিছু ঠান্ডার সীমার উৎস এখনো নেই, তাই “যাচাই হয়নি” লেখা আছে।'},
+  d:{en:'Do not rush Boro seedbeds into the coldest weeks. Cover seedbeds on cold nights where local practice allows.',bn:'বোরোর বীজতলা সবচেয়ে ঠান্ডা সপ্তাহে তাড়াহুড়ো করে করবেন না। স্থানীয় রীতি অনুযায়ী ঠান্ডা রাতে বীজতলা ঢেকে দিন।'},
+  n:{en:'Before sowing Boro, and on forecast cold nights.',bn:'বোরো বোনার আগে এবং ঠান্ডা রাতের পূর্বাভাসে।'}},
+ {a:'water',t:{en:'Waterlogging',bn:'জলাবদ্ধতা'},
+  w:{en:'Standing water after heavy rain or a flood starves roots of air. Mustard and lentil are checked for it.',bn:'ভারী বৃষ্টি বা বন্যার পর জমে থাকা পানি শিকড়ের বাতাস কমিয়ে দেয়। সরিষা ও মসুরে এটি যাচাই হয়।'},
+  d:{en:'Dig drainage channels before the rains. Wait until the soil is back to normal before sowing a dry-season crop.',bn:'বৃষ্টির আগে নালা কেটে রাখুন। রবি ফসল বোনার আগে মাটি স্বাভাবিক হওয়া পর্যন্ত অপেক্ষা করুন।'},
+  n:{en:'Before the rains, and after any flood.',bn:'বৃষ্টির আগে, আর বন্যার পর।'}},
+ {a:'rain',t:{en:'Dry spell',bn:'শুকনো সময়'},
+  w:{en:'Weeks without rain raise the water the crop needs. Irrigation need is shown on each rotation card.',bn:'কয়েক সপ্তাহ বৃষ্টি না হলে ফসলের পানির চাহিদা বাড়ে। প্রতিটি ফসলক্রম কার্ডে সেচের চাহিদা দেখানো আছে।'},
+  d:{en:'Pick a crop that matches the water you can give. Irrigate at the sensitive stages first. Mulch to hold moisture.',bn:'আপনি যত পানি দিতে পারবেন, সেই অনুযায়ী ফসল বাছুন। সংবেদনশীল ধাপে আগে সেচ দিন। আর্দ্রতা ধরে রাখতে মালচ দিন।'},
+  n:{en:'Plan before sowing; check soil moisture weekly.',bn:'বোনার আগে পরিকল্পনা করুন; সপ্তাহে একবার মাটির আর্দ্রতা দেখুন।'}}
+];
+/* ===== logic ===== */
+function floodDateOf(){
+ if(!st.flooded||!st.floodMode)return null;
+ if(st.floodMode==='ex')return new Date(2024,7,21);
+ if(st.floodMode==='date')return st.floodDate?new Date(st.floodDate+'T00:00:00'):null;
+ var n={w1:7,w2:14,m1:30,w6:45}[st.floodMode];return addD(NOW,-n)}
+/* ===== render pieces ===== */
+function srcBtn(k){return '<button class="src" data-act="src" data-v="'+k+'">'+(lang==='bn'?'উৎস':'Source')+' ›</button>'}
+function demoBadge(live){/* live: pass true only on a screen that is showing a real, non-mock server answer */return (DEMO&&!live)?'<div class="note warn"><span class="badge">'+esc(s('demo'))+'</span><span>'+esc(s('demonote'))+'</span></div>':''}
+function renderField(){
+ var f=FIELDS[st.field];var dn=Math.round(st.areaM2/40.4686),bg=(dn/33).toFixed(1);
+ var h='<div class="hero"><div class="txt"><div class="eyebrow">'+esc(s('eye'))+'</div><h1>'+esc(s('h1'))+'</h1></div>'+
+ '<div class="orbit" aria-hidden="true"><div class="ring"></div><div class="sat">'+window.SATART+'</div>'+window.EARTHART+'</div></div>'+
+ '<p class="lead">'+esc(s('lead'))+'</p>'+modeCards()+demoBadge()+
+ '<div class="cols"><div class="ctl"><button class="btn" data-act="gps">'+ic('pin')+'<span>'+esc(s('gps'))+'</span></button>'+
+ '<h2>'+esc(s('pick'))+'</h2><div class="chips">'+Object.keys(DIST).map(function(k){return '<button class="chip'+(st.district===k?' on':'')+'" data-act="dist" data-v="'+k+'">'+esc(T(DIST[k].n))+'</button>'}).join('')+'</div>'+
+ '<h2>'+esc(s('real'))+'</h2>'+Object.keys(FIELDS).map(function(k){var F=FIELDS[k];return '<button class="fieldcard'+(st.field===k&&st.district==='cumilla'?' on':'')+'" data-act="field" data-v="'+k+'">'+ic('pin')+'<div><small>'+F.id+'</small><b>'+esc(T(F.n))+'</b><span>'+esc(T(F.soilS))+' · '+esc(T(F.wat))+'</span></div></button>'}).join('')+
+ '</div><div class="mapc"><div class="eyebrow">'+esc(s('step1'))+'</div><h2 style="margin-top:6px">'+esc(s('q1'))+'</h2><p class="lead" style="margin-top:4px">'+esc(s('mapnote'))+'</p><div id="map"></div></div>'+
+ '<div class="inf" id="finfo">'+fieldInfo()+'</div></div>';
+ $('#pg-field').innerHTML=h;initMap()}
+function fieldInfo(){
+ var f=FIELDS[st.field],dn=Math.round(st.areaM2/40.4686),bg=(dn/33).toFixed(1);var isRec=st.district==='cumilla'&&st.fromField;
+ var x='';
+ if(isRec)x+='<div class="card gold"><small style="color:var(--gold);font-weight:700">'+f.id+' · '+esc(s('rec'))+'</small><h3>'+esc(T(f.n))+'</h3><dl class="kv"><dt>'+s('loc')+'</dt><dd>'+N(st.lat.toFixed(4))+'° N, '+N(st.lon.toFixed(4))+'° E</dd><dt>'+s('addr')+'</dt><dd>'+esc(T(f.addr))+'</dd><dt>'+s('type')+'</dt><dd>'+esc(T(f.type))+'</dd><dt>'+s('soil')+'</dt><dd>'+esc(T(f.soil))+'</dd><dt>'+s('water')+'</dt><dd>'+esc(T(f.wat))+'</dd><dt>'+s('main')+'</dt><dd>'+esc(T(f.mainc))+'</dd></dl><div class="note warn" style="margin-bottom:0"><span class="badge">'+esc(s('rec'))+'</span><span>'+esc(s('recnote'))+'</span></div></div>';
+ else x+='<div class="card"><b>'+N(st.lat.toFixed(4))+'° N, '+N(st.lon.toFixed(4))+'° E</b> · '+esc(T(DIST[st.district].n))+'</div>';
+ x+='<div class="card water"><b>'+esc(s('area').replace('{d}',N(dn)).replace('{b}',N(bg)))+'</b><p style="color:var(--mute)">'+esc(s('areaS').replace('{m}',N(Math.round(st.areaM2)).replace(/\B(?=(\d{3})+(?!\d))/g,',')))+'</p></div>'+
+ '<div class="row" style="flex-wrap:wrap;gap:8px;margin:8px 0"><a class="chip" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--water)" target="_blank" rel="noopener" href="https://www.google.com/maps/@?api=1&map_action=map&center='+st.lat+','+st.lon+'&zoom=18&basemap=satellite">Google Maps ↗</a><a class="chip" style="display:inline-flex;align-items:center;text-decoration:none;color:var(--water)" target="_blank" rel="noopener" href="'+wvUrl()+'">NASA Worldview ↗</a></div>'+
+ '<div class="note"><span>'+ic('info')+'</span><span>'+esc(s('nasaarea'))+'</span></div>'+
+ '<button class="btn" data-act="go" data-v="farm">'+esc(s('yes'))+'</button>';
+ return x}
+var MAP=null,MK=null,RECT=null;
+function outline(){
+ if(!MAP||!window.L)return;var side=Math.sqrt(st.areaM2),dLat=side/2/111320,dLon=side/2/(111320*Math.cos(st.lat*Math.PI/180));
+ var b=[[st.lat-dLat,st.lon-dLon],[st.lat+dLat,st.lon+dLon]];
+ if(RECT)RECT.setBounds(b);else RECT=L.rectangle(b,{color:'#F2C14E',weight:3,fillOpacity:.15}).addTo(MAP);
+ if(MK)MK.setLatLng([st.lat,st.lon]);else MK=L.circleMarker([st.lat,st.lon],{radius:6,color:'#fff',weight:2,fillColor:'#4FC3F7',fillOpacity:1}).addTo(MAP)}
+function mapFail0(){var el=$('#map');el.innerHTML='';mapFail()}
+function initMap(){
+ var el=$('#map');if(!el)return;MAP=null;MK=null;RECT=null;
+ if(!window.L){mapFail0();return}
+ if(0){el.innerHTML='<div class="mapfb"><div>'+art('twin',64)+'<p>'+N(st.lat.toFixed(4))+'° N, '+N(st.lon.toFixed(4))+'° E</p><p>'+(lang==='bn'?'মানচিত্র লোড হয়নি (ইন্টারনেট দরকার)।':'Map could not load (needs internet).')+'</p></div></div>';return}
+ MAP=L.map(el,{zoomControl:true,attributionControl:true}).setView([st.lat,st.lon],17);
+ var loaded=0,errs=0,esri=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:19,attribution:'Imagery © Esri, Maxar, Earthstar Geographics'}).addTo(MAP);
+ var osm=null;function sw(){if(osm||loaded)return;osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'© OpenStreetMap contributors'});osm.on('tileload',function(){loaded++;var f=el.querySelector('.mapfb');if(f)f.remove()});MAP.removeLayer(esri);osm.addTo(MAP)}
+ esri.on('tileload',function(){loaded++;var f=el.querySelector('.mapfb');if(f)f.remove()});esri.on('tileerror',function(){errs++;if(errs>=3)sw()});
+ setTimeout(function(){if(!loaded)sw()},3500);setTimeout(function(){if(!loaded)mapFail()},8000);
+ outline();
+ MAP.on('click',function(e){st.lat=e.latlng.lat;st.lon=e.latlng.lng;st.fromField=false;st.areaM2=2000;outline();$('#finfo').innerHTML=fieldInfo()});
+ setTimeout(function(){MAP&&MAP.invalidateSize()},250)}
+function cropGrid(sel,act){return '<div class="crops">'+CORDER.map(function(k){var c=CROPS[k];return '<button class="crop'+(sel===k?' on':'')+'" data-act="'+act+'" data-v="'+k+'">'+art(c.a,64)+'<span>'+esc(T(c.n))+'</span></button>'}).join('')+'</div>'}
+function bars(n){var h='<span class="bars" aria-hidden="true">';for(var i=0;i<4;i++)h+='<i class="'+(i<n?'f':'')+'"></i>';return h+'</span>'}
+function drops(n){var h='<span class="drops" aria-hidden="true">';for(var i=0;i<4;i++)h+='<b class="'+(i<n?'f':'')+'">●</b>';return h+'</span>'}
+/* ---- the plan: ask the server with the farmer's answers, show what it returns (no maths here) ---- */
+var PLAN={state:'idle',key:null,res:null,ad:null,sent:null};
+var WMAP={rain:'rain_only',few:'limited',regular:'regular',plenty:'plenty'};
+function isoDate(d){var m=d.getMonth()+1,dd=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(dd<10?'0':'')+dd}
+function harvestISO(){if(st.harvestDate)return st.harvestDate;var o={w0:0,w1:7,w2:21,w3:35}[st.harvest];return isoDate(addD(NOW,o||0))}
+function iso2d(i){return fd(new Date(i+'T00:00:00'))}
+function planKey(){var f=floodDateOf();return JSON.stringify([st.district,st.lat,st.lon,harvestISO(),f?isoDate(f):null,st.water,st.prio])}
+function ensurePlan(){if(PLAN.key===planKey()&&(PLAN.state==='wait'||PLAN.state==='done'))return;askPlan()}
+function askPlan(){
+ if(!window.CS_API||!window.CS_AD)return;var key=planKey();PLAN={state:'wait',key:key,res:null,ad:null,sent:null};paintPlan();
+ var base='district='+st.district+'&lat='+st.lat+'&lon='+st.lon+'&lang='+lang,fdt=floodDateOf();
+ var step=(st.flooded&&fdt)?fetchFlood():Promise.resolve(null);
+ step.then(function(pf){
+  var ready=null;if(pf){var e=pf.data&&pf.data.data&&pf.data.data.earliest_sowing_date;ready=e&&e.date}
+  var q=base+'&prev_harvest='+harvestISO()+'&water='+WMAP[st.water]+(st.prio?'&priority='+st.prio:'')+(ready?'&flood_ready='+ready:'');
+  var sent={harvest:harvestISO(),flood:fdt?isoDate(fdt):null};
+  return CS_API.get('/api/v1/advisory?'+q).then(function(r){return {r:r,sent:sent}})}).then(function(x){
+  if(PLAN.key!==key)return;                       // the farmer changed an answer meanwhile
+  PLAN.res=x.r;PLAN.sent=x.sent;PLAN.ad=x.r.data?CS_AD.adapt(x.r.data):null;PLAN.state='done';paintPlan()})}
+function paintPlan(){if(cur==='rotation')renderRotation();else if(cur==='plan')renderPlan();else if(cur==='pictures')renderPictures()}
+function planLive(){return !!(PLAN.res&&CS_API.isLive(PLAN.res))}
+/* a small "Source" button for a measure: opens the server's own provenance entries */
+function lsrc(ids){if(!PLAN.ad||!ids||!ids.length)return '';return '<button class="src" data-act="lsrc" data-v="'+esc(ids.join(','))+'">'+(lang==='bn'?'উৎস':'Source')+' ›</button>'}
+function showSources(ids,ad){var list=CS_AD.sources(ad||PLAN.ad,ids.split(','));var dd=$('#dlg');
+ dd.innerHTML='<h3>'+esc(s('planSrc'))+'</h3>'+(list.length?'<ul style="padding-left:18px">'+list.map(function(p){return '<li><b>'+esc(p.dataset||p.id)+'</b>'+(p.period?'<br>'+esc(p.period):'')+(p.resolution?' · '+esc(p.resolution):'')+(p.url?'<br><a href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.url)+' ↗</a>':'<br><span style="color:var(--mute)">'+esc(lang==='bn'?'লিংক পরে যোগ হবে':'Link pending')+'</span>')+(p.view_url?'<br><a href="'+esc(p.view_url)+'" target="_blank" rel="noopener">'+esc(lang==='bn'?'স্যাটেলাইট তথ্য দেখুন ↗':'See the satellite data ↗')+'</a>':'')+'</li>'}).join('')+'</ul>':'<p>'+esc(s('planNone'))+'</p>')+'<button class="btn sm" data-act="close">OK</button>';
+ dd.showModal?dd.showModal():dd.setAttribute('open','')}
+function mtxt(m){return m?N(m.value)+' '+esc(lang==='bn'&&m.unit==='mm'?'মিমি':m.unit):''}
+function demoKey(id){return id==='boro_rice'?'boro':id}
+function liveCard(o,rank){
+ var h='<div class="card strat'+(rank===1?' top':'')+'">';
+ if(rank)h+='<span class="rk">'+esc(s('rank'))+' '+N(rank)+'</span>';
+ var cur_=CROPS[st.current];
+ h+='<div class="chain"><span class="step">'+art(cur_.a,32)+esc(T(cur_.n))+'</span>'+(st.flooded?'<span class="arr">→</span><span class="step f">'+esc(lang==='bn'?'বন্যা':'Flood')+'</span>':'')+'<span class="arr">→</span><span class="step">'+art((CROPS[demoKey(o.id)]||{a:'sow'}).a,32)+esc(T(o.name))+'</span></div>';
+ if(o.problemLine)h+='<div style="margin:10px 0"><span class="badge '+(o.problem&&o.problem.value===0?'ok':'blue')+'">'+esc(T(o.problemLine))+'</span> '+lsrc(o.problem&&o.problem.src)+'</div>';
+ if(o.price)h+=csPriceHtml(o.price,o.price.na?'':lsrc(o.price.src));
+ h+='<div class="quick only-farmer">'+art('sow',40)+'<span class="sd">'+(o.sow?iso2d(o.sow.date):'')+'</span>'+(o.irrAvg?art('water',30)+'<span style="color:var(--mute)">'+mtxt(o.irrAvg)+'</span>':'')+'</div>';
+ if(o.partial)h+='<div class="note warn"><span>'+esc(lang==='bn'?'এই ফসলের সব ঝুঁকি যাচাই করা হয়নি।':'Not all risks for this crop are checked.')+'</span></div>';
+ h+='<details class="fdet"'+(st.mode==='officer'?' open':'')+'><summary>'+esc(s('more'))+'</summary>';
+ if(o.why)h+='<div class="tag g"><div></div><div><b>'+esc(s('why'))+'</b><p>'+esc(T(o.why))+'</p></div></div>';
+ h+='<div class="tag"><div></div><div><b>'+esc(s('evid'))+'</b><p>';
+ if(o.sow)h+=esc(s('sowon'))+' <b>'+iso2d(o.sow.date)+'</b> '+lsrc(o.sow.src)+'<br>';
+ if(o.status)h+='<span style="color:var(--mute)">'+esc(T(o.status))+'</span><br>';
+ if(o.window)h+=esc(lang==='bn'?'সুপারিশকৃত সময়':'Recommended window')+': '+iso2d(o.window.start)+' – '+iso2d(o.window.end)+' '+lsrc(o.window.src)+'<br>';
+ if(o.maturity)h+=esc(lang==='bn'?'পাকার তারিখ (মধ্যমান)':'Median maturity')+': '+iso2d(o.maturity.date)+' '+lsrc(o.maturity.src)+'<br>';
+ if(o.irrAvg)h+=esc(s('irr'))+': <b>'+mtxt(o.irrAvg)+'</b>'+(o.irrWorst?' · '+esc(lang==='bn'?'সবচেয়ে খারাপ ২০% বছরে':'worst 20% of years')+': <b>'+mtxt(o.irrWorst)+'</b>':'')+' '+lsrc(o.irrAvg.src)+'<br>';
+ if(o.eventsWorst)h+=esc(lang==='bn'?'সেচের সংখ্যা (সবচেয়ে খারাপ ২০%)':'Waterings (worst 20%)')+': '+mtxt(o.eventsWorst)+' '+lsrc(o.eventsWorst.src)+'<br>';
+ if(o.checkedText)h+=esc(T(o.checkedText));
+ if(o.checked.length)h+='<br>'+o.checked.map(function(c){return esc(T(c.label))+(c.years?': '+N(c.years.value)+' '+esc(lang==='bn'?'বছর':'years'):'')}).join(' · ');
+ h+='</p></div></div>';
+ if(o.coverageNotice)h+='<div class="tag a"><div></div><div><b>'+esc(s('gap'))+'</b><p>'+esc(T(o.coverageNotice))+'</p></div></div>';
+ if(o.waterNote)h+='<div class="tag a"><div></div><div><b>'+esc(s('wat'))+'</b><p>'+esc(T(o.waterNote))+'</p></div></div>';
+ h+='</details><button class="btn '+(st.chosen===demoKey(o.id)?'alt':'')+'" data-act="choose" data-v="'+esc(demoKey(o.id))+'">'+esc(st.chosen===demoKey(o.id)?s('chosen'):s('choose'))+'</button></div>';
+ return h}
+function liveCompare(ad){
+ var rows=ad.options.map(function(o){return '<tr><td><b>'+esc(T(CROPS[st.current].n))+' → '+esc(T(o.name))+'</b></td><td>'+(o.problem?N(o.problem.value)+' '+esc(lang==='bn'?'/ ২৪ বছর':o.problem.unit):esc(s('notrank')))+'</td><td>'+(o.irrAvg?mtxt(o.irrAvg)+(o.irrWorst?' / '+mtxt(o.irrWorst):''):'')+'</td><td>'+(o.sow?iso2d(o.sow.date):'')+'</td><td>'+(o.checkedText?esc(T(o.checkedText)):'')+(o.partial?' *':'')+'</td></tr>'}).join('');
+ return '<div class="only-officer"><h2>'+esc(s('cmp'))+'</h2><div class="card cmp"><table><thead><tr>'+s('cmpH').map(function(x){return '<th>'+esc(x)+'</th>'}).join('')+'</tr></thead><tbody>'+rows+'</tbody></table><p style="color:var(--mute);font-size:.85em;margin-top:8px">* '+esc(s('notall'))+'</p></div></div>'}
+function renderRotation(){
+ ensurePlan();
+ var ad=PLAN.ad,live=planLive();
+ var h='<div class="eyebrow">'+esc(s('step4'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('q4'))+'</h1><p class="lead">'+esc(s('q4s'))+'</p>';
+ if(PLAN.state!=='done'){h+='<div class="card"><p><span style="display:inline-block;width:14px;height:14px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;vertical-align:-2px;margin-right:8px;animation:apispin 1s linear infinite"></span>'+esc(s('planWait'))+'</p></div>';$('#pg-rotation').innerHTML=h;return}
+ if(!ad){h+='<div class="note warn"><span>'+esc(s('offline'))+'</span></div><button class="btn" data-act="replan">'+esc(s('retry'))+'</button>';$('#pg-rotation').innerHTML=h;return}
+ if(!ad.ok){h+='<div class="note warn"><span>'+esc(ad.errors.length?T(ad.errors[0]):s('planNone'))+'</span></div><button class="btn" data-act="go" data-v="farm">'+esc(lang==='bn'?'উত্তর বদলান':'Change my answers')+'</button>';$('#pg-rotation').innerHTML=h;return}
+ h+=(live?'<div class="note"><span class="badge">'+esc(s('planLive'))+'</span><span>'+esc(ad.sourceMode||'')+'</span></div>':demoBadge()+'<div class="note warn"><span>'+esc(s('planDemo'))+'</span></div>');
+ if(live&&PLAN.sent)h+='<p style="color:var(--mute)">'+esc(s('planFor'))+': <b>'+iso2d(PLAN.sent.harvest)+'</b>'+(PLAN.sent.flood?' · '+esc(s('whenfl').replace('?',''))+': <b>'+iso2d(PLAN.sent.flood)+'</b>':'')+'</p>';
+ h+=(window.shortCard?shortCard(ad):'')+(window.placeLine?placeLine(ad,lsrc):'');
+ if(ad.rankedBy&&ad.rankedBy.text)h+='<div class="note"><span>'+esc(T(ad.rankedBy.text))+'</span></div>';
+ if(ad.earliest)h+='<p>'+esc(s('earliestAny'))+': <b>'+iso2d(ad.earliest.date)+'</b>'+(ad.earliest.basis?' <span style="color:var(--mute)">('+esc(T(ad.earliest.basis))+')</span>':'')+'</p>';
+ h+=liveCompare(ad)+(window.priceStrip?priceStrip(ad):'')+'<div class="strats">'+ad.options.map(function(o,i){return liveCard(o,i+1)}).join('')+'</div>';
+ if(ad.filtered.length)h+='<h3>'+esc(s('planNo'))+'</h3>'+ad.filtered.map(function(o){return '<p><b>'+esc(T(o.name))+'</b>'+(o.reason?': '+esc(T(o.reason)):'')+'</p>'}).join('');
+ ad.notices.forEach(function(n){h+='<div class="note'+(n.level==='caution'?' warn':'')+'"><span>'+esc(T(n))+'</span></div>'});
+ h+='<p style="color:var(--mute)">'+esc(s('notfc'))+'</p><div class="note warn"><span>'+esc(s('pest'))+'</span></div>';
+ h+='<div style="height:10px"></div><button class="btn" data-act="go" data-v="strategies">'+esc(bi('See market prices and other ways to rotate','বাজারদর ও ফসল ঘোরানোর অন্য উপায় দেখুন'))+'</button>';
+ h+='<details class="only-officer"><summary>JSON</summary><pre class="json">'+esc(JSON.stringify(PLAN.res.data,null,1).slice(0,8000))+'</pre></details>';
+ $('#pg-rotation').innerHTML=h}
+/* ---- flood: ask /post-flood, show what it returns (no maths here) ---- */
+var FLOOD={key:null,state:'idle',res:null,ad:null,promise:null};
+function bi(en,bn){return lang==='bn'?bn:en}
+function floodKey(){var f=floodDateOf();return f?JSON.stringify([st.district,st.lat,st.lon,isoDate(f)]):null}
+function fetchFlood(){
+ var key=floodKey();if(!key||!window.CS_API||!window.CS_PF)return Promise.resolve(null);
+ if(FLOOD.key===key&&FLOOD.promise)return FLOOD.promise;
+ FLOOD={key:key,state:'wait',res:null,ad:null,promise:null};
+ FLOOD.promise=CS_API.get('/api/v1/post-flood?district='+st.district+'&lat='+st.lat+'&lon='+st.lon+'&lang='+lang+'&flood_date='+isoDate(floodDateOf())).then(function(r){
+  if(FLOOD.key===key){FLOOD.res=r;FLOOD.ad=r.data?CS_PF.adapt(r.data):null;FLOOD.state='done';repaintFlood()}return r});
+ repaintFlood();return FLOOD.promise}
+function repaintFlood(){if(cur==='issues')renderIssues();var b=$('#farmflood');if(b)b.innerHTML=floodMini()}
+function floodLive(){return !!(FLOOD.res&&CS_API.isLive(FLOOD.res))}
+function fsrc(ids){if(!FLOOD.ad||!ids||!ids.length)return '';return '<button class="src" data-act="fsrc" data-v="'+esc(ids.join(','))+'">'+bi('Source','উৎস')+' ›</button>'}
+function fmeas(m){return m?N(m.value)+' '+esc(lang==='bn'?({'km²':'বর্গ কিমি','days':'দিন','scenes':'টি দৃশ্য','% of the observed area':'% (দেখা এলাকার)'}[m.unit]||m.unit):m.unit):''}
+function spinner(){return '<span style="display:inline-block;width:14px;height:14px;border:2px solid var(--gold);border-top-color:transparent;border-radius:50%;vertical-align:-2px;margin-right:8px;animation:apispin 1s linear infinite"></span>'}
+/* plots the server's rows as lines; marker dates also come from the server */
+function lineChart(rows,keys,styles,markers,label){
+ var W=320,H=110,P=6,vals=[];rows.forEach(function(r){keys.forEach(function(k){if(r[k]!=null)vals.push(r[k])})});
+ if(rows.length<2||!vals.length)return '';
+ var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);if(mx===mn)mx=mn+1;
+ function X(i){return P+i*(W-2*P)/(rows.length-1)}function Y(v){return H-P-(v-mn)*(H-2*P)/(mx-mn)}
+ var g='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="'+esc(label)+'" style="width:100%;height:auto;background:rgba(255,255,255,.04);border-radius:10px">';
+ keys.forEach(function(k,ki){var pts=rows.map(function(r,i){return r[k]==null?null:X(i).toFixed(1)+','+Y(r[k]).toFixed(1)}).filter(Boolean).join(' ');g+='<polyline fill="none" stroke-width="2" style="'+styles[ki]+'" points="'+pts+'"/>'});
+ (markers||[]).forEach(function(m){if(!m.date)return;var i=rows.findIndex(function(r){return r.date===m.date});if(i>=0)g+='<line x1="'+X(i).toFixed(1)+'" x2="'+X(i).toFixed(1)+'" y1="'+P+'" y2="'+(H-P)+'" stroke-dasharray="3 3" style="stroke:'+m.color+'"/>'});
+ return g+'</svg><p style="color:var(--mute);font-size:.8em;margin:2px 0 8px">'+esc(label)+' · '+iso2d(rows[0].date)+' – '+iso2d(rows[rows.length-1].date)+'</p>'}
+/* compact box on the Farm page */
+function floodMini(){
+ if(!floodKey())return '';
+ if(FLOOD.state!=='done')return '<div class="card" style="margin-bottom:0"><p>'+spinner()+esc(s('planWait'))+'</p></div>';
+ var a=FLOOD.ad;
+ if(!a)return '<div class="note warn"><span>'+esc(s('offline'))+'</span></div>';
+ if(!a.ok||!a.earliest)return '<div class="note warn"><span>'+esc(a.errors.length?T(a.errors[0]):s('noflood'))+'</span></div>';
+ var d=new Date(a.earliest.date+'T00:00:00');
+ return '<div class="card gold" style="margin-bottom:0"><div class="note'+(floodLive()?'':' warn')+'" style="margin:0 0 8px"><span class="badge">'+esc(floodLive()?s('planLive'):s('planDemo'))+'</span></div><div class="big-date"><div class="cal"><b>'+N(d.getDate())+'</b><span>'+MON[lang][d.getMonth()].toUpperCase()+' '+N(d.getFullYear())+'</span></div><div><h3>'+esc(s('earliestAny'))+' '+fsrc(a.earliest.src)+'</h3>'+(a.earliest.basis?'<p style="color:var(--mute)">'+esc(T(a.earliest.basis))+'</p>':'')+'</div></div>'+(a.soil&&a.soil.days?'<p style="margin-top:8px">'+esc(s('soilN'))+' <b>'+N(a.soil.days.value)+'</b> '+esc(s('days'))+'</p>':'')+'<button class="btn sm" data-act="go" data-v="issues" style="margin-top:8px">'+esc(bi('Flood details','বন্যার বিস্তারিত'))+'</button></div>'}
+/* full flood section on the Issues page */
+function floodCard(){
+ var h='<div class="card water" style="margin-bottom:14px"><div class="issue">'+art('flood',56)+'<div style="flex:1;min-width:0"><h3>'+esc(bi('Flood','বন্যা'))+'</h3>';
+ if(!st.flooded){
+  h+='<p style="color:var(--mute)">'+esc(bi('If your field flooded, switch on “My field flooded” on the Farm page. It then shows when the soil will be ready, from NASA data.','আপনার জমিতে বন্যা হলে “খামার” পাতায় “আমার জমিতে বন্যা হয়েছে” চালু করুন। তখন নাসার ডেটা থেকে মাটি কবে তৈরি হবে তা দেখাবে।'))+'</p>'}
+ else if(!floodKey()){h+='<p>'+esc(s('noflood'))+'</p>'}
+ else if(FLOOD.state!=='done'){h+='<p>'+spinner()+esc(s('planWait'))+'</p>'}
+ else if(!FLOOD.ad){h+='<div class="note warn"><span>'+esc(s('offline'))+'</span></div>'}
+ else if(!FLOOD.ad.ok){h+='<div class="note warn"><span>'+esc(FLOOD.ad.errors.length?T(FLOOD.ad.errors[0]):s('planNone'))+'</span></div>'}
+ else{
+  var a=FLOOD.ad,live=floodLive();
+  h+=(window.shortCard?shortCard(a):'')+(window.placeLine?placeLine(a,fsrc):'');
+  h+='<div class="note'+(live?'':' warn')+'" style="margin:0 0 8px"><span class="badge">'+esc(live?s('planLive'):s('planDemo'))+'</span><span>'+esc(live?(a.sourceMode||''):'')+'</span></div>';
+  h+='<p style="color:var(--mute)">'+esc(bi('Flood date used','ধরা বন্যার তারিখ'))+': <b>'+iso2d(a.floodDate)+'</b></p>';
+  if(a.earliest){var d=new Date(a.earliest.date+'T00:00:00');
+   h+='<div class="big-date"><div class="cal"><b>'+N(d.getDate())+'</b><span>'+MON[lang][d.getMonth()].toUpperCase()+' '+N(d.getFullYear())+'</span></div><div><h3>'+esc(bi('Earliest sowing after this flood','এই বন্যার পর বপনের সবচেয়ে আগের তারিখ'))+' '+fsrc(a.earliest.src)+'</h3>'+(a.earliest.basis?'<p style="color:var(--mute)">'+esc(T(a.earliest.basis))+'</p>':'')+'</div></div>'}
+  /* radar pictures */
+  if(a.images.length){h+='<h4 style="margin:12px 0 6px">'+esc(bi('Flood water seen by radar','রাডারে দেখা বন্যার পানি'))+'</h4><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">'+a.images.map(function(im){return '<figure style="margin:0"><img loading="lazy" src="'+esc(String(window.API_BASE||'').replace(/\/$/,'')+im.path)+'" alt="'+esc(T(im.caption)||im.date)+'" style="width:100%;border-radius:10px;background:#06101B"><figcaption style="font-size:.8em;color:var(--mute)">'+iso2d(im.date)+' '+fsrc(im.src)+'</figcaption></figure>'}).join('')+'</div>'}
+  else h+='<p style="color:var(--mute);margin-top:10px">'+esc(bi('No radar pictures for this place and date yet.','এই স্থান ও তারিখের জন্য এখনও রাডার ছবি নেই।'))+'</p>';
+  /* water on the ground */
+  if(a.water&&a.water.available){var w=a.water;
+   h+='<h4 style="margin:12px 0 6px">'+esc(bi('Water on the ground (radar)','মাঠে পানি (রাডার)'))+'</h4><dl class="kv">'+
+    (w.peakDate?'<dt>'+esc(bi('Highest','সবচেয়ে বেশি'))+'</dt><dd>'+iso2d(w.peakDate)+(w.peakShare?' · '+fmeas(w.peakShare)+' '+fsrc(w.peakShare.src):'')+(w.peakArea?' · '+fmeas(w.peakArea):'')+'</dd>':'')+
+    (w.goneDate?'<dt>'+esc(bi('Mostly gone','প্রায় নেমে গেছে'))+'</dt><dd>'+iso2d(w.goneDate)+(w.daysToGone?' · '+fmeas(w.daysToGone)+' '+esc(bi('after the peak','সর্বোচ্চের পর')):'')+'</dd>':'')+'</dl>'+
+    (w.conclusive?'':'<div class="note warn"><span>'+esc(bi('Not conclusive: too few radar scenes.','নিশ্চিত নয়: রাডার দৃশ্য কম।'))+'</span></div>')+
+    '<div class="only-officer">'+(w.curve?lineChart(w.curve.rows,['flood_pct'],['stroke:var(--water)'],[{date:w.peakDate,color:'var(--gold)'},{date:w.goneDate,color:'var(--ok,#7BD389)'}],bi('Flood water, % of the observed area','বন্যার পানি, দেখা এলাকার %')):'')+(w.rule?'<p style="color:var(--mute);font-size:.85em">'+esc(T(w.rule))+'</p>':'')+(w.resolutionNote?'<p style="color:var(--mute);font-size:.85em">'+esc(T(w.resolutionNote))+'</p>':'')+(w.curve?'<p>'+fsrc(w.curve.src)+'</p>':'')+'</div>'}
+  else h+='<div class="note warn"><span>'+esc(bi('No radar flood record for this place and date, so the water-on-ground part is not assessed.','এই স্থান ও তারিখের রাডার বন্যার তথ্য নেই, তাই মাঠে পানির অংশ মূল্যায়ন করা হয়নি।'))+'</span></div>';
+  /* soil back to normal */
+  if(a.soil){var so=a.soil;
+   h+='<h4 style="margin:12px 0 6px">'+esc(bi('Soil back to normal (satellite soil moisture)','মাটি স্বাভাবিক হওয়া (স্যাটেলাইট মাটির আর্দ্রতা)'))+'</h4><dl class="kv">'+(so.date?'<dt>'+esc(bi('Date','তারিখ'))+'</dt><dd>'+iso2d(so.date)+(so.days?' · '+fmeas(so.days)+' '+esc(bi('after the flood','বন্যার পর'))+' '+fsrc(so.days.src):'')+'</dd>':'')+'</dl>'+
+    '<div class="only-officer">'+(so.curve?lineChart(so.curve.rows,['value','threshold'],['stroke:var(--gold)','stroke:var(--mute)'],[{date:so.date,color:'var(--water)'}],bi('Root-zone soil moisture (solid) and the “normal” limit (grey)','মূল শিকড় অঞ্চলের আর্দ্রতা (গাঢ়) ও “স্বাভাবিক” সীমা (ধূসর)')):'')+(so.rule?'<p style="color:var(--mute);font-size:.85em">'+esc(T(so.rule))+'</p>':'')+
+    (so.sensitivity.length?'<table class="cmp" style="width:100%"><thead><tr><th>'+esc(bi('If the limit is the … percentile','সীমা … শতাংশ হলে'))+'</th><th>'+esc(bi('Date','তারিখ'))+'</th><th>'+esc(bi('Days after the flood','বন্যার পর দিন'))+'</th></tr></thead><tbody>'+so.sensitivity.map(function(x){return '<tr><td>'+N(x.pct)+'</td><td>'+iso2d(x.date)+'</td><td>'+(x.days?N(x.days.value):'')+'</td></tr>'}).join('')+'</tbody></table>':'')+'</div>'}
+  /* crops */
+  if(a.still.length)h+='<h4 style="margin:12px 0 6px">'+esc(bi('Crops still possible','যেসব ফসল এখনও সম্ভব'))+'</h4>'+a.still.map(function(o){return '<p><b>'+esc(T(o.name))+'</b> · '+esc(s('sowon'))+' '+(o.sow?iso2d(o.sow.date):'')+(o.sow?' '+fsrc(o.sow.src):'')+(o.problemLine?'<br><span style="color:var(--mute)">'+esc(T(o.problemLine))+'</span>':'')+(o.partial?'<br><span style="color:var(--amber)">'+esc(bi('Not all risks for this crop are checked.','এই ফসলের সব ঝুঁকি যাচাই করা হয়নি।'))+'</span>':'')+'</p>'}).join('');
+  if(a.gone.length)h+='<h4 style="margin:12px 0 6px">'+esc(bi('No longer possible','আর সম্ভব নয়'))+'</h4>'+a.gone.map(function(o){return '<p><b>'+esc(T(o.name))+'</b>'+(o.reason?': '+esc(T(o.reason)):'')+'</p>'}).join('');
+  /* cascade (officer) */
+  if(a.cascade.length)h+='<div class="only-officer"><h4 style="margin:12px 0 6px">'+esc(bi('What the flood changes','বন্যায় কী বদলায়'))+'</h4>'+(a.cascadeNote?'<p style="color:var(--mute);font-size:.85em">'+esc(T(a.cascadeNote))+'</p>':'')+'<table class="cmp" style="width:100%"><thead><tr><th>'+esc(bi('Crop','ফসল'))+'</th><th>'+esc(bi('Ready at once','সঙ্গে সঙ্গে প্রস্তুত'))+'</th><th>'+esc(bi('After the flood','বন্যার পর'))+'</th><th>'+esc(bi('Change','পরিবর্তন'))+'</th></tr></thead><tbody>'+a.cascade.map(function(c){function leg(x){return x?(x.sow?iso2d(x.sow):'')+'<br>'+(x.problem?N(x.problem.value)+' '+esc(bi('of 24 years','/ ২৪ বছর')):''):''}return '<tr><td><b>'+esc(T(c.name))+'</b></td><td>'+leg(c.readyAtOnce)+'</td><td>'+leg(c.afterFlood)+'</td><td>'+(c.change?esc(T(c.change)):'')+(c.coverageNotice?' *':'')+'</td></tr>'}).join('')+'</tbody></table><p>'+fsrc(a.cascadeSrc)+'</p></div>';
+  a.notices.forEach(function(n){h+='<div class="note'+(n.level==='caution'?' warn':'')+'"><span>'+esc(T(n))+'</span></div>'});
+  if(a.soilTest)h+='<div class="note"><span>'+esc(T(a.soilTest))+'</span></div>';
+  h+='<p style="color:var(--mute)">'+esc(s('notfc'))+'</p>';
+  h+='<details class="only-officer"><summary>JSON</summary><pre class="json">'+esc(JSON.stringify(FLOOD.res.data,null,1).slice(0,8000))+'</pre></details>';
+ }
+ h+='<div class="only-farmer">'+watchBtn('flood')+'</div><details><summary>'+esc(s('do'))+'</summary><p>'+esc(bi('Drain standing water through channels. Do not sow a dry-season crop until the soil is back to normal. Check the date before you buy new seedlings or seed.','পানি নালা দিয়ে বের করুন। মাটি স্বাভাবিক না হওয়া পর্যন্ত রবি ফসল বুনবেন না। নতুন চারা বা বীজ কেনার আগে তারিখ দেখুন।'))+'</p></details></div></div></div>';
+ return h}
+function renderFarm(){
+ var h='<div class="eyebrow">'+esc(s('step2'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('q2'))+'</h1><p class="lead">'+esc(s('q2s'))+'</p>'+
+ cropGrid(st.current,'crop')+
+ '<div style="height:12px"></div><button class="toggle'+(st.flooded?' on':'')+'" data-act="flood">'+art('flood',48)+'<div><b>'+esc(s('fl'))+'</b><div style="color:var(--mute);font-size:.88em">'+esc(s('fls'))+'</div></div><span class="yn">'+esc(st.flooded?s('yesb'):s('no'))+'</span></button>';
+ if(st.flooded){
+  h+='<div class="card water"><h3>'+esc(s('whenfl'))+'</h3><div class="when">'+['w1','w2','m1','w6','ex'].map(function(k,i){return '<button class="opt'+(st.floodMode===k?' on':'')+'" data-act="fmode" data-v="'+k+'">'+bars(Math.min(4,i+1))+'<span>'+esc(s('floodlbl')[i])+'</span></button>'}).join('')+'</div>'+
+  '<p style="margin:10px 0 4px;color:var(--mute)">'+esc(s('pickdate'))+'</p><input type="date" id="fdate" value="'+(st.floodMode==='date'&&st.floodDate?st.floodDate:'')+'" max="'+NOW.toISOString().slice(0,10)+'">';
+  if(st.floodMode)h+='<div id="farmflood" style="margin-top:10px">'+floodMini()+'</div>';
+  h+='</div>'}
+ h+='<h2>'+esc(s('cut'))+'</h2><div class="opts">'+['w0','w1','w2','w3'].map(function(k,i){return '<button class="opt'+(st.harvest===k?' on':'')+'" data-act="harv" data-v="'+k+'">'+bars(i)+'<span>'+esc(s('cutO')[i])+'</span></button>'}).join('')+'</div>'+
+ '<p style="margin:10px 0 4px;color:var(--mute)">'+esc(s('hdate'))+'</p><input type="date" id="hdate" value="'+harvestISO()+'"><p style="margin:4px 0 0;color:var(--mute);font-size:.85em">'+esc(s('hdateS'))+'</p>'+
+ '<h2>'+esc(s('wat'))+'</h2><div class="opts4">'+['rain','few','regular','plenty'].map(function(k,i){return '<button class="opt'+(st.water===k?' on':'')+'" data-act="wat" data-v="'+k+'">'+drops(i+1)+'<span>'+esc(s('watO')[i])+'</span></button>'}).join('')+'</div>'+
+ '<h2>'+esc(s('prio'))+'</h2><p style="color:var(--mute);margin:-4px 0 8px">'+esc(s('prioS'))+'</p><div class="chips">'+Object.keys(S.en.prioO).map(function(k){return '<button class="chip'+(st.prio===k?' on':'')+'" data-act="prio" data-v="'+k+'">'+esc(s('prioO')[k])+'</button>'}).join('')+'</div>'+
+ (window.farmSoilCard?farmSoilCard():'')+'<div style="height:16px"></div><button class="btn gold" data-act="getplan">'+esc(s('getplan'))+'</button><div style="height:8px"></div><button class="btn" data-act="go" data-v="issues">'+esc(lang==='bn'?'সমস্যা ও করণীয় দেখুন':'See problems and what to do')+'</button><div style="height:8px"></div><button class="btn alt" data-act="go" data-v="rotation">'+esc(s('find'))+'</button>';
+ $('#pg-farm').innerHTML=h;if(st.flooded&&st.floodMode)fetchFlood()}
+function renderIssues(){
+ var h='<div class="eyebrow">'+esc(s('step3'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('q3'))+'</h1><p class="lead">'+esc(s('q3s'))+'</p>'+demoBadge();
+ if(st.flooded)fetchFlood();
+ h+=(window.outlookCards?outlookCards():'');h+=floodCard();h+=(window.riskCard?riskCard():'');h+='<div class="strats">';
+ ISSUES.forEach(function(i){if(i.a==='pest'){h+=pestCard();return}h+='<div class="card"><div class="issue">'+art(i.a,56)+'<div><h3>'+esc(T(i.t))+'</h3><p style="color:var(--mute)">'+esc(T(i.w))+'</p><details><summary>'+esc(s('do'))+'</summary><p>'+esc(T(i.d))+'</p><p><b>'+esc(s('whenl'))+':</b> '+esc(T(i.n))+'</p></details></div></div></div>'});
+ h+='</div><div class="note warn"><span>'+esc(s('pest'))+'</span></div><button class="btn" data-act="go" data-v="rotation">'+esc(s('find'))+'</button>';
+ $('#pg-issues').innerHTML=h;if(window.rkLoad)rkLoad();if(window.olLoad)olLoad()}
+function chainFor(k){
+ var cur=CROPS[st.current];var hasF=st.flooded;
+ var h='<div class="chain"><span class="step">'+art(cur.a,32)+esc(T(cur.n))+'</span>';
+ if(hasF)h+='<span class="arr">→</span><span class="step f">'+esc(lang==='bn'?'বন্যা':'Flood')+'</span>';
+ var c=CROPS[k];h+='<span class="arr">→</span><span class="step">'+art(c.a,32)+esc(T(c.n))+'</span></div>';return h}
+/* ---- the chosen plan: the server's option for the crop the farmer chose (no maths here) ---- */
+function liveId(k){return k==='boro'?'boro_rice':k}
+function chosenOpt(){
+ if(!PLAN.ad||!PLAN.ad.ok)return null;
+ if(!st.chosen)return PLAN.ad.options[0]||null;
+ return PLAN.ad.options.filter(function(x){return x.id===liveId(st.chosen)})[0]||null}
+function chosenKey(){if(st.chosen)return st.chosen;var o=PLAN.ad&&PLAN.ad.ok&&PLAN.ad.options[0];return o?demoKey(o.id):'mustard'}
+function plainM(m){return m?N(m.value)+' '+(lang==='bn'&&m.unit==='mm'?'মিমি':m.unit):''}
+function srcCells(ids,ad){var list=CS_AD.sources(ad,ids);
+ return '<td>'+(list.map(function(p){return esc(p.dataset||p.id)}).join('; ')||'–')+'</td><td>'+(list.map(function(p){return p.url?'<a href="'+esc(p.url)+'" target="_blank" rel="noopener">'+esc(p.url)+'</a>':esc(bi('Link pending','লিংক পরে যোগ হবে'))}).join('<br>')||'–')+'</td>'}
+function provTableLive(o){
+ var rows=[];
+ if(o.problem)rows.push([T(o.problemLine)||plainM(o.problem),o.problem.src,PLAN.ad]);
+ if(o.sow)rows.push([s('sowon')+' '+iso2d(o.sow.date),o.sow.src,PLAN.ad]);
+ if(o.irrAvg)rows.push([s('irr')+' '+plainM(o.irrAvg),o.irrAvg.src,PLAN.ad]);
+ if(o.maturity)rows.push([bi('Median maturity','পাকার তারিখ (মধ্যমান)')+' '+iso2d(o.maturity.date),o.maturity.src,PLAN.ad]);
+ if(st.flooded&&FLOOD.ad&&FLOOD.ad.ok&&FLOOD.ad.earliest)rows.push([s('earliestAny')+' '+iso2d(FLOOD.ad.earliest.date),FLOOD.ad.earliest.src,FLOOD.ad]);
+ return '<div class="only-officer"><h2>'+esc(s('prov'))+'</h2><div class="card cmp"><table><thead><tr>'+s('provH').map(function(x){return '<th>'+esc(x)+'</th>'}).join('')+'</tr></thead><tbody>'+rows.map(function(r){return '<tr><td>'+esc(r[0])+'</td>'+srcCells(r[1],r[2])+'</tr>'}).join('')+'</tbody></table></div><p class="note"><span>'+esc(s('conf'))+'</span></p><button class="btn alt" data-act="raw">'+esc(s('raw'))+'</button></div>'}
+function renderPlan(){
+ var h='<div class="eyebrow">'+esc(s('step5'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('q5'))+'</h1>';
+ if(!st.chosen){h+='<div class="card"><p>'+esc(s('noplan'))+'</p></div><button class="btn" data-act="go" data-v="rotation">'+esc(s('find'))+'</button>';$('#pg-plan').innerHTML=h;return}
+ ensurePlan();
+ if(PLAN.state!=='done'){$('#pg-plan').innerHTML=h+'<div class="card"><p>'+spinner()+esc(s('planWait'))+'</p></div>';return}
+ if(!PLAN.ad){$('#pg-plan').innerHTML=h+'<div class="note warn"><span>'+esc(s('offline'))+'</span></div><button class="btn" data-act="replan2">'+esc(s('retry'))+'</button>';return}
+ if(!PLAN.ad.ok){$('#pg-plan').innerHTML=h+'<div class="note warn"><span>'+esc(PLAN.ad.errors.length?T(PLAN.ad.errors[0]):s('planNone'))+'</span></div>';return}
+ var o=chosenOpt();
+ if(!o){$('#pg-plan').innerHTML=h+'<div class="note warn"><span>'+esc(bi('This crop is not in the server’s answer for your current answers. Please choose again.','এই ফসল আপনার বর্তমান উত্তরে সার্ভারের তালিকায় নেই। আবার বাছুন।'))+'</span></div><button class="btn" data-act="go" data-v="rotation">'+esc(s('find'))+'</button>';return}
+ var live=planLive(),cur_=CROPS[st.current],k=chosenKey(),n=1;
+ h+=(live?'<div class="note"><span class="badge">'+esc(s('planLive'))+'</span><span>'+esc(PLAN.ad.sourceMode||'')+'</span></div>':demoBadge()+'<div class="note warn"><span>'+esc(s('planDemo'))+'</span></div>');
+ h+='<div class="card gold">'+chainFor(k)+'</div><div class="card"><h3>'+esc(s('timeline'))+'</h3><dl class="kv" style="margin-top:8px">';
+ if(live&&PLAN.sent)h+='<dt>'+(n++)+'</dt><dd>'+esc(T(cur_.n))+' · '+esc(bi('Harvest','ফসল কাটা'))+': '+iso2d(PLAN.sent.harvest)+'</dd>';
+ if(st.flooded&&FLOOD.ad&&FLOOD.ad.ok&&FLOOD.ad.earliest)h+='<dt>'+(n++)+'</dt><dd>'+esc(s('earliestAny'))+': '+iso2d(FLOOD.ad.earliest.date)+' '+fsrc(FLOOD.ad.earliest.src)+'</dd>';
+ if(o.sow)h+='<dt>'+(n++)+'</dt><dd>'+esc(T(o.name))+': '+esc(s('sowon'))+' <b>'+iso2d(o.sow.date)+'</b> '+lsrc(o.sow.src)+(o.status?'<br><span style="color:var(--mute)">'+esc(T(o.status))+'</span>':'')+'</dd>';
+ if(o.irrAvg)h+='<dt>'+(n++)+'</dt><dd>'+esc(s('irr'))+': '+mtxt(o.irrAvg)+(o.irrWorst?' · '+esc(bi('worst 20% of years','সবচেয়ে খারাপ ২০% বছরে'))+': '+mtxt(o.irrWorst):'')+' '+lsrc(o.irrAvg.src)+'</dd>';
+ if(o.maturity)h+='<dt>'+(n++)+'</dt><dd>'+esc(bi('Median maturity','পাকার তারিখ (মধ্যমান)'))+': '+iso2d(o.maturity.date)+' '+lsrc(o.maturity.src)+'</dd>';
+ h+='</dl></div><div class="card"><h3>'+esc(s('risk'))+'</h3>'+(o.problemLine?'<p>'+esc(T(o.problemLine))+' '+lsrc(o.problem&&o.problem.src)+'</p>':'')+
+  (o.partial&&!o.coverageNotice?'<p style="color:var(--amber)">'+esc(bi('Not all risks for this crop are checked.','এই ফসলের সব ঝুঁকি যাচাই করা হয়নি।'))+'</p>':'')+
+  (o.coverageNotice?'<p style="color:var(--mute)">'+esc(T(o.coverageNotice))+'</p>':'')+
+  '<p style="color:var(--amber)">'+esc(s('pest'))+'</p><p style="color:var(--mute)">'+esc(s('notfc'))+'</p></div>'+
+  PLAN.ad.notices.map(function(x){return '<div class="note'+(x.level==='caution'?' warn':'')+'"><span>'+esc(T(x))+'</span></div>'}).join('')+
+  '<div class="only-farmer">'+sceneBlock()+'</div>'+provTableLive(o)+'<div style="height:12px"></div><button class="btn" data-act="sms">'+esc(s('sms'))+'</button><div style="height:8px"></div><button class="btn alt only-farmer" data-act="go" data-v="pictures">'+esc(s('picS'))+'</button>';
+ $('#pg-plan').innerHTML=h}
+function smsText(){var o=chosenOpt();if(!o||!o.sow||!planLive())return '';/* never copy saved-sample numbers as if they were the farmer's */
+ return T(CROPS[st.current].n)+' → '+T(o.name)+'. '+bi('Sow from ','বোনা শুরু ')+iso2d(o.sow.date)+'. '+(o.irrAvg?bi('Irrigation ','সেচ গড় ')+plainM(o.irrAvg)+'. ':'')+bi('Based on past seasons, not a forecast.','অতীত মৌসুমের ভিত্তিতে, পূর্বাভাস নয়।')}
+function renderSources(){if(window.renderSourcesPage)renderSourcesPage()}
+
+function modeCards(){return '<h2 style="margin-top:6px">'+esc(s('who'))+'</h2><div class="modes"><button class="mcard'+(st.mode==='farmer'?' on':'')+'" data-act="setmode" data-v="farmer">'+art('sow',48)+'<b>'+esc(s('farmer'))+'</b><span>'+esc(s('farmerS'))+'</span></button><button class="mcard'+(st.mode==='officer'?' on':'')+'" data-act="setmode" data-v="officer">'+art('check',48)+'<b>'+esc(s('officer'))+'</b><span>'+esc(s('officerS'))+'</span></button></div>'}
+function applyMode(){document.body.dataset.mode=st.mode;var l=$('#modeLbl');if(l)l.textContent=s(st.mode);var u=document.querySelector('#modeBtn use');if(u)u.setAttribute('href',st.mode==='farmer'?'#i-farm':'#i-plan')}
+function noVoice(t){/* a missing recording is said plainly; the phone's robot voice is never used for these clips */toast(lang==='bn'?s('noBnTts'):s('novoice'))}
+function speakText(t,id){try{var au=new Audio('audio/'+id+'.'+lang+'.mp3');au.onerror=function(){noVoice(t)};au.play().catch(function(){noVoice(t)})}catch(x){noVoice(t)}}
+function tts(t){if(!window.speechSynthesis){toast('No speech here');return}speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(t);u.lang=lang==='bn'?'bn-BD':'en-GB';speechSynthesis.speak(u)}
+/* field scene: illustration only, never real data */
+var PHK=[.14,.45,.62,.9,1.01],PHN=['sow','grow','flower','fill','harvest'];
+var sceneP=.55,scenePlaying=false,sceneTimer=null;
+function phIdx(p){for(var i=0;i<5;i++)if(p<=PHK[i])return i;return 4}
+function sceneSVG(p){
+ var xs=[48,86,124,162,200,238,276,314],hs=[62,70,58,74,66,60,72,64],i0=phIdx(p),k=PHN[i0],rain=k==='grow',heat=k==='flower';
+ var plants=xs.map(function(x,i){var h=Math.max(6,Math.round(hs[i]*Math.min(1,.1+p*1.25))),top=176-h,head='';
+  if(p>.9)head='';else if(p>.62)head='<g fill="#E8C15A"><ellipse cx="'+x+'" cy="'+(top-4)+'" rx="3" ry="6"/><ellipse cx="'+(x-4)+'" cy="'+(top+3)+'" rx="2.6" ry="5" transform="rotate(-20 '+(x-4)+' '+(top+3)+')"/><ellipse cx="'+(x+4)+'" cy="'+(top+3)+'" rx="2.6" ry="5" transform="rotate(20 '+(x+4)+' '+(top+3)+')"/></g>';
+  else if(p>.45)head='<g fill="#F7D23E"><circle cx="'+(x-5)+'" cy="'+(top-1)+'" r="3.5"/><circle cx="'+(x+1)+'" cy="'+(top-5)+'" r="3.5"/><circle cx="'+(x+6)+'" cy="'+(top-1)+'" r="3.5"/><circle cx="'+x+'" cy="'+(top+2)+'" r="3.5"/></g>';
+  else if(p>.14)head='<ellipse cx="'+(x+4)+'" cy="'+(top+2)+'" rx="5" ry="2.6" transform="rotate(-30 '+(x+4)+' '+(top+2)+')" fill="#7BD389"/>';
+  var leaf=p>.25?'<ellipse cx="'+(x+6)+'" cy="'+(176-h*.45)+'" rx="6" ry="2.6" transform="rotate(-30 '+(x+6)+' '+(176-h*.45)+')" fill="#6FBF5B"/><ellipse cx="'+(x-6)+'" cy="'+(176-h*.6)+'" rx="6" ry="2.6" transform="rotate(30 '+(x-6)+' '+(176-h*.6)+')" fill="#6FBF5B"/>':'';
+  return '<g class="ssway" style="animation-delay:'+(i*.35).toFixed(2)+'s;transform-origin:'+x+'px 176px"><rect x="'+(x-1.5)+'" y="'+top+'" width="3" height="'+h+'" rx="1.5" fill="#7BD389"/>'+leaf+head+'</g>'}).join('');
+ var drops='';if(rain)for(var i=0;i<12;i++)drops+='<rect class="drop" style="animation-delay:'+(i*.17).toFixed(2)+'s" x="'+(44+i*9)+'" y="62" width="2" height="10" rx="1" fill="#8FD8FA"/>';
+ var cloud=(rain||(!heat&&p<.5))?'<g class="cloud"><ellipse cx="60" cy="51" rx="20" ry="13" fill="#DDE8EE" fill-opacity=".92"/><ellipse cx="84" cy="44" rx="22" ry="20" fill="#DDE8EE" fill-opacity=".92"/><ellipse cx="111" cy="50" rx="19" ry="14" fill="#DDE8EE" fill-opacity=".92"/></g>':'';
+ return '<svg viewBox="0 0 350 236" class="scenesvg" role="img" aria-label="'+esc(S[lang].ph[i0])+'"><defs><linearGradient id="sc-sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#123A57"/><stop offset=".7" stop-color="#2E6A6E"/><stop offset="1" stop-color="#6E8F58"/></linearGradient><linearGradient id="sc-soil" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#6B4A2B"/><stop offset="1" stop-color="#3B2616"/></linearGradient><filter id="sc-blur"><feGaussianBlur stdDeviation="10"/></filter></defs><rect width="350" height="236" fill="url(#sc-sky)"/><circle class="'+(heat?'sunhot':'')+'" cx="300" cy="35" r="'+(heat?52:45)+'" fill="#FFB547" fill-opacity="'+(heat?.5:.3)+'" filter="url(#sc-blur)"/><circle cx="300" cy="35" r="21" fill="#F7D23E"/>'+cloud+drops+'<rect y="174" width="350" height="62" fill="url(#sc-soil)"/><rect y="186" width="350" height="3" fill="#2A1A0E" fill-opacity=".5"/><rect y="202" width="350" height="3" fill="#2A1A0E" fill-opacity=".5"/><rect y="218" width="350" height="3" fill="#2A1A0E" fill-opacity=".5"/><rect y="'+(rain?162:168)+'" width="350" height="'+(rain?22:16)+'" fill="#4FC3F7" fill-opacity=".5"/>'+plants+'</svg>'}
+function sceneChip(){var i=phIdx(sceneP);return '<span class="wchip '+(i===2?'warn':'')+'">'+esc(s('ph')[i])+'</span>'}
+function sceneBlock(){return '<div class="eyebrow" style="margin-top:14px">'+esc(s('scene'))+'</div><div class="scenewrap" id="sceneWrap" style="margin-top:8px">'+sceneSVG(sceneP)+sceneChip()+'</div><div class="scrub"><button class="playbtn" data-act="scenePlay" id="playBtn" aria-label="'+esc(scenePlaying?s('pause'):s('play'))+'">'+(scenePlaying?'❚❚':'▶')+'</button><input id="scrub" type="range" min="0" max="100" value="'+Math.round(sceneP*100)+'" aria-label="'+esc(s('picS'))+'"></div><div class="stages">'+s('stg').map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div><p style="color:var(--mute);font-size:.85em">'+esc(s('sceneNote'))+'</p>'}
+function updateScene(){var w=$('#sceneWrap');if(w)w.innerHTML=sceneSVG(sceneP)+sceneChip()}
+function scenePlay(){scenePlaying=!scenePlaying;clearInterval(sceneTimer);var b=$('#playBtn');
+ if(scenePlaying){if(sceneP>=1)sceneP=0;sceneTimer=setInterval(function(){sceneP=Math.min(1,sceneP+.012);var r=$('#scrub');if(r)r.value=Math.round(sceneP*100);updateScene();if(sceneP>=1){scenePlaying=false;clearInterval(sceneTimer);var bb=$('#playBtn');if(bb)bb.textContent='▶'}},120)}
+ if(b)b.textContent=scenePlaying?'❚❚':'▶'}
+function renderPictures(){
+ ensurePlan();var k=chosenKey(),co=chosenOpt(),swTxt=(co&&co.sow)?iso2d(co.sow.date):'';
+ var tiles=['sow','water','risk','harvest','pest','twin'].map(function(n){var art2={sow:'sow',water:'water',risk:'heat',harvest:'harvest',pest:'pest',twin:'twin'}[n];var txt=s('stepsT')[n]+'. '+s('stepsD')[n]+(n==='sow'&&swTxt?' '+swTxt+'.':'');
+  return '<button class="ptile" data-act="say" data-v="'+n+'">'+art(art2,72)+'<b>'+esc(s('stepsT')[n])+'</b><small>'+esc(s('stepsD')[n])+(n==='sow'&&swTxt?' <b>'+swTxt+'</b>':'')+'</small><span class="say2">'+ic('spk')+esc(s('hear'))+'</span></button>'}).join('');
+ var lg=Object.keys(S.en.legN).map(function(n){return '<div class="lg">'+art(n,48)+'<b>'+esc(s('legN')[n])+'</b></div>'}).join('');
+ $('#pg-pictures').innerHTML='<div class="eyebrow">'+esc(s('picT'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('steps'))+'</h1><p class="lead">'+esc(s('picS'))+'</p><div class="card gold" style="margin-top:0">'+chainFor(k)+'</div><div class="ptiles">'+tiles+'</div><h2>'+esc(s('legT'))+'</h2><div class="legend">'+lg+'</div><div class="note warn"><span>'+esc(s('pest'))+'</span></div><button class="btn alt" data-act="go" data-v="sources">'+esc(s('src'))+'</button>'}
+/* ===== nav / routing ===== */
+var PAGES=['field','farm','issues','rotation','twin','plan','learn','pictures'],ICONS=['field','farm','alert','rot','pin','plan','info','pic'],XN=[0,0,0,0,1,1,0,1];
+function renderNav(){$('#nav').innerHTML=PAGES.map(function(p,i){return '<button data-act="go" data-v="'+p+'" class="'+(cur===p?'on':'')+(XN[i]?' x':'')+'">'+ic(ICONS[i])+'<span>'+esc(s('navx')[i])+'</span></button>'}).join('')+'<button data-act="go" data-v="server" class="only-officer x'+(cur==='server'?' on':'')+'">'+ic('info')+'<span>'+esc(s('server'))+'</span></button>'}
+var cur='field';var EXTRA=['sources','server','data','model','evidence','strategies'];
+function show(p){cur=p;PAGES.concat(EXTRA).forEach(function(x){var e=$('#pg-'+x);if(e)e.classList.toggle('on',x===p)});$('#backBtn').classList.toggle('show',p!=='field');renderNav();
+ var RT={farm:renderFarm,issues:renderIssues,rotation:renderRotation,twin:renderTwin,plan:renderPlan,learn:renderLearn,pictures:renderPictures,sources:renderSources,server:renderServer,data:window.renderData,model:window.renderModel,evidence:window.renderEvidence,strategies:window.renderStrategies};if(RT[p])RT[p]();
+ if(p==='field'&&MAP)setTimeout(function(){MAP.invalidateSize()},50);window.scrollTo(0,0)}
+function go(p){if(location.hash!=='#/'+p)location.hash='#/'+p;else show(p)}
+window.addEventListener('hashchange',function(){var p=(location.hash.replace('#/','')||'field');if(PAGES.concat(EXTRA).indexOf(p)<0)p='field';show(p)});
+function toast(m){var t=$('#toast');t.textContent=m;t.classList.add('on');setTimeout(function(){t.classList.remove('on')},2200)}
+function applyLang(){document.documentElement.lang=lang;document.querySelectorAll('[data-t="back"]').forEach(function(e){e.textContent=s('back')});document.querySelectorAll('.seg [data-act=lang]').forEach(function(b){b.classList.toggle('on',b.dataset.v===lang)});document.body.style.fontFamily=lang==='bn'?"'Noto Sans Bengali',var(--body)":''}
+function full(){applyLang();applyMode();renderField();show(cur)}
+/* ===== events ===== */
+document.addEventListener('click',function(e){
+ var b=e.target.closest('[data-act]');if(!b)return;var a=b.dataset.act,v=b.dataset.v;
+ if(a==='go')go(v);
+ else if(a==='back')history.length>1?history.back():go('field');
+ else if(a==='lang'){lang=v;full();apiBarDraw()}
+ else if(a==='apiretry'){APIBAR.failed=false;APIBAR.state='waking';apiBarDraw();liveLoad(true)}
+ else if(a==='big'){big=!big;document.body.classList.toggle('big',big)}
+ else if(a==='dist'){st.district=v;st.fromField=false;var c=DIST[v].c;st.lat=c[0];st.lon=c[1];st.areaM2=2000;if(MAP)MAP.setView(c,15);outline();renderField()}
+ else if(a==='field'){st.district='cumilla';st.field=v;var F=FIELDS[v];st.lat=F.lat;st.lon=F.lon;st.areaM2=F.dec*40.4686;st.fromField=true;st.water=F.w;st.current='aman';if(MAP)MAP.setView([F.lat,F.lon],18);renderField()}
+ else if(a==='gps'){if(!navigator.geolocation){toast(lang==='bn'?'এই ব্রাউজারে GPS নেই':'GPS is not available here');return}
+  navigator.geolocation.getCurrentPosition(function(p){st.lat=p.coords.latitude;st.lon=p.coords.longitude;st.fromField=false;st.areaM2=2000;if(MAP)MAP.setView([st.lat,st.lon],17);outline();$('#finfo').innerHTML=fieldInfo();toast(lang==='bn'?'অবস্থান পাওয়া গেছে। জেলা বাছুন (ডেমোতে সার্ভার জেলা মেলায় না)।':'Location found. Pick the district (the live server matches it; the demo cannot).')},function(){toast(lang==='bn'?'অবস্থান পাওয়া যায়নি':'Could not get your location')},{timeout:10000})}
+ else if(a==='crop'){st.current=v;renderFarm()}
+ else if(a==='flood'){st.flooded=!st.flooded;if(!st.flooded)st.floodMode=null;renderFarm()}
+ else if(a==='fmode'){st.floodMode=v;renderFarm()}
+ else if(a==='harv'){st.harvest=v;st.harvestDate=null;renderFarm()}
+ else if(a==='getplan'){PLAN.key=null;go('rotation')}
+ else if(a==='replan'){PLAN.key=null;renderRotation()}
+ else if(a==='replan2'){PLAN.key=null;renderPlan()}
+ else if(a==='lsrc'){showSources(v)}
+ else if(a==='fsrc'){showSources(v,FLOOD.ad)}
+ else if(a==='wat'){st.water=v;renderFarm()}
+ else if(a==='prio'){st.prio=st.prio===v?null:v;renderFarm()}
+ else if(a==='choose'){st.chosen=v;renderRotation();toast(s('chosen'))}
+ else if(a==='sms'){var t=smsText();if(!t){toast(s('offline'));return}(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast(s('copied'))},function(){toast(t)})}
+
+ else if(a==='mode'){st.mode=st.mode==='farmer'?'officer':'farmer';full()}
+ else if(a==='setmode'){st.mode=v;full()}
+ else if(a==='scenePlay')scenePlay();
+ else if(a==='say'){var tt=s('stepsT')[v]+'. '+s('stepsD')[v];speakText(tt,'step-'+v)}
+ else if(a==='raw'){var dd=$('#dlg');var oo=chosenOpt();var rawO=oo&&PLAN.res&&PLAN.res.data&&PLAN.res.data.data?(PLAN.res.data.data.options||[]).filter(function(x){return x.crop===oo.id})[0]:null;dd.innerHTML='<h3>JSON</h3><pre class="json">'+esc(JSON.stringify({source:PLAN.res&&PLAN.res.source,option:rawO||null},null,1))+'</pre><button class="btn sm" data-act="close">OK</button>';dd.showModal?dd.showModal():dd.setAttribute('open','')}
+ else if(a==='vid')vidOpen(v);else if(a==='vclose')vidClose();else if(a==='vplay'){vid.play=!vid.play;if(vid.play&&vid.i>=VIDS[vid.id].length-1)vid.i=0;vidDraw();vidTick()}else if(a==='vnext'){if(vid.i<VIDS[vid.id].length-1){vid.i++;vidDraw()}}else if(a==='vprev'){if(vid.i>0){vid.i--;vidDraw()}}else if(a==='vhear'){vid.hear=!vid.hear;vidDraw()}
+ else if(a==='close'){var d2=$('#dlg');d2.close?d2.close():d2.removeAttribute('open')}
+ else if(a==='speak'){if(lang==='bn'){toast(s('noBnTts'));return}if(!window.speechSynthesis){toast('No speech here');return}speechSynthesis.cancel();var el=$('#pg-'+cur);var u=new SpeechSynthesisUtterance((el.innerText||'').slice(0,900));u.lang=lang==='bn'?'bn-BD':'en-GB';speechSynthesis.speak(u)}
+});
+document.addEventListener('input',function(e){if(e.target.id==='scrub'){sceneP=e.target.value/100;updateScene()}});
+document.addEventListener('change',function(e){if(e.target.id==='hdate'&&e.target.value){st.harvest='date';st.harvestDate=e.target.value;renderFarm();return}if(e.target.id==='fdate'){st.floodMode='date';st.floodDate=e.target.value;renderFarm()}});
+/* ===== start ===== */
+(function(){var p=(location.hash.replace('#/','')||'field');if(PAGES.concat(EXTRA).indexOf(p)<0)p='field';cur=p;
+ ['field','farm','issues','rotation','twin','plan','learn','pictures'].concat(EXTRA).forEach(function(x){var s2=document.createElement('section');s2.className='page';s2.id='pg-'+x;$('#app').appendChild(s2)});
+ full();liveLoad()})();
+
+
+
+</script>
+</body></html>

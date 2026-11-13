@@ -1,0 +1,262 @@
+[
+ {
+  "id": "vid-tutorial-1",
+  "en": "NASA satellites look at the weather and water around your field.",
+  "bn": "নাসার স্যাটেলাইট আপনার জমির আশপাশের আবহাওয়া ও পানি দেখে।"
+ },
+ {
+  "id": "vid-tutorial-2",
+  "en": "First, tap your field on the map, or use your phone’s location.",
+  "bn": "প্রথমে মানচিত্রে আপনার জমিতে ট্যাপ করুন, অথবা ফোনের অবস্থান ব্যবহার করুন।"
+ },
+ {
+  "id": "vid-tutorial-3",
+  "en": "Tell us what is growing now, and if water covered your field.",
+  "bn": "এখন জমিতে কী আছে আর জমিতে পানি উঠেছিল কি না জানান।"
+ },
+ {
+  "id": "vid-tutorial-4",
+  "en": "See what can go wrong, and what you can do about it.",
+  "bn": "কী ভুল হতে পারে আর আপনি কী করতে পারেন তা দেখুন।"
+ },
+ {
+  "id": "vid-tutorial-5",
+  "en": "Compare crop plans side by side. Fewer bad years is better.",
+  "bn": "ফসলের পরিকল্পনাগুলো পাশাপাশি তুলনা করুন। কম খারাপ বছর ভালো।"
+ },
+ {
+  "id": "vid-tutorial-6",
+  "en": "Choose a plan. Tap the speaker to hear it. Always ask your agriculture officer too.",
+  "bn": "একটি পরিকল্পনা বাছুন। শুনতে স্পিকারে ট্যাপ করুন। সবসময় আপনার কৃষি কর্মকর্তাকেও জিজ্ঞাসা করুন।"
+ },
+ {
+  "id": "vid-icons-1",
+  "en": "Water: the extra water a crop may need. 100 mm is about 10 cm of water over the field.",
+  "bn": "পানি: ফসলের বাড়তি পানির প্রয়োজন। ১০০ মিমি মানে জমিতে প্রায় ১০ সেমি পানি।"
+ },
+ {
+  "id": "vid-icons-2",
+  "en": "Rain: how much rain the satellites saw.",
+  "bn": "বৃষ্টি: স্যাটেলাইট কত বৃষ্টি দেখেছে।"
+ },
+ {
+  "id": "vid-icons-3",
+  "en": "Heat: very hot days can hurt a crop when it is flowering.",
+  "bn": "গরম: ফুল ফোটার সময় খুব গরম দিন ফসলের ক্ষতি করতে পারে।"
+ },
+ {
+  "id": "vid-icons-4",
+  "en": "Cold night: cold can hurt young rice and other crops.",
+  "bn": "ঠান্ডা রাত: ঠান্ডা কচি ধান ও অন্য ফসলের ক্ষতি করতে পারে।"
+ },
+ {
+  "id": "vid-icons-5",
+  "en": "Flood: water covered the field.",
+  "bn": "বন্যা: জমি পানিতে ডুবেছিল।"
+ },
+ {
+  "id": "vid-icons-6",
+  "en": "Pests and disease: insects and sickness. Satellites cannot see them.",
+  "bn": "পোকা ও রোগ: পোকামাকড় আর অসুখ। স্যাটেলাইট এগুলো দেখতে পারে না।"
+ },
+ {
+  "id": "vid-icons-7",
+  "en": "Soil pH: how sour or sweet the soil is. A soil test gives the real value.",
+  "bn": "মাটির pH: মাটি কতটা টক বা মিষ্টি। মাটি পরীক্ষায় আসল মান জানা যায়।"
+ },
+ {
+  "id": "vid-icons-8",
+  "en": "Calendar: the date to sow.",
+  "bn": "ক্যালেন্ডার: বোনার তারিখ।"
+ },
+ {
+  "id": "vid-icons-9",
+  "en": "Tick: we checked this risk.",
+  "bn": "টিক: আমরা এই ঝুঁকি যাচাই করেছি।"
+ },
+ {
+  "id": "vid-icons-10",
+  "en": "Warning: check locally with your officer before you decide.",
+  "bn": "সতর্কতা: সিদ্ধান্তের আগে আপনার কর্মকর্তার সঙ্গে স্থানীয়ভাবে যাচাই করুন।"
+ },
+ {
+  "id": "vid-icons-11",
+  "en": "Source: tap to see where a number comes from.",
+  "bn": "উৎস: সংখ্যাটি কোথা থেকে এসেছে দেখতে ট্যাপ করুন।"
+ },
+ {
+  "id": "vid-years24-1",
+  "en": "Each square is one past year, from 2001 to 2024.",
+  "bn": "প্রতিটি বর্গ একটি অতীত বছর, ২০০১ থেকে ২০২৪।"
+ },
+ {
+  "id": "vid-years24-2",
+  "en": "A red square means bad weather hurt the crop that year.",
+  "bn": "লাল বর্গ মানে সেই বছর খারাপ আবহাওয়া ফসলের ক্ষতি করেছিল।"
+ },
+ {
+  "id": "vid-years24-3",
+  "en": "“0 of 24” means no bad years. It describes the past. It is not a promise for this year.",
+  "bn": "“২৪টির ০টি” মানে কোনো খারাপ বছর ছিল না। এটা অতীতের কথা, এ বছরের প্রতিশ্রুতি নয়।"
+ },
+ {
+  "id": "vid-irrigation-1",
+  "en": "Crops need water to grow.",
+  "bn": "ফসল বাড়তে পানি লাগে।"
+ },
+ {
+  "id": "vid-irrigation-2",
+  "en": "Sometimes rain is not enough.",
+  "bn": "কখনো কখনো বৃষ্টি যথেষ্ট নয়।"
+ },
+ {
+  "id": "vid-irrigation-3",
+  "en": "The number shows the extra water you may need, in millimetres.",
+  "bn": "সংখ্যাটি দেখায় আপনার বাড়তি কত পানি লাগতে পারে, মিলিমিটারে।"
+ },
+ {
+  "id": "vid-ph-1",
+  "en": "pH shows how sour or sweet the soil is.",
+  "bn": "pH দেখায় মাটি কতটা টক বা মিষ্টি।"
+ },
+ {
+  "id": "vid-ph-2",
+  "en": "Most crops like the middle.",
+  "bn": "বেশিরভাগ ফসল মাঝামাঝি পছন্দ করে।"
+ },
+ {
+  "id": "vid-ph-3",
+  "en": "Satellites cannot measure pH. Get a soil test at your Upazila Agriculture Office.",
+  "bn": "স্যাটেলাইট pH মাপতে পারে না। উপজেলা কৃষি অফিসে মাটি পরীক্ষা করান।"
+ },
+ {
+  "id": "vid-flood-1",
+  "en": "Water covers the field.",
+  "bn": "জমি পানিতে ডুবে যায়।"
+ },
+ {
+  "id": "vid-flood-2",
+  "en": "The water goes down slowly.",
+  "bn": "পানি ধীরে ধীরে নামে।"
+ },
+ {
+  "id": "vid-flood-3",
+  "en": "The soil needs time to dry. We show the first date it is ready to sow.",
+  "bn": "মাটি শুকাতে সময় লাগে। বোনার জন্য প্রথম প্রস্তুত তারিখটি আমরা দেখাই।"
+ },
+ {
+  "id": "vid-twin-1",
+  "en": "The field twin replays a past year, week by week.",
+  "bn": "ফিল্ড টুইন একটি অতীত বছর সপ্তাহ ধরে ধরে আবার দেখায়।"
+ },
+ {
+  "id": "vid-twin-2",
+  "en": "Watch the plants grow, with rain and hot days.",
+  "bn": "বৃষ্টি আর গরম দিনসহ গাছ বড় হওয়া দেখুন।"
+ },
+ {
+  "id": "vid-twin-3",
+  "en": "It is a picture of the past. It is not a forecast.",
+  "bn": "এটি অতীতের ছবি। পূর্বাভাস নয়।"
+ },
+ {
+  "id": "vid-pest-1",
+  "en": "The same crop again and again lets its pests grow.",
+  "bn": "একই ফসল বারবার চাষ করলে তার পোকা বাড়ে।"
+ },
+ {
+  "id": "vid-pest-2",
+  "en": "A different kind of crop breaks the pest cycle.",
+  "bn": "ভিন্ন ধরনের ফসল পোকার চক্র ভাঙে।"
+ },
+ {
+  "id": "vid-pest-3",
+  "en": "We do not score pests. Walk your field every week and ask your officer.",
+  "bn": "আমরা পোকার স্কোর দিই না। প্রতি সপ্তাহে জমি ঘুরে দেখুন আর কর্মকর্তাকে জিজ্ঞাসা করুন।"
+ },
+ {
+  "id": "vid-legume-1",
+  "en": "Lentil and other pulses (legumes) put nitrogen, a plant food, into the soil.",
+  "bn": "মসুর ও অন্য ডাল (লেগিউম) মাটিতে নাইট্রোজেন, অর্থাৎ গাছের খাবার, দেয়।"
+ },
+ {
+  "id": "vid-legume-2",
+  "en": "The next crop gets this food. Our source for this is still being added.",
+  "bn": "পরের ফসল এই খাবার পায়। এর উৎস আমরা এখনো যোগ করছি।"
+ },
+ {
+  "id": "vid-satmoist-1",
+  "en": "Satellites measure how wet the soil is.",
+  "bn": "স্যাটেলাইট মাপে মাটি কতটা ভেজা।"
+ },
+ {
+  "id": "vid-satmoist-2",
+  "en": "We compare it with a normal year to know when the soil is ready.",
+  "bn": "মাটি কবে প্রস্তুত তা জানতে আমরা এটিকে স্বাভাবিক বছরের সঙ্গে মেলাই।"
+ },
+ {
+  "id": "step-sow",
+  "en": "Sow. Sow from the date shown. Keep the soil moist.",
+  "bn": "বুনুন. দেখানো তারিখ থেকে বুনুন। মাটি ভেজা রাখুন।"
+ },
+ {
+  "id": "step-water",
+  "en": "Water. Give water at the sensitive stages. Rain may not be enough.",
+  "bn": "পানি দিন. সংবেদনশীল ধাপে পানি দিন। শুধু বৃষ্টি যথেষ্ট নাও হতে পারে।"
+ },
+ {
+  "id": "step-risk",
+  "en": "Watch the weather. Hot days at flowering and cold nights can hurt the crop.",
+  "bn": "আবহাওয়া দেখুন. ফুল ফোটার সময় গরম দিন আর ঠান্ডা রাত ফসলের ক্ষতি করতে পারে।"
+ },
+ {
+  "id": "step-harvest",
+  "en": "Harvest. Harvest when the crop is ripe. Then change the crop family.",
+  "bn": "ফসল তুলুন. ফসল পাকলে তুলুন। তারপর ফসলের পরিবার বদলান।"
+ },
+ {
+  "id": "step-pest",
+  "en": "Look for pests. Walk the field every week. Ask the Upazila Agriculture Office.",
+  "bn": "পোকা দেখুন. প্রতি সপ্তাহে জমি ঘুরে দেখুন। উপজেলা কৃষি অফিসে জানুন।"
+ },
+ {
+  "id": "step-twin",
+  "en": "See the season. Slide to see how a season can look (an example picture).",
+  "bn": "মৌসুমটি দেখুন. স্লাইড করে দেখুন একটি মৌসুম কেমন হতে পারে (উদাহরণ ছবি)।"
+ },
+ {
+  "id": "page-risk",
+  "en": "This table shows how many past seasons had a problem for each sowing date. Grey means we could not check it.",
+  "bn": "এই ছকে দেখানো হয়েছে প্রতিটি বপনের তারিখে অতীতের কতটি মৌসুমে সমস্যা হয়েছে। ধূসর মানে আমরা যাচাই করতে পারিনি।"
+ },
+ {
+  "id": "page-warnings",
+  "en": "These are weather warnings for the next few days, and what you can do. Today they are example data.",
+  "bn": "এগুলো আগামী কয়েক দিনের আবহাওয়া সতর্কতা, আর আপনি কী করতে পারেন। আজ এগুলো উদাহরণ তথ্য।"
+ },
+ {
+  "id": "page-enso",
+  "en": "This compares El Niño years with all years. It is context from past seasons, not a forecast.",
+  "bn": "এখানে এল নিনো বছরের সঙ্গে সব বছরের তুলনা। এটি অতীতের প্রেক্ষাপট, পূর্বাভাস নয়।"
+ },
+ {
+  "id": "page-strategies",
+  "en": "Pick what you grow now. We show other ways to rotate your crops, tested on past seasons. Fewer problem years is better.",
+  "bn": "এখন কী চাষ করেন তা বেছে নিন। অতীতের মৌসুমে পরীক্ষা করা ফসল ঘোরানোর অন্য উপায় দেখানো হয়েছে। সমস্যার বছর কম হলে ভালো।"
+ },
+ {
+  "id": "page-data",
+  "en": "This page lists the data we use and how much of it we really have. Missing data is marked, never shown as zero.",
+  "bn": "এই পাতায় আমাদের ব্যবহৃত ডেটা এবং তার কতটা আসলে আছে তা দেখানো হয়েছে। যা নেই তা চিহ্নিত, কখনও শূন্য নয়।"
+ },
+ {
+  "id": "page-model",
+  "en": "These are test results of our models on seasons they had not seen. The sample is small, so the ranges are wide.",
+  "bn": "এগুলো আমাদের মডেলের পরীক্ষার ফলাফল, যে মৌসুম তারা আগে দেখেনি তার ওপর। নমুনা ছোট, তাই পরিসীমা বড়।"
+ },
+ {
+  "id": "page-evidence",
+  "en": "This table compares the options on the same past seasons: problem years and water needed.",
+  "bn": "এই ছকে একই অতীত মৌসুমে বিকল্পগুলোর তুলনা: সমস্যার বছর ও পানি কত লাগে।"
+ }
+]

@@ -1,0 +1,1 @@
+{"api_version":"1.0","endpoint":"/api/v1/map/values","request":{},"generated_at":"2026-11-13T05:08:41+06:00","source_mode":"cache","is_mock":false,"data":null,"narration":null,"provenance":[],"notices":[],"errors":[{"code":"BAD_PARAMETER","en":"Missing parameter: layer.","bn":"অনুরোধের একটি তথ্য ঠিক নেই: layer"}]}

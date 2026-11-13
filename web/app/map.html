@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Survey Crops map</title>
+<style>
+:root{--bg:#fafaf7;--fg:#1d2a1f;--mut:#5d6b5f;--line:#d9dcd2;--card:#fff;--acc:#2f6b3a;--warn:#8a5a00}
+@media(prefers-color-scheme:dark){:root{--bg:#141a15;--fg:#e8ede6;--mut:#a3ada3;--line:#2f3a31;--card:#1c241d;--acc:#7cc98a;--warn:#e0b050}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.45 system-ui,sans-serif}
+header,main{max-width:1100px;margin:0 auto;padding:12px 16px}
+h1{font-size:20px;margin:0}h2{font-size:16px;margin:0 0 8px}
+.banner{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 12px;color:var(--mut);font-size:13px}
+.grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:16px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:16px}
+select,input[type=range]{width:100%}label{display:block;font-size:13px;color:var(--mut);margin:8px 0 2px}
+.stage{position:relative;width:100%;aspect-ratio:1/1.05}
+.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.ticks{display:flex;gap:1px;margin-top:2px}.ticks span{flex:1;height:8px;background:var(--acc);border-radius:1px}.ticks span.off{background:var(--line)}
+.small{font-size:12px;color:var(--mut)}.warn{color:var(--warn)}
+table{border-collapse:collapse;width:100%;font-size:13px}td,th{padding:3px 6px;border-bottom:1px solid var(--line);text-align:left}
+canvas{border:1px solid var(--line);image-rendering:pixelated;max-width:100%}
+.legend{display:flex;align-items:center;gap:6px;font-size:12px;margin-top:6px}.bar{flex:1;height:8px;border-radius:4px;background:linear-gradient(90deg,#f3efc9,#6fb36f,#1f5c3a)}
+path{stroke:var(--bg);stroke-width:.4;vector-effect:non-scaling-stroke}path:hover{stroke:var(--fg);stroke-width:1.5}
+</style></head><body>
+<header><h1>Survey Crops map</h1>
+<div class="banner">Every value on this page comes from the API with its NASA source. It supports, not replaces, your agriculture officer. Grey = not assessed or no data.</div></header>
+<main>
+<div class="grid">
+<section>
+ <div class="card">
+  <h2>Layer</h2>
+  <select id="layer" aria-label="Layer"></select><div id="reason" class="small warn"></div>
+  <label>Season window <span class="small">(W2 indicators only)</span></label><select id="season"><option>rabi</option><option>kharif1</option><option>kharif2</option></select>
+  <label>Year: <b id="yearLabel"></b></label><input id="year" type="range" min="2001" max="2024" value="2020"><div id="ticks" class="ticks"></div><div id="yearNote" class="small"></div>
+  <label>Compare with (swipe) <span class="small">drag the slider to reveal the second layer</span></label><select id="layerB"></select>
+  <input id="swipe" type="range" min="0" max="100" value="100" aria-label="Swipe">
+  <div class="stage" id="stage"><svg id="mapA" viewBox="0 0 100 100"></svg><svg id="mapB" viewBox="0 0 100 100"></svg></div>
+  <div class="legend"><span id="lo"></span><div class="bar"></div><span id="hi"></span><span id="unit" class="small"></span></div>
+  <div id="hover" class="small" style="min-height:2.6em"></div>
+  <div id="caveats" class="small"></div><div id="src" class="small"></div>
+ </div>
+</section>
+<section>
+ <div class="card">
+  <h2>What-if on past seasons</h2><div class="small warn" id="scLabel"></div>
+  <label>District</label><select id="scDist"></select>
+  <label>Crop</label><select id="scCrop"><option>wheat</option><option>mustard</option><option>lentil</option><option>potato</option></select>
+  <label>Rain change: <b id="rainV">0</b> %</label><input id="rain" type="range" min="-30" max="30" step="5" value="0">
+  <label>Warming: +<b id="tempV">0</b> °C</label><input id="temp" type="range" min="0" max="2" step="0.5" value="0">
+  <div id="scOut" style="margin-top:8px"></div>
+ </div>
+ <div class="card">
+  <h2>Field Passport</h2>
+  <select id="field" aria-label="Field"></select>
+  <div id="passport"></div>
+ </div>
+</section></div>
+<div id="foot" class="small"></div>
+</main>
+<script src="config.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const base=String(window.API_BASE||'').replace(/\/$/,'');
+async function api(path,params){const q=new URLSearchParams(Object.entries(params||{}).filter(([,v])=>v!=null&&v!=='')).toString();
+ const r=await fetch(base+'/api/v1/map'+path+(q?'?'+q:''),{cache:'no-store'});return r.json();}
+let LAYERS=[],OUT=null,projected=null;
+function project(){let x0=1e9,x1=-1e9,y0=1e9,y1=-1e9;const walk=g=>g.forEach(p=>Array.isArray(p[0])?walk(p):(x0=Math.min(x0,p[0]),x1=Math.max(x1,p[0]),y0=Math.min(y0,p[1]),y1=Math.max(y1,p[1])));
+ OUT.features.forEach(f=>walk(f.geometry.coordinates));const k=Math.cos(23.7*Math.PI/180),w=(x1-x0)*k,h=y1-y0,s=96/Math.max(w,h);
+ projected=OUT.features.map(f=>{const polys=f.geometry.type==='Polygon'?[f.geometry.coordinates]:f.geometry.coordinates;
+  const d=polys.map(poly=>poly.map(ring=>'M'+ring.map(p=>((p[0]-x0)*k*s+2).toFixed(2)+' '+((y1-p[1])*s+2).toFixed(2)).join('L')+'Z').join('')).join('');
+  return {slug:f.properties.slug,name:f.properties.name,live:f.properties.live,d}});}
+function colour(t){const a=[243,239,201],b=[111,179,111],c=[31,92,58];const m=t<.5?[a,b,t*2]:[b,c,(t-.5)*2];return 'rgb('+m[0].map((v,i)=>Math.round(v+(m[1][i]-v)*m[2])).join(',')+')';}
+async function draw(svgId,key,main){
+ const svg=$(svgId),e=LAYERS.find(l=>l.key===key);let rows={},info=null;
+ if(e&&e.enabled){const res=await api('/values',{layer:key,year:e.static?null:$('year').value,season:$('season').value});
+  if(res.data){info=res.data;res.data.rows.forEach(r=>rows[r.district]=r);}else if(main)$('yearNote').textContent=(res.errors[0]||{}).en||'';}
+ const vals=Object.values(rows).map(r=>r.value).filter(v=>v!=null),lo=Math.min(...vals),hi=Math.max(...vals);
+ svg.innerHTML=projected.map(p=>{const r=rows[p.slug],ok=r&&r.value!=null,t=ok&&hi>lo?(r.value-lo)/(hi-lo):.5;
+  return `<path data-s="${esc(p.slug)}" d="${p.d}" fill="${ok?colour(t):'#c9ccc2'}" fill-opacity="${ok?1:.55}"><title>${esc(p.name)}: ${ok?r.value.toFixed(2):'not assessed / no value'}</title></path>`}).join('');
+ svg.querySelectorAll('path').forEach(el=>el.onmousemove=()=>{const r=rows[el.dataset.s],p=projected.find(x=>x.slug===el.dataset.s);
+  $('hover').textContent=p.name+': '+(r&&r.value!=null?r.value.toFixed(2)+' '+(info?info.unit:'')+(r.n?' (n='+r.n+')':''):'no value — '+((r&&r.note)||'not assessed'))});
+ if(main){$('lo').textContent=vals.length?lo.toFixed(2):'';$('hi').textContent=vals.length?hi.toFixed(2):'';$('unit').textContent=info?info.unit:'';
+  $('caveats').innerHTML=info?info.caveats.map(c=>'<div>• '+esc(c)+'</div>').join(''):'';
+  $('src').innerHTML=info?'Source: '+esc(info.provenance.dataset)+' — <a href="'+esc(info.provenance.source_url)+'">link</a>':'';
+  if(info&&info.status_note)$('yearNote').textContent=info.status_note;}
+}
+async function refresh(){const e=LAYERS.find(l=>l.key===$('layer').value);
+ $('reason').textContent=e&&!e.enabled?'Not assessed: '+e.reason:'';$('yearLabel').textContent=$('year').value;
+ $('year').disabled=!!(e&&e.static);$('yearNote').textContent=e&&e.static?'Single acquisition ('+(e.caveats[0]||'').slice(0,0)+'no timeline).':'';
+ $('ticks').innerHTML=[...Array(24)].map((_,i)=>`<span class="${e&&e.available_years.includes(2001+i)?'':'off'}" title="${2001+i}"></span>`).join('');
+ await draw('mapA',$('layer').value,true);await draw('mapB',$('layerB').value,false);swipe();}
+function swipe(){$('mapB').style.clipPath='inset(0 0 0 '+$('swipe').value+'%)';$('mapB').style.display=$('layerB').value?'':'none';}
+let sct;function scenario(){clearTimeout(sct);sct=setTimeout(async()=>{$('rainV').textContent=$('rain').value;$('tempV').textContent=$('temp').value;
+ const r=await api('/scenario',{district:$('scDist').value,crop:$('scCrop').value,rain_pct:$('rain').value,temp_add_c:$('temp').value});
+ if(!r.data){$('scOut').textContent=(r.errors[0]||{}).en||'error';return}
+ const d=r.data,b=d.baseline,s=d.scenario;$('scLabel').textContent=d.label;
+ const row=(n,k,u)=>`<tr><td>${n}</td><td>${b[k]}</td><td>${s[k]}</td><td>${d.delta[k]>0?'+':''}${d.delta[k]} ${u}</td></tr>`;
+ $('scOut').innerHTML=`<div class="small">${esc(d.inputs.crop)}, sown ${esc(d.inputs.sowing_mmdd)}, ${s.n_years} past seasons</div><table><tr><th></th><th>Past</th><th>What-if</th><th>Change</th></tr>`+
+  row('Irrigation need (mean)','irrigation_mm_mean','mm')+row('Irrigation need (worst 20%)','irrigation_mm_worst20','mm')+row('Water-stress days (rain only)','water_stress_days_mean','days')+row('Season rain','rain_mm_mean','mm')+'</table>'+
+  '<table>'+s.heat.map((h,i)=>`<tr><td>${esc(h.item)} (&gt; ${h.limit} ${esc(h.unit)}, ${esc(h.stage)})</td><td>${b.heat[i].mean_days}</td><td>${h.mean_days}</td><td><a href="${esc(h.source_url)}">source</a></td></tr>`).join('')+'</table>'+
+  '<div class="small">'+d.assumptions.map(a=>'• '+esc(a)).join('<br>')+'</div>';},200);}
+function paint(canvas,l,scale){const g=l.grid,n=g.length,px=l.pixel_size_m*scale;canvas.width=canvas.height=Math.round(n*px);const c=canvas.getContext('2d');
+ const v=g.flat().filter(x=>x!=null),lo=Math.min(...v),hi=Math.max(...v);
+ g.forEach((row,i)=>row.forEach((x,j)=>{c.fillStyle=x==null?(l.status_grid&&l.status_grid[i][j]==='no event'?'#e9f2e4':'#c9ccc2'):colour(hi>lo?(x-lo)/(hi-lo):.5);c.fillRect(j*px,i*px,Math.ceil(px),Math.ceil(px))}));return [lo,hi];}
+function zonesView(vz,scale){$('zones').innerHTML=Object.values(vz.zones).map((z,i)=>{const w=z.window_summary;
+  return `<div style="margin-top:10px"><b>${esc(z.name)}</b>${z.pixel_size_m?` <span class="small">(${z.pixel_size_m} m pixels)</span>`:''}<div id="zn${i}"></div><div class="small">${z.status==='assessed'?'':'<span class="warn">Not assessed:</span> '+esc(z.reason)+'<br>'}${w?esc(w.n_flagged+' of '+w.n_known+' pixels flagged; '+w.n_unknown+' unknown (not counted as 0)'):''}${(z.caveats||[]).map(c=>'<br>• '+esc(c)).join('')}<br><i>${esc(z.label)}</i><br>${esc(z.dataset)} — <a href="${esc(z.source_url)}">link</a></div></div>`}).join('');
+ Object.values(vz.zones).forEach((z,i)=>{if(!z.grid)return;const px=z.pixel_size_m*scale,cv=document.createElement('canvas');cv.width=cv.height=Math.round(z.grid.length*px);const c=cv.getContext('2d');
+  z.grid.forEach((row,r)=>row.forEach((x,k)=>{c.fillStyle=x==null?'#c9ccc2':x===1?'#1f5c3a':'#f3efc9';c.fillRect(k*px,r*px,Math.ceil(px),Math.ceil(px))}));$('zn'+i).appendChild(cv);
+  $('zn'+i).insertAdjacentHTML('beforeend','<div class="small">dark = flagged · pale = not flagged · grey = unknown</div>')});}
+async function passport(){const r=await api('/passport',{field:$('field').value});if(!r.data){$('passport').textContent=(r.errors[0]||{}).en;return}
+ const p=r.data,scale=0.6;$('passport').innerHTML='<div class="small">'+esc(p.field.name)+' — window '+p.window_m+' m; every layer drawn at its real pixel size (0.6 screen px per metre). '+esc(p.field.record_note)+'</div>'+
+ p.layers.map((l,i)=>`<div style="margin-top:10px"><b>${esc(l.label)}</b> <span class="small">(${l.pixel_size_m} m pixels)</span><div id="pl${i}"></div><div class="small">${l.status==='assessed'?'':'<span class="warn">Not assessed:</span> '+esc(l.reason)}${l.caveats.map(c=>'<br>• '+esc(c)).join('')}<br>${esc(l.dataset)} — <a href="${esc(l.source_url)}">link</a></div></div>`).join('')+
+ '<h3 style="margin-top:14px">Relative zones</h3><div class="small"><b>'+esc(p.vulnerability_zones.label)+'.</b> '+esc(p.vulnerability_zones.note)+'</div><div id="zones"></div>';
+ zonesView(p.vulnerability_zones,scale);
+ p.layers.forEach((l,i)=>{const h=$('pl'+i);if(l.grid){const cv=document.createElement('canvas');h.appendChild(cv);const [lo,hi]=paint(cv,l,scale);h.insertAdjacentHTML('beforeend','<div class="small">'+lo.toFixed(1)+' – '+hi.toFixed(1)+' '+esc(l.unit)+(l.status_grid?' · pale green = observed, no open water (no event) · grey = no usable observations':'')+'</div>')}
+  else{const side=Math.min(l.pixel_size_m*scale,300);h.innerHTML=`<div style="width:${side}px;height:${side}px;border:2px dashed var(--line)" title="one pixel, drawn to scale${l.pixel_size_m*scale>300?' (cut to fit)':''}"></div>`}});}
+(async()=>{try{
+ const [lay,out]=await Promise.all([api('/layers'),api('/outlines')]);if(!lay.data||!out.data){$('foot').textContent='The API is not reachable (it may be waking up). Reload in a minute.';return}
+ LAYERS=lay.data.layers;OUT=out.data;project();
+ const opt=l=>`<option value="${esc(l.key)}" ${l.enabled?'':'disabled'}>${esc(l.label)}${l.enabled?'':' — not assessed'}</option>`;
+ $('layer').innerHTML=LAYERS.map(opt).join('');$('layer').value='nasadem_elevation';
+ $('layerB').innerHTML='<option value="">(none)</option>'+LAYERS.map(opt).join('');
+ ['cumilla','feni','brahmanbaria','noakhali','sylhet'].forEach(d=>$('scDist').insertAdjacentHTML('beforeend',`<option>${d}</option>`));
+ const f=await api('/passport',{field:'CUM-ARF-01',half_width:1});$('field').innerHTML='<option>CUM-ARF-01</option><option>CUM-BRRI-02</option>';
+ const pv=out.provenance[0];$('foot').innerHTML='District outlines: '+esc(pv.dataset)+', '+esc(pv.licence)+'. '+esc(pv.attribution)+'. '+esc(pv.note)+' <a href="'+esc(pv.source_url)+'">source</a>. 64 districts are drawn; the five live districts have the full indicators.';
+ ['layer','layerB','season'].forEach(i=>$(i).onchange=refresh);$('year').oninput=refresh;$('swipe').oninput=swipe;
+ ['scDist','scCrop','rain','temp'].forEach(i=>$(i).oninput=scenario);$('field').onchange=passport;
+ refresh();scenario();passport();}catch(e){$('foot').textContent='Could not load: '+e}})();
+</script></body></html>

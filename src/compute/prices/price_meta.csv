@@ -1,0 +1,16 @@
+item,as_of,market,basis
+potato.price.wholesale,2024-03,not stated in the source,"DAM notice reported by Business Insider Bangladesh; the notice is dated 15 Mar 2024 in the row note, the source title says 16 Mar, so only the month is used"
+potato.price.retail,2024-03,not stated in the source,same notice as potato.price.wholesale
+lentil.price.wholesale_high_quality,2024-03,not stated in the source,same notice as potato.price.wholesale
+lentil.price.retail_high_quality,2024-03,not stated in the source,same notice as potato.price.wholesale
+lentil.price.wholesale_coarse,2024-03,not stated in the source,same notice as potato.price.wholesale
+lentil.price.retail_coarse,2024-03,not stated in the source,same notice as potato.price.wholesale
+chickpea.price.wholesale,2024-03,not stated in the source,same notice as potato.price.wholesale
+chickpea.price.retail,2024-03,not stated in the source,same notice as potato.price.wholesale
+khesari.price.wholesale,2024-03,not stated in the source,same notice as potato.price.wholesale
+khesari.price.retail,2024-03,not stated in the source,same notice as potato.price.wholesale
+mung_bean.price.retail,2024-03,not stated in the source,same notice as potato.price.wholesale
+wheat.price.wholesale,2026-02,not stated in the source,"row note: DAM, Feb 2026, wholesale (reported in a USDA FAS GAIN report)"
+wheat.price.retail,2026-02,not stated in the source,"row note: DAM, Feb 2026, retail (reported in a USDA FAS GAIN report)"
+rice.aman_coarse.price.retail,2026-09,Dhaka city markets,row note: fortnight ending 10 Sep 2026
+rice.aman_coarse.price.wholesale,2026-09,Dhaka city markets,row note: fortnight ending 10 Sep 2026

@@ -1,0 +1,475 @@
+{
+  "api_version": "1.0",
+  "endpoint": "/api/v1/rotation/rank",
+  "request": {
+    "district": "cumilla",
+    "weights": {
+      "save_water": 0.5,
+      "lowest_risk": 0.3,
+      "soil_health": 0.2
+    }
+  },
+  "generated_at": "2026-11-13T09:00:00+06:00",
+  "source_mode": "cache",
+  "is_mock": true,
+  "mock_note": "Example shape only. Do not present as results.",
+  "data": {
+    "district": "cumilla",
+    "weights": {
+      "requested": {
+        "save_water": 0.5,
+        "soil_health": 0.2,
+        "lowest_risk": 0.3,
+        "flood_safety": 0.0
+      },
+      "normalised": {
+        "save_water": 0.5,
+        "soil_health": 0.2,
+        "lowest_risk": 0.3,
+        "flood_safety": 0.0
+      }
+    },
+    "metrics": {
+      "save_water": {
+        "label": "Save water",
+        "direction": "lower",
+        "unit": "mm",
+        "metric": "irrigation need in the driest 20% of years (Kc-weighted FAO-56 balance)"
+      },
+      "soil_health": {
+        "label": "Soil health",
+        "direction": "higher",
+        "unit": "crops",
+        "metric": "number of legume crops in the rotation"
+      },
+      "lowest_risk": {
+        "label": "Lowest risk",
+        "direction": "lower",
+        "unit": "share of years",
+        "metric": "share of past seasons with a problem for any assessed hazard"
+      },
+      "flood_safety": {
+        "label": "Flood safety",
+        "direction": "lower",
+        "unit": "share of years",
+        "metric": "share of past seasons with a flood-related problem (waterlogging)"
+      }
+    },
+    "ranked": [
+      {
+        "id": "aman_rice@06-15>lentil",
+        "rotation": {
+          "id": "aman_rice@06-15>lentil",
+          "slots": [
+            {
+              "crop": "aman_rice",
+              "variety_class": "BRRI dhan79 (photoperiod-insensitive seedbed window)",
+              "sow_mmdd": "06-15"
+            },
+            {
+              "crop": "lentil",
+              "variety_class": "standard"
+            }
+          ],
+          "kharif1": "Kharif-1 is left fallow: no crop with a cited sowing window and duration (mung bean has only Kc and root depth in the repo; NEEDS SOURCE)"
+        },
+        "problem_line": "problems in 0 of 24 years (checked: heat_flowering, waterlog)",
+        "score": 0.7938775510204085,
+        "components": {
+          "save_water": {
+            "label": "Save water",
+            "metric": "irrigation need in the driest 20% of years (Kc-weighted FAO-56 balance)",
+            "direction": "lower",
+            "raw": {
+              "value": 287.9,
+              "unit": "mm",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "date is the data file's last-modified date; the files hold the area around the field"
+              }
+            },
+            "normalised": 0.5877551020408169,
+            "weight": 0.5,
+            "contribution": 0.29387755102040847,
+            "no_contrast": false,
+            "note": null
+          },
+          "soil_health": {
+            "label": "Soil health",
+            "metric": "number of legume crops in the rotation",
+            "direction": "higher",
+            "raw": {
+              "value": 1,
+              "unit": "crops",
+              "provenance": {
+                "dataset": "CropShift crop table (cited rows copied from data/reference/*.csv)",
+                "source_url": "https://github.com/Taaanha/Crop-Shift/blob/main/data/reference/crops.csv",
+                "retrieved": "2026-10-24",
+                "granule_or_file": "data/reference/crops.csv",
+                "note": "cited durations and windows from data/reference/crops.csv"
+              }
+            },
+            "normalised": 1.0,
+            "weight": 0.2,
+            "contribution": 0.2,
+            "no_contrast": false,
+            "note": null
+          },
+          "lowest_risk": {
+            "label": "Lowest risk",
+            "metric": "share of past seasons with a problem for any assessed hazard",
+            "direction": "lower",
+            "raw": {
+              "value": 0.0,
+              "unit": "share of years",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "years with a problem: 0 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+              }
+            },
+            "normalised": 1.0,
+            "weight": 0.3,
+            "contribution": 0.3,
+            "no_contrast": false,
+            "note": null
+          },
+          "flood_safety": {
+            "label": "Flood safety",
+            "metric": "share of past seasons with a flood-related problem (waterlogging)",
+            "direction": "lower",
+            "raw": {
+              "value": 0.0,
+              "unit": "share of years",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "years with waterlog: 0 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+              }
+            },
+            "normalised": 0.5,
+            "weight": 0.0,
+            "contribution": 0.0,
+            "no_contrast": true,
+            "note": null
+          }
+        },
+        "rank": 1
+      },
+      {
+        "id": "aman_rice@06-15>mustard",
+        "rotation": {
+          "id": "aman_rice@06-15>mustard",
+          "slots": [
+            {
+              "crop": "aman_rice",
+              "variety_class": "BRRI dhan79 (photoperiod-insensitive seedbed window)",
+              "sow_mmdd": "06-15"
+            },
+            {
+              "crop": "mustard",
+              "variety_class": "BARI Sarisha-18"
+            }
+          ],
+          "kharif1": "Kharif-1 is left fallow: no crop with a cited sowing window and duration (mung bean has only Kc and root depth in the repo; NEEDS SOURCE)"
+        },
+        "problem_line": "problems in 13 of 24 years (checked: heat_flowering, waterlog)",
+        "score": 0.5,
+        "components": {
+          "save_water": {
+            "label": "Save water",
+            "metric": "irrigation need in the driest 20% of years (Kc-weighted FAO-56 balance)",
+            "direction": "lower",
+            "raw": {
+              "value": 257.6,
+              "unit": "mm",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "date is the data file's last-modified date; the files hold the area around the field"
+              }
+            },
+            "normalised": 1.0,
+            "weight": 0.5,
+            "contribution": 0.5,
+            "no_contrast": false,
+            "note": null
+          },
+          "soil_health": {
+            "label": "Soil health",
+            "metric": "number of legume crops in the rotation",
+            "direction": "higher",
+            "raw": {
+              "value": 0,
+              "unit": "crops",
+              "provenance": {
+                "dataset": "CropShift crop table (cited rows copied from data/reference/*.csv)",
+                "source_url": "https://github.com/Taaanha/Crop-Shift/blob/main/data/reference/crops.csv",
+                "retrieved": "2026-10-24",
+                "granule_or_file": "data/reference/crops.csv",
+                "note": "cited durations and windows from data/reference/crops.csv"
+              }
+            },
+            "normalised": 0.0,
+            "weight": 0.2,
+            "contribution": 0.0,
+            "no_contrast": false,
+            "note": null
+          },
+          "lowest_risk": {
+            "label": "Lowest risk",
+            "metric": "share of past seasons with a problem for any assessed hazard",
+            "direction": "lower",
+            "raw": {
+              "value": 0.5416666666666666,
+              "unit": "share of years",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "years with a problem: 13 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+              }
+            },
+            "normalised": 0.0,
+            "weight": 0.3,
+            "contribution": 0.0,
+            "no_contrast": false,
+            "note": null
+          },
+          "flood_safety": {
+            "label": "Flood safety",
+            "metric": "share of past seasons with a flood-related problem (waterlogging)",
+            "direction": "lower",
+            "raw": {
+              "value": 0.0,
+              "unit": "share of years",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "years with waterlog: 0 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+              }
+            },
+            "normalised": 0.5,
+            "weight": 0.0,
+            "contribution": 0.0,
+            "no_contrast": true,
+            "note": null
+          }
+        },
+        "rank": 2
+      },
+      {
+        "id": "aman_rice@06-15>wheat",
+        "rotation": {
+          "id": "aman_rice@06-15>wheat",
+          "slots": [
+            {
+              "crop": "aman_rice",
+              "variety_class": "BRRI dhan79 (photoperiod-insensitive seedbed window)",
+              "sow_mmdd": "06-15"
+            },
+            {
+              "crop": "wheat",
+              "variety_class": "standard"
+            }
+          ],
+          "kharif1": "Kharif-1 is left fallow: no crop with a cited sowing window and duration (mung bean has only Kc and root depth in the repo; NEEDS SOURCE)"
+        },
+        "problem_line": "problems in 0 of 24 years (checked: heat_anthesis, heat_grainfill)",
+        "score": 0.3,
+        "components": {
+          "save_water": {
+            "label": "Save water",
+            "metric": "irrigation need in the driest 20% of years (Kc-weighted FAO-56 balance)",
+            "direction": "lower",
+            "raw": {
+              "value": 331.1,
+              "unit": "mm",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "date is the data file's last-modified date; the files hold the area around the field"
+              }
+            },
+            "normalised": 0.0,
+            "weight": 0.5,
+            "contribution": 0.0,
+            "no_contrast": false,
+            "note": null
+          },
+          "soil_health": {
+            "label": "Soil health",
+            "metric": "number of legume crops in the rotation",
+            "direction": "higher",
+            "raw": {
+              "value": 0,
+              "unit": "crops",
+              "provenance": {
+                "dataset": "CropShift crop table (cited rows copied from data/reference/*.csv)",
+                "source_url": "https://github.com/Taaanha/Crop-Shift/blob/main/data/reference/crops.csv",
+                "retrieved": "2026-10-24",
+                "granule_or_file": "data/reference/crops.csv",
+                "note": "cited durations and windows from data/reference/crops.csv"
+              }
+            },
+            "normalised": 0.0,
+            "weight": 0.2,
+            "contribution": 0.0,
+            "no_contrast": false,
+            "note": null
+          },
+          "lowest_risk": {
+            "label": "Lowest risk",
+            "metric": "share of past seasons with a problem for any assessed hazard",
+            "direction": "lower",
+            "raw": {
+              "value": 0.0,
+              "unit": "share of years",
+              "provenance": {
+                "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+                "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+                "retrieved": "2026-09-26",
+                "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+                "note": "years with a problem: 0 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+              }
+            },
+            "normalised": 1.0,
+            "weight": 0.3,
+            "contribution": 0.3,
+            "no_contrast": false,
+            "note": null
+          },
+          "flood_safety": {
+            "label": "Flood safety",
+            "metric": "share of past seasons with a flood-related problem (waterlogging)",
+            "direction": "lower",
+            "raw": null,
+            "normalised": null,
+            "weight": 0.0,
+            "contribution": 0.0,
+            "no_contrast": true,
+            "note": null
+          }
+        },
+        "rank": 3
+      }
+    ],
+    "unranked": [
+      {
+        "id": "aman_rice@06-15>boro_rice",
+        "rotation": {
+          "id": "aman_rice@06-15>boro_rice",
+          "slots": [
+            {
+              "crop": "aman_rice",
+              "variety_class": "BRRI dhan79 (photoperiod-insensitive seedbed window)",
+              "sow_mmdd": "06-15"
+            },
+            {
+              "crop": "boro_rice",
+              "variety_class": "BRRI dhan28/29 (transplanting window derived)"
+            }
+          ],
+          "kharif1": "Kharif-1 is left fallow: no crop with a cited sowing window and duration (mung bean has only Kc and root depth in the repo; NEEDS SOURCE)"
+        },
+        "reason": "Lowest risk: not assessed: no sourced hazard for this rotation",
+        "how_to_include": "Lowest risk is not assessed for boro_rice (no sourced hazard for this rotation). Set the lowest_risk weight to 0 to compare it on the other priorities."
+      },
+      {
+        "id": "aman_rice@07-15>boro_rice",
+        "rotation": {
+          "id": "aman_rice@07-15>boro_rice",
+          "slots": [
+            {
+              "crop": "aman_rice",
+              "variety_class": "BRRI dhan79 (photoperiod-insensitive seedbed window)",
+              "sow_mmdd": "07-15"
+            },
+            {
+              "crop": "boro_rice",
+              "variety_class": "BRRI dhan28/29 (transplanting window derived)"
+            }
+          ],
+          "kharif1": "Kharif-1 is left fallow: no crop with a cited sowing window and duration (mung bean has only Kc and root depth in the repo; NEEDS SOURCE)"
+        },
+        "reason": "Lowest risk: not assessed: no sourced hazard for this rotation",
+        "how_to_include": "Lowest risk is not assessed for boro_rice (no sourced hazard for this rotation). Set the lowest_risk weight to 0 to compare it on the other priorities."
+      }
+    ]
+  },
+  "narration": null,
+  "provenance": [
+    {
+      "id": "p1",
+      "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+      "url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "retrieved": "2026-09-26",
+      "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+      "note": "date is the data file's last-modified date; the files hold the area around the field"
+    },
+    {
+      "id": "p2",
+      "dataset": "CropShift crop table (cited rows copied from data/reference/*.csv)",
+      "url": "https://github.com/Taaanha/Crop-Shift/blob/main/data/reference/crops.csv",
+      "source_url": "https://github.com/Taaanha/Crop-Shift/blob/main/data/reference/crops.csv",
+      "retrieved": "2026-10-24",
+      "granule_or_file": "data/reference/crops.csv",
+      "note": "cited durations and windows from data/reference/crops.csv"
+    },
+    {
+      "id": "p3",
+      "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+      "url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "retrieved": "2026-09-26",
+      "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+      "note": "years with a problem: 0 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+    },
+    {
+      "id": "p4",
+      "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+      "url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "retrieved": "2026-09-26",
+      "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+      "note": "years with waterlog: 0 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+    },
+    {
+      "id": "p5",
+      "dataset": "NASA GPM IMERG V07 Final Run daily (GPM_3IMERGDF.07), 0.1 degree (rain) + NASA POWER daily (temperature, humidity, wind, solar), with FAO-56 ET0",
+      "url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "source_url": "https://disc.gsfc.nasa.gov/datasets/GPM_3IMERGDF_07/summary ; https://power.larc.nasa.gov/",
+      "retrieved": "2026-09-26",
+      "granule_or_file": "data/processed/imerg_cumilla_daily.csv ; data/processed/power_cumilla_daily.csv",
+      "note": "years with a problem: 13 of 24 years, divided by 24 (date is the data file's last-modified date; the files hold the area around the field)"
+    }
+  ],
+  "notices": [
+    {
+      "level": "info",
+      "en": "Flood safety counts past seasons with waterlogging for the crops that have a sourced waterlogging limit, at the district point. The satellite flood history of your own field will refine it later.",
+      "bn": "বন্যা-নিরাপত্তা জেলার বিন্দুতে, যেসব ফসলের জলাবদ্ধতার সীমা উৎসসহ আছে তাদের অতীত মৌসুম গুনে হিসাব করা। আপনার নিজের মাঠের স্যাটেলাইট বন্যা-ইতিহাস পরে যুক্ত হবে।"
+    },
+    {
+      "level": "caution",
+      "en": "2 option(s) are not ranked because a priority you chose has not been assessed for them (see unranked).",
+      "bn": "আপনার বেছে নেওয়া একটি বিষয় কিছু বিকল্পের জন্য এখনও মূল্যায়ন হয়নি, তাই সেগুলো র‍্যাঙ্কে নেই (unranked দেখুন)।"
+    }
+  ],
+  "errors": []
+}

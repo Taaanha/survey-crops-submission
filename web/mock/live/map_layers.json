@@ -1,0 +1,1 @@
+{"api_version":"1.0","endpoint":"/api/v1/map/layers","request":{},"generated_at":"2026-11-13T05:08:39+06:00","source_mode":"cache","is_mock":false,"data":null,"narration":null,"provenance":[],"notices":[],"errors":[{"code":"INTERNAL","en":"Internal error: FileNotFoundError","bn":"সার্ভারে একটি সমস্যা হয়েছে। আবার চেষ্টা করুন।"}]}
