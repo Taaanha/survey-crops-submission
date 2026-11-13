@@ -32,15 +32,25 @@
     btn.hidden = !findVoice(lang);
   }
 
+  var onState = null;
   function speakAnswer(text, lang) {
     var v = findVoice(lang);
     if (!v) return false;
     root.speechSynthesis.cancel();
     var u = new root.SpeechSynthesisUtterance(text);
     u.voice = v; u.lang = v.lang; u.rate = 0.95;
+    u.onend = u.onerror = function () { if (onState) onState(false); };
     root.speechSynthesis.speak(u);
+    if (onState) onState(true);
     return true;
   }
+
+  /* Stop the answer being read (second tap, page change). */
+  function stop() {
+    if (root.speechSynthesis) root.speechSynthesis.cancel();
+    if (onState) onState(false);
+  }
+  function setStateCallback(fn) { onState = fn; }
 
   /* Returns {start, stop} or null when the browser has no recognition.
      onText(text, lang) is called with the transcript. */
@@ -66,6 +76,6 @@
 
   root.ChatVoice = { recogLang: recogLang, detectLang: detectLang,
     findVoice: findVoice, syncSpeakerButton: syncSpeakerButton,
-    speakAnswer: speakAnswer, makeMic: makeMic };
+    speakAnswer: speakAnswer, stop: stop, setStateCallback: setStateCallback, makeMic: makeMic };
   if (typeof module !== 'undefined') module.exports = root.ChatVoice;
 })(typeof window !== 'undefined' ? window : globalThis);

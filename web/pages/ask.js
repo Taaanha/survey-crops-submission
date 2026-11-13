@@ -62,7 +62,7 @@ document.addEventListener('click',function(e){
  var b=e.target.closest&&e.target.closest('[data-ask]');if(!b)return;var a=b.dataset.ask;
  if(a==='send'){var i=document.getElementById('ask-in');askSend(i&&i.value)}
  else if(a==='chip')askSend(b.dataset.q);
- else if(a==='speak'){var m=ASK.msgs[+b.dataset.i];if(m&&!ChatVoice.speakAnswer(m.text,m.lang))toast(bi('No voice for this language on this device.','এই ডিভাইসে এই ভাষার কণ্ঠ নেই।'))}
+ else if(a==='speak'){if(b.classList.contains('playing')){ChatVoice.stop();return}var m=ASK.msgs[+b.dataset.i];ChatVoice.setStateCallback(function(on){document.querySelectorAll('[data-ask="speak"]').forEach(function(x){x.classList.remove('playing');x.removeAttribute('aria-pressed')});if(on){b.classList.add('playing');b.setAttribute('aria-pressed','true')}});if(m&&!ChatVoice.speakAnswer(m.text,m.lang))toast(bi('No voice for this language on this device.','এই ডিভাইসে এই ভাষার কণ্ঠ নেই।'))}
  else if(a==='mic'){
   if(ASK.mic){ASK.mic.stop();ASK.mic=null;return}
   ASK.mic=ChatVoice.makeMic(function(){return lang},function(t){ASK.mic=null;var i=document.getElementById('ask-in');if(i)i.value=t;askSend(t)},function(){ASK.mic=null;toast(bi('Could not hear you. Please type instead.','শোনা যায়নি। দয়া করে লিখুন।'))});

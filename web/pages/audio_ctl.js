@@ -21,6 +21,7 @@
   if(on&&btn&&btn.dataset&&btn.dataset.act!=='speak'){btn.classList.add('playing');btn.setAttribute('aria-pressed','true')}}
  window.stopVoice=function(){
   try{if(window.speechSynthesis)speechSynthesis.cancel()}catch(e){}
+  try{if(window.ChatVoice&&ChatVoice.stop)ChatVoice.stop()}catch(e){}
   if(cur){try{cur.pause();cur.currentTime=0}catch(e){}cur=null}
   curBtn=null;paint(false)};
  function done(){cur=null;curBtn=null;paint(false)}
