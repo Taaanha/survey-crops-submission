@@ -840,3 +840,6 @@ Claude Code rebuilt the Field Twin page as balanced rows: map beside the replay 
 
 ## 13 Nov 2026: disease risk always visible (web-disease-visible)
 Claude Code changed web/pages/risk.js so the pest card on the Issues page always shows the potato late-blight weather risk from /risk-calendar (disease_risks), whichever crop chip is selected (it previously showed only when the Potato chip was selected, and the default chip is Mustard). The Source buttons open the sources of that answer. Other crops say no sourced rule yet (officer view). The page only displays the server's count (7 of 24 past seasons) and never says the disease occurred. Bangla strings are AI-written and need native review.
+
+## 13 Nov 2026: crops past their sowing window shown as cards (web-rotation-options)
+Claude Code added web/pages/closed.js and changed web/modes.html so the Rotation page shows crops the server left out because their sowing window has passed as cards ("Not this season", the server's own sentence, the cited sowing window with a Source button). Other reasons stay officer-only. When fewer than three crops fit, a note offers the five-rotation comparison. No risk number is shown for these crops. The page only displays the server's answer. Bangla strings are AI-written and need native review.

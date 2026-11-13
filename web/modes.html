@@ -278,8 +278,10 @@ body{background-attachment:fixed}
 <script src="adapters/strategies.js"></script>
 <script src="pages/voice.js"></script>
 <script src="pages/officer.js"></script>
+<script src="pages/closed.js"></script>
 <script src="pages/view.js"></script>
 <script src="pages/data.js"></script>
+<script src="pages/future.js"></script>
 <script>
 window.SATART="<svg class=\"satart\" viewBox=\"0 0 290 150\" fill=\"none\" aria-hidden=\"true\"><defs><linearGradient id=\"beam\" x1=\"145\" y1=\"20\" x2=\"145\" y2=\"150\" gradientUnits=\"userSpaceOnUse\"><stop stop-color=\"#F2C14E\" stop-opacity=\".55\"/><stop offset=\"1\" stop-color=\"#F2C14E\" stop-opacity=\"0\"/></linearGradient></defs><path d=\"M132 20h26l14 130h-54z\" fill=\"url(#beam)\"/><rect x=\"110\" y=\"3\" width=\"22\" height=\"10\" rx=\"2\" fill=\"#4FC3F7\"/><rect x=\"158\" y=\"3\" width=\"22\" height=\"10\" rx=\"2\" fill=\"#4FC3F7\"/><rect x=\"136\" width=\"18\" height=\"16\" rx=\"4\" fill=\"#F4F1E6\"/></svg>";window.EARTHART="<svg class=\"earthart\" viewBox=\"0 0 278 278\" fill=\"none\" aria-hidden=\"true\"><defs><filter id=\"ef\" x=\"0\" y=\"0\" width=\"278\" height=\"278\" filterUnits=\"userSpaceOnUse\" color-interpolation-filters=\"sRGB\"><feFlood flood-opacity=\"0\" result=\"b\"/><feColorMatrix in=\"SourceAlpha\" type=\"matrix\" values=\"0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0\" result=\"h\"/><feMorphology radius=\"4\" operator=\"dilate\" in=\"SourceAlpha\" result=\"e\"/><feGaussianBlur stdDeviation=\"30\"/><feColorMatrix type=\"matrix\" values=\"0 0 0 0 0.1686 0 0 0 0 0.702 0 0 0 0 0.6392 0 0 0 0.55 0\"/><feBlend mode=\"normal\" in=\"SourceGraphic\" result=\"s\"/></filter><radialGradient id=\"eg\" cx=\"0\" cy=\"0\" r=\"1\" gradientUnits=\"userSpaceOnUse\" gradientTransform=\"translate(139 139) scale(75)\"><stop stop-color=\"#35C9B4\"/><stop offset=\".55\" stop-color=\"#12605A\"/><stop offset=\"1\" stop-color=\"#08282C\"/></radialGradient><radialGradient id=\"eglow\" cx=\"50%\" cy=\"50%\" r=\"50%\"><stop stop-color=\"#2BB3A3\" stop-opacity=\".55\"/><stop offset=\"1\" stop-color=\"#2BB3A3\" stop-opacity=\"0\"/></radialGradient></defs><circle cx=\"139\" cy=\"139\" r=\"128\" fill=\"url(#eglow)\"/><rect x=\"64\" y=\"64\" width=\"150\" height=\"150\" rx=\"75\" fill=\"url(#eg)\"/><g fill=\"#7BD389\" fill-opacity=\".55\" opacity=\".7\"><ellipse cx=\"119\" cy=\"117\" rx=\"35\" ry=\"23\"/><ellipse cx=\"164\" cy=\"164\" rx=\"30\" ry=\"20\"/><ellipse cx=\"94\" cy=\"174\" rx=\"20\" ry=\"15\"/><ellipse cx=\"179\" cy=\"98\" rx=\"20\" ry=\"14\"/></g><path d=\"M64 139a75 75 0 0075 75\" stroke=\"#06101B\" stroke-opacity=\".25\" stroke-width=\"20\" fill=\"none\"/><circle cx=\"154\" cy=\"136\" r=\"7\" fill=\"#F2C14E\" stroke=\"#10202A\" stroke-width=\"3\"/><circle class=\"pulse2\" cx=\"154\" cy=\"136\" r=\"7\" stroke=\"#F2C14E\" stroke-width=\"2\" fill=\"none\"/></svg>";
 'use strict';
@@ -318,7 +320,7 @@ var S={
   floodlbl:['About 1 week ago','About 2 weeks ago','About 1 month ago','Over 6 weeks ago','August 2024 flood (NASA example)'],pickdate:'Or pick the date',
   step3:'Step 3 of 4 · what could go wrong',q3:'Problems and what to do',q3s:'General reminders for each problem: what it means, what you can do, and when. They are not NASA results. Confirm with your Upazila Agriculture Office.',
   what:'What it means',do:'What you can do',whenl:'When',
-  step4:'Step 4 of 4 · best rotation',q4:'Best rotation for your field',q4s:'Your usual pattern is shown next to other options, so you can compare at least three. Past seasons only, not a forecast.',
+  step4:'Step 4 of 4 · best rotation',q4:'Best rotation for your field',q4s:'Your options are shown side by side. Crops whose sowing time has passed are shown separately, with the reason. Past seasons only, not a forecast.',
   why:'Why it is suggested',evid:'Evidence',ben:'Benefits',gap:'Information gaps',risk:'Risks to check locally',choose:'Choose this plan',chosen:'Chosen ✓',usual:'Your usual rotation',rank:'Rank',notrank:'Not ranked',
   probS:'Problems in {x} of 24 seasons (2001–2024)',checked:'Checked: ',sowon:'Sow from',irr:'Irrigation, average',window:'Recommended window opens',notall:'Not all risks for this crop are checked yet.',
   late:'This looks late for the usual rabi window. Check the live plan.',pest:'Insect pests are not scored. Disease weather risk is counted only where a sourced rule exists. Changing the crop family can interrupt pest cycles.',
@@ -343,7 +345,7 @@ var S={
   floodlbl:['প্রায় ১ সপ্তাহ আগে','প্রায় ২ সপ্তাহ আগে','প্রায় ১ মাস আগে','৬ সপ্তাহের বেশি আগে','আগস্ট ২০২৪-এর বন্যা (নাসা উদাহরণ)'],pickdate:'অথবা তারিখ বাছুন',
   step3:'ধাপ ৩/৪ · কী ভুল হতে পারে',q3:'সমস্যা ও করণীয়',q3s:'প্রতিটি সমস্যার সাধারণ মনে করিয়ে দেওয়া: এর মানে কী, কী করা যায়, কখন। এগুলো নাসার ফল নয়। উপজেলা কৃষি অফিসে যাচাই করুন।',
   what:'এর মানে কী',do:'কী করতে পারেন',whenl:'কখন',
-  step4:'ধাপ ৪/৪ · সেরা ফসলক্রম',q4:'আপনার জমির সেরা ফসলক্রম',q4s:'আপনার নিয়মিত ধরনটি অন্য বিকল্পের পাশে দেখানো হয়েছে, যাতে কমপক্ষে তিনটি তুলনা করতে পারেন। শুধু অতীত মৌসুম, পূর্বাভাস নয়।',
+  step4:'ধাপ ৪/৪ · সেরা ফসলক্রম',q4:'আপনার জমির সেরা ফসলক্রম',q4s:'আপনার বিকল্পগুলো পাশাপাশি দেখানো হয়েছে। যেসব ফসলের বপনের সময় পেরিয়ে গেছে সেগুলো কারণসহ আলাদা করে দেখানো হয়েছে। শুধু অতীত মৌসুমের ভিত্তিতে, পূর্বাভাস নয়।',
   why:'কেন প্রস্তাব করা হলো',evid:'প্রমাণ',ben:'সুবিধা',gap:'তথ্যের ঘাটতি',risk:'স্থানীয়ভাবে যাচাইয়ের ঝুঁকি',choose:'এই পরিকল্পনা বাছুন',chosen:'বাছাই করা হয়েছে ✓',usual:'আপনার নিয়মিত ফসলক্রম',rank:'ক্রম',notrank:'ক্রম নেই',
   probS:'২৪ মৌসুমের {x}টিতে সমস্যা (২০০১–২০২৪)',checked:'যাচাই করা হয়েছে: ',sowon:'বোনা শুরু',irr:'সেচ, গড়',window:'প্রস্তাবিত সময় শুরু',notall:'এই ফসলের সব ঝুঁকি এখনো যাচাই করা হয়নি।',
   late:'এটি সাধারণ রবি মৌসুমের জন্য দেরি মনে হচ্ছে। লাইভ পরিকল্পনা দেখুন।',pest:'পোকা হিসাবে ধরা হয়নি; রোগের আবহাওয়া-ঝুঁকি শুধু সূত্রসহ নিয়ম থাকলে গণনা হয়। ফসলের পরিবার বদলালে পোকার চক্র ভাঙতে পারে।',
@@ -665,7 +667,7 @@ function renderRotation(){
  if(ad.rankedBy&&ad.rankedBy.text)h+='<div class="note"><span>'+esc(T(ad.rankedBy.text))+'</span></div>';
  if(ad.earliest)h+='<p>'+esc(s('earliestAny'))+': <b>'+iso2d(ad.earliest.date)+'</b>'+(ad.earliest.basis?' <span style="color:var(--mute)">('+esc(T(ad.earliest.basis))+')</span>':'')+'</p>';
  h+=liveCompare(ad)+(window.priceStrip?priceStrip(ad):'')+'<div class="strats">'+ad.options.map(function(o,i){return liveCard(o,i+1)}).join('')+'</div>';
- if(ad.filtered.length)h+='<h3>'+esc(s('planNo'))+'</h3>'+ad.filtered.map(function(o){return '<p><b>'+esc(T(o.name))+'</b>'+(o.reason?': '+esc(T(o.reason)):'')+'</p>'}).join('');
+ if(ad.filtered.length)h+=(window.closedCards?closedCards(ad):'');
  ad.notices.forEach(function(n){h+='<div class="note'+(n.level==='caution'?' warn':'')+'"><span>'+esc(T(n))+'</span></div>'});
  h+='<p style="color:var(--mute)">'+esc(s('notfc'))+'</p><div class="note warn"><span>'+esc(s('pest'))+'</span></div>';
  h+='<div style="height:10px"></div><button class="btn" data-act="go" data-v="strategies">'+esc(bi('See market prices and other ways to rotate','বাজারদর ও ফসল ঘোরানোর অন্য উপায় দেখুন'))+'</button>';
@@ -857,10 +859,10 @@ function renderPictures(){
  $('#pg-pictures').innerHTML='<div class="eyebrow">'+esc(s('picT'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('steps'))+'</h1><p class="lead">'+esc(s('picS'))+'</p><div class="card gold" style="margin-top:0">'+chainFor(k)+'</div><div class="ptiles">'+tiles+'</div><h2>'+esc(s('legT'))+'</h2><div class="legend">'+lg+'</div><div class="note warn"><span>'+esc(s('pest'))+'</span></div><button class="btn alt" data-act="go" data-v="sources">'+esc(s('src'))+'</button>'}
 /* ===== nav / routing ===== */
 var PAGES=['field','farm','issues','rotation','twin','plan','learn','pictures'],ICONS=['field','farm','alert','rot','pin','plan','info','pic'],XN=[0,0,0,0,1,1,0,1];
-function renderNav(){$('#nav').innerHTML=PAGES.map(function(p,i){return '<button data-act="go" data-v="'+p+'" class="'+(cur===p?'on':'')+(XN[i]?' x':'')+'">'+ic(ICONS[i])+'<span>'+esc(s('navx')[i])+'</span></button>'}).join('')+'<button data-act="go" data-v="server" class="only-officer x'+(cur==='server'?' on':'')+'">'+ic('info')+'<span>'+esc(s('server'))+'</span></button>'}
-var cur='field';var EXTRA=['sources','server','data','model','evidence','strategies'];
+function renderNav(){$('#nav').innerHTML=PAGES.map(function(p,i){return '<button data-act="go" data-v="'+p+'" class="'+(cur===p?'on':'')+(XN[i]?' x':'')+'">'+ic(ICONS[i])+'<span>'+esc(s('navx')[i])+'</span></button>'}).join('')+'<button data-act="go" data-v="server" class="only-officer x'+(cur==='server'?' on':'')+'">'+ic('info')+'<span>'+esc(s('server'))+'</span></button><button data-act="go" data-v="future" class="'+(cur==='future'?'on':'')+'">'+ic('rot')+'<span>'+esc(bi('Future','ভবিষ্যৎ'))+'</span></button>'}
+var cur='field';var EXTRA=['sources','server','data','model','evidence','strategies','future'];
 function show(p){cur=p;PAGES.concat(EXTRA).forEach(function(x){var e=$('#pg-'+x);if(e)e.classList.toggle('on',x===p)});$('#backBtn').classList.toggle('show',p!=='field');renderNav();
- var RT={farm:renderFarm,issues:renderIssues,rotation:renderRotation,twin:renderTwin,plan:renderPlan,learn:renderLearn,pictures:renderPictures,sources:renderSources,server:renderServer,data:window.renderData,model:window.renderModel,evidence:window.renderEvidence,strategies:window.renderStrategies};if(RT[p])RT[p]();
+ var RT={farm:renderFarm,issues:renderIssues,rotation:renderRotation,twin:renderTwin,plan:renderPlan,learn:renderLearn,pictures:renderPictures,sources:renderSources,server:renderServer,data:window.renderData,model:window.renderModel,evidence:window.renderEvidence,strategies:window.renderStrategies,future:window.renderFuture};if(RT[p])RT[p]();
  if(p==='field'&&MAP)setTimeout(function(){MAP.invalidateSize()},50);window.scrollTo(0,0)}
 function go(p){if(location.hash!=='#/'+p)location.hash='#/'+p;else show(p)}
 window.addEventListener('hashchange',function(){var p=(location.hash.replace('#/','')||'field');if(PAGES.concat(EXTRA).indexOf(p)<0)p='field';show(p)});
