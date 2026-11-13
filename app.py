@@ -51,6 +51,7 @@ import disease_block  # noqa: E402
 import price_block  # noqa: E402
 from reference import load_reference  # noqa: E402
 from guard import guard  # noqa: E402
+import ask_agent  # noqa: E402
 from water_balance import crop_season, load_crop_params, load_soil_params  # noqa: E402
 from weather import RAIN_CITATIONS  # noqa: E402
 
@@ -2093,13 +2094,65 @@ def enso_lens(request: Request):
     return mock_response("enso_lens", "/api/v1/enso-lens", dict(request.query_params))
 
 
+_internal_client = None
+
+
+def _internal_api(method, path, params=None, body=None):
+    """How the /ask agent reaches this app's own cited endpoints (in-process,
+    no network)."""
+    global _internal_client
+    if _internal_client is None:
+        from fastapi.testclient import TestClient
+        _internal_client = TestClient(app)
+    r = _internal_client.request(method, path, params=params, json=body)
+    try:
+        return r.status_code, r.json()
+    except ValueError:
+        return r.status_code, {}
+
+
 @app.post("/api/v1/ask")
 async def ask(request: Request):
+    """T17 agent: free Hugging Face model picks tools, every number is checked
+    by guard(), rule router + templates if the model is unavailable."""
+    endpoint = "/api/v1/ask"
     try:
         body = await request.json()
     except ValueError:
-        body = {}
-    return mock_response("ask", "/api/v1/ask", body if isinstance(body, dict) else {})
+        body = None
+    body = body if isinstance(body, dict) else {}
+    echo = {"question": body.get("question"), "district": body.get("district"),
+            "lang": body.get("lang")}
+
+    def build():
+        q = body.get("question")
+        if not isinstance(q, str) or not q.strip():
+            raise ApiError("BAD_PARAMETER", "Missing parameter: question.", "question")
+        if len(q) > 400:
+            raise ApiError("BAD_PARAMETER", "The question is too long (400 characters at most).", "question")
+        did = check_district(body["district"]) if body.get("district") else "cumilla"
+        today = _dt.datetime.now(BD_TZ).date().isoformat()
+        res = ask_agent.run_agent(q.strip(), did, body.get("lang"), _internal_api, today)
+        data = {"answer_type": "advisory", "tools_called": res["tools_called"],
+                "steps_used": res["steps_used"], "step_cap": res["step_cap"],
+                "guard": res["guard"], "district": res["district"],
+                "answer_lang": res["lang"], "llm_used": res["llm_used"]}
+        narration = {"en": res["text"]["en"], "bn": res["text"]["bn"],
+                     "narrator": res["narrator"], "provenance_check": res["provenance_check"]}
+        notices = list(res["notices"])
+        if not res["llm_used"]:
+            notices.append({"code": "RULE_ROUTER", "en": "Answered from the app's own rules and data (the language model was not used).",
+                            "bn": "অ্যাপের নিজস্ব নিয়ম ও ডেটা থেকে উত্তর দেওয়া হয়েছে (ভাষা মডেল ব্যবহার হয়নি)।"})
+        return data, narration, notices, res["sources"]
+
+    try:
+        data, narration, notices, sources = await run_in_threadpool(build)
+        return JSONResponse(envelope(endpoint, echo, data, narration, notices, provenance=sources))
+    except ApiError as err:
+        return error_response(endpoint, echo, err)
+    except Exception as exc:  # noqa: BLE001 - the contract forbids an empty body
+        return error_response(endpoint, echo, ApiError(
+            "INTERNAL", f"Internal error: {type(exc).__name__}"))
 
 
 # ---------------- W5 map endpoints (proposal: docs/contract_change_proposals.md section 11) ----------------

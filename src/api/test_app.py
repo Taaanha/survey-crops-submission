@@ -464,7 +464,6 @@ def test_root_redirects_to_docs():
 
 @pytest.mark.parametrize("method,url,name", [
     ("get", "/api/v1/enso-lens?district=cumilla&crop=wheat", "enso_lens"),
-    ("post", "/api/v1/ask", "ask"),
 ])
 def test_unbuilt_endpoints_serve_the_mock(method, url, name):
     kwargs = {"json": {"question": "?", "district": "feni", "lang": "bn"}} if method == "post" else {}
@@ -472,6 +471,28 @@ def test_unbuilt_endpoints_serve_the_mock(method, url, name):
     assert body["is_mock"] is True
     assert body["notices"][0]["en"].startswith("Not built yet")
     assert body["data"] == mock(name)["data"]
+
+
+# ---------------- /ask (T17, real; no HF_TOKEN in tests -> rule router) ----------------
+
+def test_ask_answers_in_english_and_bangla_from_cited_data(monkeypatch):
+    monkeypatch.delenv("HF_TOKEN", raising=False)
+    body = client.post("/api/v1/ask", json={"question": "What should I plant?", "district": "cumilla"}).json()
+    assert body["is_mock"] is False and body["errors"] == []
+    n = body["narration"]
+    assert n["en"].strip() and n["bn"].strip() and n["provenance_check"] == "passed"
+    assert body["data"]["guard"]["numbers_blocked"] == 0 and body["data"]["step_cap"] == 6
+    assert body["provenance"] and all(p.get("dataset") for p in body["provenance"])
+    bn = client.post("/api/v1/ask", json={"question": "আমার জমিতে এবার কী লাগাবো?", "lang": "bn"}).json()
+    assert bn["data"]["answer_lang"] == "bn" and "২" in bn["narration"]["bn"]
+
+
+def test_ask_bad_requests_are_errors_not_500s():
+    assert client.post("/api/v1/ask", json={}).json()["errors"][0]["code"] == "BAD_PARAMETER"
+    assert client.post("/api/v1/ask", json={"question": "x" * 401}).status_code == 400
+    r = client.post("/api/v1/ask", json={"question": "hi", "district": "dhaka"})
+    assert r.json()["errors"][0]["code"] == "DISTRICT_NOT_COVERED"
+    assert client.post("/api/v1/ask", content=b"not json").status_code == 400
 
 
 def test_cors_allows_any_origin():
