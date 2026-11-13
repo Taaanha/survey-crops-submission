@@ -846,3 +846,6 @@ Claude Code (Sonnet 5.5) ported the unfinished `api-soil-cache` work from the ol
 
 ## 13 Nov 2026: crops past their sowing window shown as cards (web-rotation-options)
 Claude Code added web/pages/closed.js and changed web/modes.html so the Rotation page shows crops the server left out because their sowing window has passed as cards ("Not this season", the server's own sentence, the cited sowing window with a Source button). Other reasons stay officer-only. When fewer than three crops fit, a note offers the five-rotation comparison. No risk number is shown for these crops. The page only displays the server's answer. Bangla strings are AI-written and need native review.
+
+## 14 Nov 2026: Bangla/English chat language layer (agents-bilingual-chat)
+Claude Code wrote `src/agents/language.py` (language detection, digit normalisation, Bangla and English answer templates, Bangla fallback), `src/agents/test_language.py` and `web/app/chat_voice.js` (mic and speaker language). No AI is called by this code. **All Bangla text needs native review:** the crop, unit and risk words and sentence templates in `language.py` (`BN_CROPS`, `BN_UNITS`, `NOT_ASSESSED`, `PAST_NOT_FORECAST`, `NO_ANSWER`, `TEMPLATES`) and the Bangla strings in `test_language.py`. The Bangla crop names were copied from the app's own `CNAME` table in `web/app/index.html`.
