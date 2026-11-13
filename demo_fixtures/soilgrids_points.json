@@ -1,0 +1,132 @@
+{
+ "dataset": "ISRIC SoilGrids 2.0 (CC BY 4.0; Poggio et al. 2021, doi:10.5194/soil-7-217-2021)",
+ "source_url": "https://docs.isric.org/globaldata/soilgrids/index.html",
+ "query_url": "https://rest.isric.org/soilgrids/v2.0/properties/query",
+ "resolution": "250 m",
+ "depth": "0-30 cm, thickness-weighted from 0-5, 5-15, 15-30 cm (mean)",
+ "note": "A model estimate, not a soil test. Only real answers are stored; status 'masked' = SoilGrids returned null for that cell; an `estimate` is the median of real cells around it, not that point's own value.",
+ "points": [
+  {
+   "lat": 23.4607,
+   "lon": 91.1809,
+   "label": "cumilla + demo_field_cumilla",
+   "status": "masked",
+   "retrieved": "2026-11-13",
+   "soil": null,
+   "estimate": {
+    "method": "median of SoilGrids cells around the point",
+    "retrieved": "2026-11-13",
+    "soil": {
+     "sand": 21.08352263323085,
+     "silt": 33.711412697251355,
+     "clay": 45.205064669517796,
+     "ph": 5.15,
+     "organic_carbon_g_kg": 14.566666666666666,
+     "texture": "clay",
+     "n_cells": 3,
+     "spread": {
+      "sand": [
+       18.85942971485743,
+       21.559480173275574
+      ],
+      "silt": [
+       33.40560373582388,
+       37.33755414861713
+      ],
+      "clay": [
+       41.102965678107296,
+       47.27363681840921
+      ],
+      "ph": [
+       5.116666666666666,
+       5.25
+      ],
+      "organic_carbon_g_kg": [
+       14.516666666666667,
+       16.116666666666667
+      ]
+     }
+    },
+    "ring_km": 2,
+    "n_cells": 3,
+    "n_asked": 8,
+    "n_failed": 5,
+    "cells": [
+     [
+      23.44797,
+      91.19477
+     ],
+     [
+      23.4427,
+      91.1809
+     ],
+     [
+      23.4607,
+      91.16128
+     ]
+    ]
+   }
+  },
+  {
+   "lat": 22.8696,
+   "lon": 91.0995,
+   "label": "noakhali",
+   "status": "masked",
+   "retrieved": "2026-11-13",
+   "soil": null,
+   "estimate": {
+    "method": "median of SoilGrids cells around the point",
+    "retrieved": "2026-11-13",
+    "soil": {
+     "sand": 31.55,
+     "silt": 29.266666666666666,
+     "clay": 39.18333333333333,
+     "ph": 5.6,
+     "organic_carbon_g_kg": 38.86666666666667,
+     "texture": "clay loam",
+     "n_cells": 3,
+     "spread": {
+      "sand": [
+       31.14590273151233,
+       31.666666666666668
+      ],
+      "silt": [
+       27.65,
+       30.39640239840107
+      ],
+      "clay": [
+       38.45769487008661,
+       40.68333333333333
+      ],
+      "ph": [
+       5.6,
+       5.7
+      ],
+      "organic_carbon_g_kg": [
+       36.266666666666666,
+       39.6
+      ]
+     }
+    },
+    "ring_km": 2,
+    "n_cells": 3,
+    "n_asked": 8,
+    "n_failed": 5,
+    "cells": [
+     [
+      22.85687,
+      91.08569
+     ],
+     [
+      22.8696,
+      91.07996
+     ],
+     [
+      22.88233,
+      91.08569
+     ]
+    ]
+   }
+  }
+ ]
+}

@@ -872,15 +872,51 @@ def field_soil_block(soil):
             "organic_carbon_g_kg": measure(soil["organic_carbon_g_kg"], "g/kg", src, 1)}
 
 
+SOIL_WHY = {   # one true sentence per reason (the route never says "in time" unless it was)
+    "no_value": ("SoilGrids has no value for this exact point (for example a river, "
+                 "pond or built-up cell).",
+                 "এই বিন্দুর জন্য SoilGrids-এ কোনো মান নেই (যেমন নদী, পুকুর বা বসতি)।"),
+    "timeout": ("SoilGrids did not answer in time. It is still being asked in the background; "
+                "open this page again in a minute.",
+                "SoilGrids সময়মতো উত্তর দেয়নি। পেছনে আবার চেষ্টা চলছে; এক মিনিট পরে পাতাটি আবার খুলুন।"),
+    "busy": ("SoilGrids is slow to answer. The request is still running in the background; "
+             "open this page again in a minute.",
+             "SoilGrids উত্তর দিতে দেরি করছে। অনুরোধটি পেছনে চলছে; এক মিনিট পরে পাতাটি আবার খুলুন।"),
+    "http": ("SoilGrids returned an error instead of an answer. We will try again shortly.",
+             "SoilGrids উত্তরের বদলে একটি ত্রুটি পাঠিয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করা হবে।"),
+    "network": ("SoilGrids could not be reached. We will try again shortly.",
+                "SoilGrids-এ পৌঁছানো যায়নি। কিছুক্ষণ পরে আবার চেষ্টা করা হবে।"),
+    "bad_answer": ("SoilGrids sent an answer we could not read.",
+                   "SoilGrids এমন উত্তর পাঠিয়েছে যা পড়া যায়নি।"),
+}
+
+
 def soil_fallback_notice(why):
-    reasons = {"no_value": ("SoilGrids has no value for this exact point (for example a river, "
-                            "pond or built-up cell).",
-                            "এই বিন্দুর জন্য SoilGrids-এ কোনো মান নেই (যেমন নদী, পুকুর বা বসতি)।"),
-               "unreachable": ("SoilGrids did not answer in time.",
-                               "SoilGrids সময়মতো উত্তর দেয়নি।")}[why]
+    reasons = SOIL_WHY[why]
     return {"level": "caution",
             "en": f"{reasons[0]} Showing the district soil instead (0-100 cm, texture only).",
             "bn": f"{reasons[1]} তাই জেলার মাটির তথ্য দেখানো হচ্ছে (০-১০০ সেমি, শুধু ধরন)।"}
+
+
+def soil_estimate_notice(est, retrieved):
+    """The point's own SoilGrids cell is masked: values are the median of real cells around it."""
+    n, km = est["n_cells"], est["ring_km"]
+    return {"level": "caution",
+            "en": f"SoilGrids has no value for this exact point, so pH, organic carbon and texture are "
+                  f"the median of {n} SoilGrids cells within about {km} km (saved {retrieved}). "
+                  "It is an estimate for the surroundings, not this point's own value.",
+            "bn": f"এই বিন্দুর জন্য SoilGrids-এ মান নেই, তাই pH, জৈব কার্বন ও মাটির ধরন প্রায় {bn_digits(str(km))} "
+                  f"কিমির মধ্যে {bn_digits(str(n))}টি SoilGrids ঘরের মধ্যমা (সংরক্ষিত {retrieved})। "
+                  "এটি আশপাশের অনুমান, এই বিন্দুর নিজের মান নয়।"}
+
+
+def soil_saved_notice(retrieved):
+    """A saved SoilGrids value is shown (source_mode "fixture"): say when it was retrieved."""
+    return {"level": "info",
+            "en": f"This is a saved SoilGrids value for this point, retrieved {retrieved}; "
+                  "it is refreshed in the background when SoilGrids answers.",
+            "bn": f"এটি এই বিন্দুর জন্য সংরক্ষিত SoilGrids মান, সংগ্রহের তারিখ {retrieved}; "
+                  "SoilGrids উত্তর দিলে পেছনে নতুন করে আনা হয়।"}
 
 
 # ---------------- crop option (advisory, post-flood) ----------------
@@ -1288,13 +1324,17 @@ def soil(district: str = None, lat: str = None, lon: str = None):
         block = None
         if location is not None:
             try:
-                found, mode["value"] = soilgrids_point.soil_at(location["lat"], location["lon"])
-            except soilgrids_point.SoilGridsError:
-                found, why = None, "unreachable"
+                found, mode["value"], meta = soilgrids_point.soil_at(
+                    location["lat"], location["lon"], with_meta=True)
+            except soilgrids_point.SoilGridsError as err:
+                found, why, meta = None, err.kind, {}
             else:
                 why = "no_value"
             if found is not None:
                 block = field_soil_block(found)
+                if mode["value"] == "fixture":
+                    notices.append(soil_estimate_notice(meta["estimate"], meta["retrieved"])
+                                   if meta.get("estimate") else soil_saved_notice(meta["retrieved"]))
             else:
                 notices.append(soil_fallback_notice(why))
         if block is None:
