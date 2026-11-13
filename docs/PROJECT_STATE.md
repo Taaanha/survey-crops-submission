@@ -36,7 +36,7 @@ Analog-year backtest (Field Twin) | Kc-weighted water comparison | `guard()` pro
 | T14 | Salinity add-on | not started |
 | T15 | Remal demo, Khulna | not started |
 | T16 | Drought "too dry" flag, Rajshahi | not started |
-| T17 | Agent `/ask` | partly built: `guard()` + 2 tools; no HF loop; `/ask` is a mock |
+| T17 | Agent `/ask` | partly built: `guard()` + 2 tools + bilingual answer layer (`language.py`, 14 Nov); no HF loop; `/ask` is a mock |
 | T18 | API contract consolidation | partly built: 7 real endpoints; `/enso-lens`, `/ask` are mocks; `/warnings` is real (13 Nov, api-weather-warnings); new endpoints not started |
 | T19 | README rewrite, demo fixtures, offline mode | not started (README still describes the old idea) |
 | T20 | Safest seedbed finder | not started |
