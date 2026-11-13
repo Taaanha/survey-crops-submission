@@ -53,7 +53,13 @@ class Reply:
 @pytest.fixture(autouse=True)
 def isolated_cache(tmp_path, monkeypatch):
     monkeypatch.setattr(sg, "CACHE_DIR", str(tmp_path))
-    return tmp_path
+    monkeypatch.setattr(sg, "FIXTURE_PATH", str(tmp_path / "no_fixture.json"))
+    monkeypatch.setattr(sg, "RETRY_DELAY_S", 0)
+    monkeypatch.setattr(sg, "FAIL_COOLDOWN_S", 0)
+    sg.reset_state()
+    yield tmp_path
+    sg.join_background()
+    sg.reset_state()
 
 
 def fake_get(monkeypatch, reply=None, error=None):
@@ -115,7 +121,8 @@ def test_success_returns_field_estimate_with_soilgrids_provenance(monkeypatch):
     assert prov["soilgrids"]["agency"] == "ISRIC - World Soil Information"
     assert "not a lab test" in prov["soilgrids"]["note"]
     assert "Upazila Agriculture Office" in prov["soilgrids"]["note"]
-    assert calls[0]["timeout"] == 10
+    assert calls[0]["timeout"] == (sg.CONNECT_TIMEOUT_S, sg.READ_TIMEOUT_S)
+    assert sg.READ_TIMEOUT_S >= 60       # the worker waits long; the request does not
     assert any("still uses the district" in n["en"] for n in body["notices"])
 
 
@@ -149,6 +156,9 @@ def test_failure_falls_back_to_district_soil_with_notice(monkeypatch, failure):
     assert body["source_mode"] == "fixture"
     assert any(n["level"] == "caution" and "district soil" in n["en"] for n in body["notices"])
     assert "soilgrids" not in src_ids(body["data"])
+    # "in time" is said only for a real timeout
+    said_in_time = any("did not answer in time" in n["en"] for n in body["notices"])
+    assert said_in_time == isinstance(failure.get("error"), requests.Timeout)
 
 
 def test_masked_point_falls_back_and_says_so(monkeypatch):

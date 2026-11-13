@@ -9,7 +9,7 @@ Public API (exact signatures + one-line description each):
 - `build_provenance(data)` : provenance entries (dataset, url, period, note) for every `src` id used.
 - `districts()` : GET /api/v1/districts.
 - `advisory(...)` : GET /api/v1/advisory (what to sow, ranked, `water` and `priority` options).
-- `soil(...)` : GET /api/v1/soil (ISRIC SoilGrids for the field point, district fallback).
+- `soil(...)` : GET /api/v1/soil (ISRIC SoilGrids for the field point: memory/disk cache, then saved fixture demo_fixtures/soilgrids_points.json, then a background fetch with a long timeout; district fallback with an honest notice).
 - `rotation_rank(request: Request)` : POST /api/v1/rotation/rank {district, weights} (farmer priorities, see src/compute/priorities/MODULE.md).
 - `risk_calendar(...)` : GET /api/v1/risk-calendar.
 - `post_flood(...)` : GET /api/v1/post-flood.
@@ -19,7 +19,7 @@ Public API (exact signatures + one-line description each):
 Inputs (data files / other modules) and their provenance: everything in src/compute, src/agents/guard.py, src/acquire/soilgrids_point.py; `data/processed/*`; `web/mock/*.json` for the not-built endpoints.
 Outputs (shape + units + provenance fields): envelope {api_version, endpoint, request, generated_at, source_mode, is_mock, data, provenance, notices}; `source_mode` is live, cache or fixture.
 Reference tables used (data/reference/*.csv rows): through the compute modules; `ref_provenance` turns each reference row into a provenance entry.
-Tests (file names + what each proves): src/api/test_app.py (contract keys vs web/mock files, provenance ids exist, narration passes guard, error envelope); src/api/test_soil.py (SoilGrids mocked); src/api/test_rotation_rank.py (rotation/rank contract vs its mock); src/api/test_assumptions_doc.py; src/api/test_field_twin_stage.py.
+Tests (file names + what each proves): src/api/test_app.py (contract keys vs web/mock files, provenance ids exist, narration passes guard, error envelope); src/api/test_soil.py and src/api/test_soil_cache.py (SoilGrids mocked: success, timeout, null, cache, saved fixture, retries, cooldown); src/api/test_rotation_rank.py (rotation/rank contract vs its mock); src/api/test_assumptions_doc.py; src/api/test_field_twin_stage.py.
 Known limitations / honest caveats: provenance entries have dataset and url but no `retrieved` date or `granule_or_file` (gap vs the new rule). `/enso-lens` and `/ask` are mocks. app.py is too long to paste; use the line ranges. Planned endpoints (T18): /rotation (list), /field-profile, /replan, /block-summary, /validation/*, /scorecard.
 CHAT KIT: src/api/MODULE_api.md, docs/api_contract.md, web/mock/advisory.json (or the matching mock file), app.py (read the relevant section only), src/api/test_app.py (matching tests only)
 Last changed: 2026-10-24 by T2 (rotation/rank)

@@ -49,12 +49,14 @@ function placeLine(ad,srcFn){var l=ad&&ad.location;if(!l)return '';var nm=l.dist
 function farmSoilLoad(){var k=JSON.stringify([st.district,st.lat,st.lon]);if(OF.soilKey===k)return;OF.soilKey=k;OF.soil=null;
  CS_API.get('/api/v1/soil?district='+st.district+'&lat='+st.lat+'&lon='+st.lon).then(function(r){if(OF.soilKey!==k)return;OF.soil={r:r,ad:r.data?CS_SOIL.adapt(r.data):null};var e=document.getElementById('farmsoil');if(e)e.innerHTML=farmSoilInner()})}
 function farmSoilInner(){var S=OF.soil;if(!S)return '<p>'+spinner()+esc(s('planWait'))+'</p>';var a=S.ad;if(!a)return '<div class="note warn"><span>'+esc(s('offline'))+'</span></div>';if(!a.ok)return '<div class="note warn"><span>'+esc(a.errors&&a.errors.length?T(a.errors[0]):s('planNone'))+'</span></div>';
- var live=CS_API.isLive(S.r),na='<span style="color:var(--mute)">'+esc(bi('not available for this point','এই বিন্দুর জন্য পাওয়া যায়নি'))+'</span>';
+ var live=CS_API.isLive(S.r),na='<span style="color:var(--mute)">'+esc(bi('not estimated','অনুমান করা হয়নি'))+'</span>';
  function tile(l,v){return '<div class="oftile"><small>'+esc(l)+'</small><b>'+v+'</b></div>'}
  function mm(m){return m?N(m.value)+' '+esc(m.unit):na}
  var h=(live?'':'<div class="note warn"><span class="badge">'+esc(s('planDemo'))+'</span></div>')+'<div class="oftiles">'+tile(bi('Texture','মাটির ধরন'),a.texture?esc(T(a.texture)):na)+tile(bi('Soil acidity (pH)','মাটির অম্লতা (pH)'),mm(a.ph))+tile(bi('Organic carbon','জৈব কার্বন'),mm(a.oc))+'</div>';
- if(a.estimate)h+='<p style="color:var(--mute);font-size:.85em">'+esc(a.estimate==='field'?bi('SoilGrids model estimate for this point, not a lab test.','এই বিন্দুর জন্য SoilGrids মডেলের অনুমান, ল্যাব পরীক্ষা নয়।'):bi('District soil values (SoilGrids did not answer or has no value here).','জেলার মাটির মান (SoilGrids উত্তর দেয়নি বা এখানে মান নেই)।'))+(a.depth?' ('+esc(String(a.depth))+')':'')+'</p>';
+ if(a.estimate)h+='<p style="color:var(--mute);font-size:.85em">'+esc(a.estimate==='field'?bi('SoilGrids model estimate, not a lab test.','SoilGrids মডেলের অনুমান, ল্যাব পরীক্ষা নয়।'):bi('District soil values (SoilGrids did not answer or has no value here).','জেলার মাটির মান (SoilGrids উত্তর দেয়নি বা এখানে মান নেই)।'))+(a.depth?' ('+esc(String(a.depth))+')':'')+'</p>';
  a.notices.forEach(function(n){h+='<div class="note'+(n.level==='caution'?' warn':'')+'"><span>'+esc(T(n))+'</span></div>'});
  if(a.advice)h+='<p>'+esc(T(a.advice))+'</p>';
+ if(a.texture||a.ph||a.oc)h+='<p><button class="src" data-act="fsoilsrc">'+bi('Source','উৎস')+' ›</button></p>';
  return h}
+document.addEventListener('click',function(e){var b=e.target.closest&&e.target.closest('[data-act="fsoilsrc"]');if(b&&OF.soil&&OF.soil.ad)showSources('soilgrids',OF.soil.ad)});
 function farmSoilCard(){farmSoilLoad();return '<div class="card"><h3>'+esc(bi('Your soil','আপনার মাটি'))+'</h3><div id="farmsoil">'+farmSoilInner()+'</div></div>'}
