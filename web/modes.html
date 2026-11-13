@@ -278,6 +278,7 @@ body{background-attachment:fixed}
 <script src="adapters/strategies.js"></script>
 <script src="pages/voice.js"></script>
 <script src="pages/officer.js"></script>
+<script src="pages/closed.js"></script>
 <script src="pages/view.js"></script>
 <script src="pages/data.js"></script>
 <script>
@@ -318,7 +319,7 @@ var S={
   floodlbl:['About 1 week ago','About 2 weeks ago','About 1 month ago','Over 6 weeks ago','August 2024 flood (NASA example)'],pickdate:'Or pick the date',
   step3:'Step 3 of 4 · what could go wrong',q3:'Problems and what to do',q3s:'General reminders for each problem: what it means, what you can do, and when. They are not NASA results. Confirm with your Upazila Agriculture Office.',
   what:'What it means',do:'What you can do',whenl:'When',
-  step4:'Step 4 of 4 · best rotation',q4:'Best rotation for your field',q4s:'Your usual pattern is shown next to other options, so you can compare at least three. Past seasons only, not a forecast.',
+  step4:'Step 4 of 4 · best rotation',q4:'Best rotation for your field',q4s:'Your options are shown side by side. Crops whose sowing time has passed are shown separately, with the reason. Past seasons only, not a forecast.',
   why:'Why it is suggested',evid:'Evidence',ben:'Benefits',gap:'Information gaps',risk:'Risks to check locally',choose:'Choose this plan',chosen:'Chosen ✓',usual:'Your usual rotation',rank:'Rank',notrank:'Not ranked',
   probS:'Problems in {x} of 24 seasons (2001–2024)',checked:'Checked: ',sowon:'Sow from',irr:'Irrigation, average',window:'Recommended window opens',notall:'Not all risks for this crop are checked yet.',
   late:'This looks late for the usual rabi window. Check the live plan.',pest:'Insect pests are not scored. Disease weather risk is counted only where a sourced rule exists. Changing the crop family can interrupt pest cycles.',
@@ -343,7 +344,7 @@ var S={
   floodlbl:['প্রায় ১ সপ্তাহ আগে','প্রায় ২ সপ্তাহ আগে','প্রায় ১ মাস আগে','৬ সপ্তাহের বেশি আগে','আগস্ট ২০২৪-এর বন্যা (নাসা উদাহরণ)'],pickdate:'অথবা তারিখ বাছুন',
   step3:'ধাপ ৩/৪ · কী ভুল হতে পারে',q3:'সমস্যা ও করণীয়',q3s:'প্রতিটি সমস্যার সাধারণ মনে করিয়ে দেওয়া: এর মানে কী, কী করা যায়, কখন। এগুলো নাসার ফল নয়। উপজেলা কৃষি অফিসে যাচাই করুন।',
   what:'এর মানে কী',do:'কী করতে পারেন',whenl:'কখন',
-  step4:'ধাপ ৪/৪ · সেরা ফসলক্রম',q4:'আপনার জমির সেরা ফসলক্রম',q4s:'আপনার নিয়মিত ধরনটি অন্য বিকল্পের পাশে দেখানো হয়েছে, যাতে কমপক্ষে তিনটি তুলনা করতে পারেন। শুধু অতীত মৌসুম, পূর্বাভাস নয়।',
+  step4:'ধাপ ৪/৪ · সেরা ফসলক্রম',q4:'আপনার জমির সেরা ফসলক্রম',q4s:'আপনার বিকল্পগুলো পাশাপাশি দেখানো হয়েছে। যেসব ফসলের বপনের সময় পেরিয়ে গেছে সেগুলো কারণসহ আলাদা করে দেখানো হয়েছে। শুধু অতীত মৌসুমের ভিত্তিতে, পূর্বাভাস নয়।',
   why:'কেন প্রস্তাব করা হলো',evid:'প্রমাণ',ben:'সুবিধা',gap:'তথ্যের ঘাটতি',risk:'স্থানীয়ভাবে যাচাইয়ের ঝুঁকি',choose:'এই পরিকল্পনা বাছুন',chosen:'বাছাই করা হয়েছে ✓',usual:'আপনার নিয়মিত ফসলক্রম',rank:'ক্রম',notrank:'ক্রম নেই',
   probS:'২৪ মৌসুমের {x}টিতে সমস্যা (২০০১–২০২৪)',checked:'যাচাই করা হয়েছে: ',sowon:'বোনা শুরু',irr:'সেচ, গড়',window:'প্রস্তাবিত সময় শুরু',notall:'এই ফসলের সব ঝুঁকি এখনো যাচাই করা হয়নি।',
   late:'এটি সাধারণ রবি মৌসুমের জন্য দেরি মনে হচ্ছে। লাইভ পরিকল্পনা দেখুন।',pest:'পোকা হিসাবে ধরা হয়নি; রোগের আবহাওয়া-ঝুঁকি শুধু সূত্রসহ নিয়ম থাকলে গণনা হয়। ফসলের পরিবার বদলালে পোকার চক্র ভাঙতে পারে।',
@@ -665,7 +666,7 @@ function renderRotation(){
  if(ad.rankedBy&&ad.rankedBy.text)h+='<div class="note"><span>'+esc(T(ad.rankedBy.text))+'</span></div>';
  if(ad.earliest)h+='<p>'+esc(s('earliestAny'))+': <b>'+iso2d(ad.earliest.date)+'</b>'+(ad.earliest.basis?' <span style="color:var(--mute)">('+esc(T(ad.earliest.basis))+')</span>':'')+'</p>';
  h+=liveCompare(ad)+(window.priceStrip?priceStrip(ad):'')+'<div class="strats">'+ad.options.map(function(o,i){return liveCard(o,i+1)}).join('')+'</div>';
- if(ad.filtered.length)h+='<h3>'+esc(s('planNo'))+'</h3>'+ad.filtered.map(function(o){return '<p><b>'+esc(T(o.name))+'</b>'+(o.reason?': '+esc(T(o.reason)):'')+'</p>'}).join('');
+ if(ad.filtered.length)h+=(window.closedCards?closedCards(ad):'');
  ad.notices.forEach(function(n){h+='<div class="note'+(n.level==='caution'?' warn':'')+'"><span>'+esc(T(n))+'</span></div>'});
  h+='<p style="color:var(--mute)">'+esc(s('notfc'))+'</p><div class="note warn"><span>'+esc(s('pest'))+'</span></div>';
  h+='<div style="height:10px"></div><button class="btn" data-act="go" data-v="strategies">'+esc(bi('See market prices and other ways to rotate','বাজারদর ও ফসল ঘোরানোর অন্য উপায় দেখুন'))+'</button>';
