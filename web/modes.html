@@ -128,6 +128,9 @@ dialog::backdrop{background:rgba(0,0,0,.6)}
 .sc-wrap{border-radius:20px;overflow:hidden;border:1px solid var(--line)}.sc-wrap svg{display:block;width:100%;height:auto}
 .sway{animation:swy 3.4s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:bottom center}@keyframes swy{from{transform:rotate(-2.2deg)}to{transform:rotate(2.2deg)}}
 
+body[data-mode="officer"] svg.art,body[data-mode="officer"] .watch,body[data-mode="officer"] .scenewrap,body[data-mode="officer"] #pg-learn,body[data-mode="officer"] #pg-pictures{display:none!important}
+body[data-mode="officer"] .mcard svg.art{display:block!important}
+[data-act="speak"].stopmode{background:#E5604D;color:#fff}[data-act].playing{outline:2px solid var(--gold)}
 body[data-mode="farmer"] .only-officer,body[data-mode="officer"] .only-farmer{display:none!important}
 .modes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}
 .mcard{display:flex;flex-direction:column;align-items:flex-start;gap:8px;padding:16px;border-radius:20px;border:1px solid var(--line);background:linear-gradient(170deg,rgba(255,255,255,.09),rgba(255,255,255,.03));text-align:left}
@@ -240,6 +243,7 @@ body{background-attachment:fixed}
 <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></symbol>
 <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></symbol>
 <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></symbol>
+<symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
 <symbol id="i-spk" viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9z"/><path d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></symbol>
 <symbol id="i-ext" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5H5V6h5"/></symbol>
 </svg>
@@ -727,7 +731,7 @@ function floodCard(){
   if(a.earliest){var d=new Date(a.earliest.date+'T00:00:00');
    h+='<div class="big-date"><div class="cal"><b>'+N(d.getDate())+'</b><span>'+MON[lang][d.getMonth()].toUpperCase()+' '+N(d.getFullYear())+'</span></div><div><h3>'+esc(bi('Earliest sowing after this flood','এই বন্যার পর বপনের সবচেয়ে আগের তারিখ'))+' '+fsrc(a.earliest.src)+'</h3>'+(a.earliest.basis?'<p style="color:var(--mute)">'+esc(T(a.earliest.basis))+'</p>':'')+'</div></div>'}
   /* radar pictures */
-  if(a.images.length){h+='<h4 style="margin:12px 0 6px">'+esc(bi('Flood water seen by radar','রাডারে দেখা বন্যার পানি'))+'</h4><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">'+a.images.map(function(im){return '<figure style="margin:0"><img loading="lazy" src="'+esc(String(window.API_BASE||'').replace(/\/$/,'')+im.path)+'" alt="'+esc(T(im.caption)||im.date)+'" style="width:100%;border-radius:10px;background:#06101B"><figcaption style="font-size:.8em;color:var(--mute)">'+iso2d(im.date)+' '+fsrc(im.src)+'</figcaption></figure>'}).join('')+'</div>'}
+  if(a.images.length){h+='<h4 style="margin:12px 0 6px">'+esc(bi('Flood water seen by radar','রাডারে দেখা বন্যার পানি'))+'</h4><div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">'+a.images.map(function(im){return '<figure style="margin:0"><img loading="lazy" decoding="async" width="640" height="480" src="'+esc(String(window.API_BASE||'').replace(/\/$/,'')+im.path)+'" alt="'+esc(T(im.caption)||im.date)+'" style="width:100%;border-radius:10px;background:#06101B"><figcaption style="font-size:.8em;color:var(--mute)">'+iso2d(im.date)+' '+fsrc(im.src)+'</figcaption></figure>'}).join('')+'</div>'}
   else h+='<p style="color:var(--mute);margin-top:10px">'+esc(bi('No radar pictures for this place and date yet.','এই স্থান ও তারিখের জন্য এখনও রাডার ছবি নেই।'))+'</p>';
   /* water on the ground */
   if(a.water&&a.water.available){var w=a.water;
@@ -861,7 +865,7 @@ function renderPictures(){
  $('#pg-pictures').innerHTML='<div class="eyebrow">'+esc(s('picT'))+'</div><h1 style="font-size:clamp(1.5rem,5.5vw,2.1rem);margin-top:6px">'+esc(s('steps'))+'</h1><p class="lead">'+esc(s('picS'))+'</p><div class="card gold" style="margin-top:0">'+chainFor(k)+'</div><div class="ptiles">'+tiles+'</div><h2>'+esc(s('legT'))+'</h2><div class="legend">'+lg+'</div><div class="note warn"><span>'+esc(s('pest'))+'</span></div><button class="btn alt" data-act="go" data-v="sources">'+esc(s('src'))+'</button>'}
 /* ===== nav / routing ===== */
 var PAGES=['field','farm','issues','rotation','twin','plan','learn','pictures'],ICONS=['field','farm','alert','rot','pin','plan','info','pic'],XN=[0,0,0,0,1,1,0,1];
-function renderNav(){$('#nav').innerHTML=PAGES.map(function(p,i){return '<button data-act="go" data-v="'+p+'" class="'+(cur===p?'on':'')+(XN[i]?' x':'')+'">'+ic(ICONS[i])+'<span>'+esc(s('navx')[i])+'</span></button>'}).join('')+'<button data-act="go" data-v="server" class="only-officer x'+(cur==='server'?' on':'')+'">'+ic('info')+'<span>'+esc(s('server'))+'</span></button><button data-act="go" data-v="ask" class="'+(cur==='ask'?'on':'')+'">'+ic('info')+'<span>'+esc(bi('Ask','জিজ্ঞাসা'))+'</span></button><button data-act="go" data-v="future" class="'+(cur==='future'?'on':'')+'">'+ic('rot')+'<span>'+esc(bi('Future','ভবিষ্যৎ'))+'</span></button>'}
+function renderNav(){$('#nav').innerHTML=PAGES.map(function(p,i){return '<button data-act="go" data-v="'+p+'" class="'+(cur===p?'on':'')+(XN[i]?' x':'')+((p==='learn'||p==='pictures')?' only-farmer':'')+'">'+ic(ICONS[i])+'<span>'+esc(s('navx')[i])+'</span></button>'}).join('')+'<button data-act="go" data-v="server" class="only-officer x'+(cur==='server'?' on':'')+'">'+ic('info')+'<span>'+esc(s('server'))+'</span></button><button data-act="go" data-v="ask" class="'+(cur==='ask'?'on':'')+'">'+ic('info')+'<span>'+esc(bi('Ask','জিজ্ঞাসা'))+'</span></button><button data-act="go" data-v="future" class="'+(cur==='future'?'on':'')+'">'+ic('rot')+'<span>'+esc(bi('Future','ভবিষ্যৎ'))+'</span></button>'}
 var cur='field';var EXTRA=['sources','server','data','model','evidence','strategies','future','ask'];
 function show(p){cur=p;PAGES.concat(EXTRA).forEach(function(x){var e=$('#pg-'+x);if(e)e.classList.toggle('on',x===p)});$('#backBtn').classList.toggle('show',p!=='field');renderNav();
  var RT={farm:renderFarm,issues:renderIssues,rotation:renderRotation,twin:renderTwin,plan:renderPlan,learn:renderLearn,pictures:renderPictures,sources:renderSources,server:renderServer,data:window.renderData,model:window.renderModel,evidence:window.renderEvidence,strategies:window.renderStrategies,future:window.renderFuture,ask:window.renderAsk};if(RT[p])RT[p]();
@@ -904,7 +908,7 @@ document.addEventListener('click',function(e){
  else if(a==='raw'){var dd=$('#dlg');var oo=chosenOpt();var rawO=oo&&PLAN.res&&PLAN.res.data&&PLAN.res.data.data?(PLAN.res.data.data.options||[]).filter(function(x){return x.crop===oo.id})[0]:null;dd.innerHTML='<h3>JSON</h3><pre class="json">'+esc(JSON.stringify({source:PLAN.res&&PLAN.res.source,option:rawO||null},null,1))+'</pre><button class="btn sm" data-act="close">OK</button>';dd.showModal?dd.showModal():dd.setAttribute('open','')}
  else if(a==='vid')vidOpen(v);else if(a==='vclose')vidClose();else if(a==='vplay'){vid.play=!vid.play;if(vid.play&&vid.i>=VIDS[vid.id].length-1)vid.i=0;vidDraw();vidTick()}else if(a==='vnext'){if(vid.i<VIDS[vid.id].length-1){vid.i++;vidDraw()}}else if(a==='vprev'){if(vid.i>0){vid.i--;vidDraw()}}else if(a==='vhear'){vid.hear=!vid.hear;vidDraw()}
  else if(a==='close'){var d2=$('#dlg');d2.close?d2.close():d2.removeAttribute('open')}
- else if(a==='speak'){if(lang==='bn'){toast(s('noBnTts'));return}if(!window.speechSynthesis){toast('No speech here');return}speechSynthesis.cancel();var el=$('#pg-'+cur);var u=new SpeechSynthesisUtterance((el.innerText||'').slice(0,900));u.lang=lang==='bn'?'bn-BD':'en-GB';speechSynthesis.speak(u)}
+ else if(a==='speak'){window.togglePageSpeak(b)}
 });
 document.addEventListener('input',function(e){if(e.target.id==='scrub'){sceneP=e.target.value/100;updateScene()}});
 document.addEventListener('change',function(e){if(e.target.id==='hdate'&&e.target.value){st.harvest='date';st.harvestDate=e.target.value;renderFarm();return}if(e.target.id==='fdate'){st.floodMode='date';st.floodDate=e.target.value;renderFarm()}});
@@ -916,4 +920,5 @@ document.addEventListener('change',function(e){if(e.target.id==='hdate'&&e.targe
 
 
 </script>
+<script src="pages/audio_ctl.js"></script>
 </body></html>
