@@ -137,16 +137,30 @@ def _bad_wording(text, lang):
     return bool(_BANNED_EN.search(text))
 
 
-def compose_answer(lang, facts, tool_results, model_text=None):
+def _names_other_crop(sentence, base):
+    """True if the sentence names a crop that the tool-based answer does not."""
+    low_s, low_b = sentence.lower(), base.lower()
+    names = {n.lower() for n in EN_CROPS.values()} | set(BN_CROPS.values())
+    return any(n in low_s and n not in low_b for n in names)
+
+
+def compose_answer(lang, facts, tool_results, model_text=None, base_text=None,
+                   disclaimer=True):
     """Final user-facing answer in `lang`.
 
-    Returns {"text", "lang", "narrator", "guard_passed", "language_note"}.
-    narrator is "model" only when the model's sentence is used."""
+    The facts always come first: `base_text` (the tools' own sentences) if
+    given, else the template for `facts`. The model may add ONE short
+    sentence, kept only if it is clean text in `lang`, avoids "predict" /
+    "forecast", passes guard(), and names no crop the facts do not. In
+    Bangla a failed sentence is dropped, never translated or replaced by
+    English. `disclaimer=False` leaves out the "past seasons" line (used
+    for weather warnings, which are short-range outlooks).
+
+    Returns {"text", "lang", "narrator", "guard_passed", "language_note"}."""
     lang = "bn" if lang == "bn" else "en"
-    base = template_answer(lang, facts)
-    base_guard = guard(base, tool_results)
-    if not base_guard["passed"]:
-        # The template itself quotes a number the tools never returned: say so.
+    base = base_text if base_text else template_answer(lang, facts)
+    if not guard(base, tool_results)["passed"]:
+        # The base quotes a number the tools never returned: say so.
         base = NO_ANSWER[lang]
 
     t = (model_text or "").strip()
@@ -155,16 +169,12 @@ def compose_answer(lang, facts, tool_results, model_text=None):
         in_lang = (not looks_garbled_bn(t)) if lang == "bn" else (
             detect_language(t) == "en")
         model_ok = (in_lang and not _bad_wording(t, lang)
+                    and not _names_other_crop(t, base)
                     and guard(t, tool_results)["passed"])
 
-    if lang == "en":
-        # English: the model's sentence replaces the template when it passes.
-        body = t if model_ok else base
-    else:
-        # Bangla: the template carries the facts; the model only adds a
-        # linking sentence. A failed sentence is dropped, never translated.
-        body = base + (" " + t if model_ok else "")
-    text = body + " " + PAST_NOT_FORECAST[lang]
+    text = base + (" " + t if model_ok else "")
+    if disclaimer:
+        text += " " + PAST_NOT_FORECAST[lang]
     return {"text": localise_digits(text, lang), "lang": lang,
             "narrator": "model" if model_ok else "template",
             "guard_passed": True, "language_note": None}
